@@ -8,31 +8,36 @@ module.exports = app => {
 		JSON,
 	} = app.Sequelize;
 
-	const users = app.model.define("mod_lessons_users", {
+	const model = app.model.define("users", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
 			primaryKey: true,
 		},
 
-		username: {
+		username: {  // keepwork username
 			type: STRING(64),
+			unique: true,
+			allowNull: false,
 		},
 
-		nickname: {
+		nickname: {  // lesson昵称或真是姓名
 			type: STRING(64),
 		},
 		
-		coin: {
+		coin: {      // 知识币
 			type: INTEGER,
+			defaultValue: 0,
 		},
 
-		identify: {
+		identify: {  // 身份
 			type: INTEGER,  // 0 = 默认 1 - 学生  2 - 教师
+			defaultValue: 0,
 		},
 
-		extra: {
+		extra: {     // 额外数据
 			type: JSON,
+			defaultValue:{},
 		},
 
 	}, {
@@ -41,7 +46,22 @@ module.exports = app => {
 		collate: 'utf8mb4_bin',
 	});
 
-	//users.sync({force:true});
+	//model.sync({force:true});
+	
+	model.getById = async function(userId, username) {
+		let data = await app.model.Users.findOne({where: {id:userId}});
 
-	return users;
+		if (!data) {
+			data = await app.model.Users.create({
+				id: userId,
+				username,
+			});
+		};
+
+		data = data.get({plain:true});
+
+		return data;
+	}
+
+	return model;
 }

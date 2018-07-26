@@ -8,7 +8,7 @@ module.exports = app => {
 		JSON,
 	} = app.Sequelize;
 
-	const classes = app.model.define("mod_lessons_classes", {
+	const model = app.model.define("classrooms", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
@@ -17,12 +17,19 @@ module.exports = app => {
 
 		lessonId: {
 			type: BIGINT,
+			allowNull: false,
 		},
 
 		teacherId: {
 			type: BIGINT,
+			allowNull: false,
 		},
 		
+		state: {
+			type: INTEGER,
+			defaultValue: 0,
+		},
+
 		extra: {
 			type: JSON,
 		},
@@ -33,7 +40,7 @@ module.exports = app => {
 		collate: 'utf8mb4_bin',
 	});
 
-	//classes.sync({force:true});
+	//model.sync({force:true});
 
-	return classes;
+	return model;
 }

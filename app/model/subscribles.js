@@ -8,7 +8,7 @@ module.exports = app => {
 		JSON,
 	} = app.Sequelize;
 
-	const model = app.model.define("packageLessons", {
+	const model = app.model.define("subscribles", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
@@ -25,31 +25,24 @@ module.exports = app => {
 			allowNull: false,
 		},
 
-		lessonId: {
-			type: BIGINT,
-			allowNull: false,
+		extra: {     // 额外数据
+			type: JSON,
+			defaultValue:{},
 		},
 
-		extra: {
-			type: JSON,
-			defaultValue: {},
-		},
 	}, {
 		underscored: false,
 		charset: "utf8mb4",
 		collate: 'utf8mb4_bin',
-
 		indexes: [
 		{
 			unique: true,
-			fields: ["packageId", "lessonId"],
+			fields: ["userId", "packageId"],
 		},
 		],
 	});
 
-	//model.sync({force:true});
+	//users.sync({force:true});
 
 	return model;
 }
-
-

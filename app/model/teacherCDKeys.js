@@ -8,48 +8,39 @@ module.exports = app => {
 		JSON,
 	} = app.Sequelize;
 
-	const model = app.model.define("packageLessons", {
+	const model = app.model.define("teacherCDKeys", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
 			primaryKey: true,
 		},
 
-		userId: {
+		teacherId: {
 			type: BIGINT,
+		},
+
+		key: {
+			type: STRING(64),
 			allowNull: false,
 		},
 
-		packageId: {
-			type: BIGINT,
-			allowNull: false,
+		state: {
+			type: INTEGER,
+			defaultValue: 0, // 0 --未使用 1 -- 已使用
 		},
-
-		lessonId: {
-			type: BIGINT,
-			allowNull: false,
-		},
-
+		
 		extra: {
 			type: JSON,
-			defaultValue: {},
+			defaultValue:{},
 		},
+
 	}, {
 		underscored: false,
 		charset: "utf8mb4",
 		collate: 'utf8mb4_bin',
-
-		indexes: [
-		{
-			unique: true,
-			fields: ["packageId", "lessonId"],
-		},
-		],
 	});
 
 	//model.sync({force:true});
 
 	return model;
 }
-
-

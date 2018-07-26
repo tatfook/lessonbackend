@@ -8,7 +8,7 @@ module.exports = app => {
 		JSON,
 	} = app.Sequelize;
 
-	const packages = app.model.define("mod_lessons_packages", {
+	const model = app.model.define("packages", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
@@ -20,20 +20,46 @@ module.exports = app => {
 			allowNull: false,
 		},
 
-		title: {
+		packageName: {
 			type: STRING,
+			allowNull: false,
+			unique: true,
 		},
 
-		cover: {
+		minAge: {
+			type: INTEGER,
+			defaultValue: 0,
+		},
+
+		maxAge: {
+			type: INTEGER,
+			defaultValue: 1000,
+		},
+
+		state: { //  0 - 初始状态  1 - 审核中  2 - 审核成功  3 - 审核失败  4 - 异常态(审核成功后被改坏可不用此状态 用0代替)
+			type: INTEGER,
+			defaultValue: 0,
+		},
+
+		intro: {
 			type: STRING(512),
 		},
 
-		skills: {
-			type: STRING(512),
+		cost: {
+			type: INTEGER,
+			defaultValue: 0,
 		},
-		
+
+		reward: {
+			type: INTEGER,
+			defaultValue: 0,
+		},
+
 		extra: {
 			type: JSON,
+			defaultValue: {
+				coverUrl: "",
+			}
 		},
 	}, {
 		underscored: false,
@@ -41,7 +67,62 @@ module.exports = app => {
 		collate: 'utf8mb4_bin',
 	});
 
-	//packages.sync({force:true});
+	//model.sync({force:true});
+	
+	model.getById = async function(id, userId) {
+		const where = {id};
 
-	return packages;
+		if (userId) where.userId = userId;
+
+		const data = await app.model.Packages.findOne({where});
+
+		return data && data.get({plain: true});
+	}
+
+	model.addLesson = async function(userId, packageId, lessonId) {
+		let data = await app.model.Packages.findOne({where: {userId, id: packageId}});
+		if (!data) return false;
+
+		data = await app.model.Lessons.findOne({where: {id:lessonId}});
+
+		if (!data) return false;
+
+		data = await app.model.PackageLessons.create({
+			userId,
+			packageId,
+			lessonId,
+		});
+
+		if (data) return true;
+		
+		return false;
+	}
+
+	model.deleteLesson = async function(userId, packageId, lessonId) {
+		//let data = await app.model.Packages.findOne({where: {userId, id: packageId}});
+		//if (!data) return false;
+
+		return await app.model.PackageLessons.destroy({
+			where: {
+				userId,
+				packageId,
+				lessonId,
+			}
+		});
+	}
+
+	model.lessons = async function(packageId) {
+		const list = await app.model.PackageLessons.findAll({where:{packageId}});
+		const lessons = [];
+
+		for (let i = 0; i < list.length; i++) {
+			const lesson = await app.model.Lessons.findOne({where:{id:list[i].lessonId}});
+			if (!lesson) continue;
+			lessons.push(lesson.get({plain:true}));
+		}
+
+		return lessons;
+	}
+
+	return model;
 }

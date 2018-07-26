@@ -5,7 +5,7 @@ exports.keepworkBaseURL = "";
 
 exports.sequelize = {
 	dialect: "mysql",
-	database: "keepwork-dev",
+	database: "lesson-dev",
 	host: '10.28.18.16',
 	port: "32000",
 	username: "root",
@@ -16,7 +16,7 @@ exports.cors = {
 	origin: "*",
 }
 
-//exports.middleware = ['authenticated'];
+exports.middleware = ['authenticated'];
 
 exports.security = {
 	xframe: {

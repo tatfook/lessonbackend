@@ -4,11 +4,12 @@ module.exports = app => {
 		BIGINT,
 		STRING,
 		INTEGER,
+		TEXT,
 		DATE,
 		JSON,
 	} = app.Sequelize;
-
-	const model = app.model.define("packageLessons", {
+	
+	const model = app.model.define("lessonSkills", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
@@ -20,20 +21,25 @@ module.exports = app => {
 			allowNull: false,
 		},
 
-		packageId: {
+		lessonId: {
 			type: BIGINT,
 			allowNull: false,
 		},
 
-		lessonId: {
+		skillId: {
 			type: BIGINT,
-			allowNull: false,
+		},
+
+		score: {
+			type: INTEGER,
+			defaultValue: 0,
 		},
 
 		extra: {
 			type: JSON,
 			defaultValue: {},
 		},
+
 	}, {
 		underscored: false,
 		charset: "utf8mb4",
@@ -42,7 +48,7 @@ module.exports = app => {
 		indexes: [
 		{
 			unique: true,
-			fields: ["packageId", "lessonId"],
+			fields: ["lessonId", "skillId"],
 		},
 		],
 	});
@@ -51,5 +57,3 @@ module.exports = app => {
 
 	return model;
 }
-
-

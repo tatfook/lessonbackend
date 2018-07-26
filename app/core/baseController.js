@@ -4,65 +4,65 @@ const Controller = require("egg").Controller;
 
 class BaseController extends Controller {
 	// get
-	async index() {
-		const {ctx} = this;
-		const query = ctx.query;
+	//async index() {
+		//const {ctx} = this;
+		//const query = ctx.query;
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		//this.enauthenticated();
+		//const userId = this.getUser().userId;
 
-		query.userId = userId;
+		//query.userId = userId;
 
-		const result = await ctx.model.findAndCount(params);
+		//const result = await this.model.findAndCount(params);
 
-		this.success(result);
-	}
+		//this.success(result);
+	//}
 
-	async create() {
-		const {ctx} = this;
-		const params = ctx.request.body;
+	//async create() {
+		//const {ctx} = this;
+		//const params = ctx.request.body;
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		//this.enauthenticated();
+		//const userId = this.getUser().userId;
 
-		params.userId = userId;
+		//params.userId = userId;
 
-		const result = await ctx.model.create(params);
+		//const result = await this.model.create(params);
 
-		this.success(result);
-	}
+		//this.success(result);
+	//}
 
-	async update() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		const params = ctx.request.body;
+	//async update() {
+		//const {ctx} = this;
+		//const id = _.toNumber(ctx.params.id);
+		//const params = ctx.request.body;
 
-		this.enauthenticated();
+		//this.enauthenticated();
 
-		if (!id) ctx.throw(400, "id invalid");
+		//if (!id) ctx.throw(400, "id invalid");
 
-		const userId = this.getUser().userId;
+		//const userId = this.getUser().userId;
 
-		const result = await ctx.model.update(params, {where:{id, userId}});
+		//const result = await this.model.update(params, {where:{id, userId}});
 
-		this.success(result);
-	}
+		//this.success(result);
+	//}
 
-	async destroy() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		const params = ctx.request.body;
+	//async destroy() {
+		//const {ctx} = this;
+		//const id = _.toNumber(ctx.params.id);
+		//const params = ctx.request.body;
 
-		this.enauthenticated();
+		//this.enauthenticated();
 
-		if (!id) ctx.throw(400, "id invalid");
+		//if (!id) ctx.throw(400, "id invalid");
 
-		const userId = this.getUser().userId;
+		//const userId = this.getUser().userId;
 
-		const result = await ctx.model.destroy({where:{id, userId}});
+		//const result = await this.model.destroy({where:{id, userId}});
 
-		this.success(result);
-	}
+		//this.success(result);
+	//}
 
 	getUser() {
 		return this.ctx.state.user;
@@ -82,6 +82,11 @@ class BaseController extends Controller {
 	success(body, status=200) {
 		this.ctx.status = status;
 		this.ctx.body = body;
+	}
+
+	failed(status, msg) {
+		this.ctx.status = status || 400;
+		this.ctx.body = msg;
 	}
 }
 
