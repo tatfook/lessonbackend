@@ -27,10 +27,12 @@ module.exports = app => {
 
 		classroomId: {
 			type: BIGINT,
+			defaultValue: 0,
 		},
 
-		state: {
+		state: { // 0 
 			type: INTEGER,
+			defaultValue: 0,
 		},
 
 		extra: {

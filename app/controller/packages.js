@@ -8,7 +8,10 @@ const {
 	PACKAGE_STATE_UNAUDIT,
 	PACKAGE_STATE_AUDITING,
 	PACKAGE_STATE_AUDIT_SUCCESS,
-	PACKAGE_STATE_AUDIT_FAILED
+	PACKAGE_STATE_AUDIT_FAILED,
+
+	PACKAGE_SUBSCRIBE_STATE_UNBUY,
+	PACKAGE_SUBSCRIBE_STATE_BUY,
 } = consts;
 
 class PackagesController extends Controller {
@@ -175,6 +178,33 @@ class PackagesController extends Controller {
 		const result = ctx.model.Packages.update(data, {where:{id}});
 
 		return this.success(result);
+	}
+
+	async subscribe() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		const params = ctx.request.body;
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const user = await ctx.model.Users.getById(userId);
+		const _package = await ctx.model.Packages.getById(id);
+
+		if (!user || !_package) ctx.throw(400, "args error");
+		
+		if (user.coin <= _package.cost) ctx.throw(400, "知识币不足");
+
+		user.coin = user.coin - _package.cost;
+		await ctx.model.Users.update({coin:user.coin}, {where:{id:userId}});
+		await ctx.model.Subscribes.upsert({
+			userId,
+			packageId: _package.id,
+			state: PACKAGE_SUBSCRIBE_STATE_BUY,
+		});
+		
+		return this.success();
 	}
 }
 

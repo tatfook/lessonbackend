@@ -147,6 +147,43 @@ class LessonsController extends Controller {
 		
 		const result = await ctx.model.LessonContents.release(id, params.content);
 	}
+
+	async learn() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const data = await ctx.model.LearnRecords.create({
+			userId,
+			lessonId:id,
+		});
+
+		return this.success(data);
+	}
+
+	async learnRecords() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const params = ctx.request.body || {};
+		if (!params.id) ctx.throw(400, "args error");
+
+		params.lessonId = id;
+		params.userId = userId;
+	
+		const result = await ctx.model.LearnRecords.update(params, {
+			where: {id, userId},
+		});
+
+		return this.success(result);
+	}
 }
 
 module.exports = LessonsController;

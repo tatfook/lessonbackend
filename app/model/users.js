@@ -31,7 +31,7 @@ module.exports = app => {
 		},
 
 		identify: {  // 身份
-			type: INTEGER,  // 0 = 默认 1 - 学生  2 - 教师
+			type: INTEGER,  // 0 = 默认 1 - 学生  2 - 教师 4 - 申请老师
 			defaultValue: 0,
 		},
 

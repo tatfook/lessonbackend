@@ -8,7 +8,7 @@ module.exports = app => {
 		JSON,
 	} = app.Sequelize;
 
-	const model = app.model.define("subscribles", {
+	const model = app.model.define("subscribes", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
@@ -23,6 +23,11 @@ module.exports = app => {
 		packageId: {
 			type: BIGINT,
 			allowNull: false,
+		},
+
+		state: {  // 0 - 未购买 1 - 已购买
+			type: INTEGER,
+			defaultValue: 0
 		},
 
 		extra: {     // 额外数据
@@ -42,7 +47,20 @@ module.exports = app => {
 		],
 	});
 
-	//users.sync({force:true});
+	//model.sync({force:true});
+	
+	model.getByUserId = async function(userId) {
+		const list = await app.model.Subscribes.findAll({where:{userId}});
+		const packages = [];
+
+		for (let i = 0; i < list.length; i++) {
+			let data = await app.model.Packages.findOne({where:{id:list[i].packageId}});
+			if (!data)continue;
+			packages.push(data.get({plain:true}));
+		}
+
+		return packages;
+	}
 
 	return model;
 }

@@ -1,3 +1,10 @@
+const consts = require("../core/consts.js");
+
+const {
+	TEACHER_KEY_STATE_UNUSED,
+	TEACHER_KEY_STATE_USING,
+	TEACHER_KEY_STATE_DISABLE,
+} = consts;
 
 module.exports = app => {
 	const {
@@ -15,7 +22,7 @@ module.exports = app => {
 			primaryKey: true,
 		},
 
-		teacherId: {
+		userId: {  // 谁在使用此激活码
 			type: BIGINT,
 		},
 
@@ -26,7 +33,7 @@ module.exports = app => {
 
 		state: {
 			type: INTEGER,
-			defaultValue: 0, // 0 --未使用 1 -- 已使用
+			defaultValue: 0, // 0 --未使用 1 -- 已使用 2 -- 禁用态
 		},
 		
 		extra: {
@@ -41,6 +48,34 @@ module.exports = app => {
 	});
 
 	//model.sync({force:true});
+	
+	model.isAvailable = async function(key) {
+		let data = await app.model.TeacherCDKeys.findOne({where:{key}});
+
+		if (!data) return false;
+
+		data = data.get({plain:true});
+
+		const disable = TEACHER_KEY_STATE_USING | TEACHER_KEY_STATE_DISABLE;
+
+		if (data.state & disable) return false;
+
+		return true;
+	}
+
+	model.useKey = async function(key, userId) {
+		const isAvail = await this.isAvailable(key);
+		if (!isAvail) return isAvail;
+
+		await app.model.TeacherCDKeys.update({
+			state: TEACHER_KEY_STATE_USING,
+			userId,
+		}, {
+			where: {key},
+		});
+
+		return true;
+	}
 
 	return model;
 }

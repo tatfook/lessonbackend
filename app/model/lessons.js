@@ -6,6 +6,7 @@ module.exports = app => {
 		INTEGER,
 		DATE,
 		JSON,
+		TEXT,
 	} = app.Sequelize;
 	
 	const model = app.model.define("lessons", {
@@ -31,12 +32,15 @@ module.exports = app => {
 			allowNull: false,
 		},
 
+		goals: {
+			type: TEXT,
+		},
+
 		extra: {
 			type: JSON,
 			defaultValue: {
 				coverUrl: "",
 				vedioUrl: "",
-				goals: "",
 			},
 		},
 
@@ -97,6 +101,9 @@ module.exports = app => {
 			}
 		});
 	}
+
+	//model.learn = async function(lessonId, userId) {
+	//}
 
 	return model;
 }
