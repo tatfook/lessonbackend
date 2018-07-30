@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "egg-bin dev",
+    "start": "egg-scripts start" ,
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,6 +14,7 @@
     "axios": "^0.18.0",
     "egg": "^2.9.1",
     "egg-cors": "^2.1.0",
+    "egg-scripts": "^2.6.0",
     "egg-sequelize": "^3.1.5",
     "egg-validate": "^1.0.0",
     "lodash": "^4.17.10",
