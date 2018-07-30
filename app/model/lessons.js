@@ -85,14 +85,30 @@ module.exports = app => {
 		return true;
 	}
 
+
+	model.getSkills = async function(userId, lessonId) {
+		const skills = [];
+		const list = await app.model.LessonSkills.findAll({
+			where: {
+				userId,
+				lessonId,
+			}
+		});
+
+		for (let i = 0; i < list.length; i++){
+			let lessonSkill = list[i].get({plain:true});
+			let skill = await app.model.Skills.findOne({
+				where: {id: lessonSkill.skillId},
+			});
+			if (skill) skill = skill.get({plain:true});
+			lessonSkill.skill = skill;
+			skills.push(lessonSkill);
+		}
+
+		return skills;
+	}
+
 	model.deleteSkill = async function(userId, lessonId, skillId) {
-		//let data = await app.model.Lessons.findOne({where: {
-			//userId,
-			//id: lessonId,
-		//}});
-
-		//if (!data) return false;
-
 		return await app.model.LessonSkills.destroy({
 			where: {
 				userId,
@@ -101,9 +117,6 @@ module.exports = app => {
 			}
 		});
 	}
-
-	//model.learn = async function(lessonId, userId) {
-	//}
 
 	return model;
 }

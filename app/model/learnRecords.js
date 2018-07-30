@@ -30,7 +30,7 @@ module.exports = app => {
 			defaultValue: 0,
 		},
 
-		state: { // 0 
+		state: { // 0 -- 课堂学习  1 -- 自学
 			type: INTEGER,
 			defaultValue: 0,
 		},

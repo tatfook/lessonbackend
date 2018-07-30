@@ -27,6 +27,10 @@ module.exports = app => {
 			allowNull: false,
 		},
 
+		packageId: {   // 所属课程包ID
+			type: BIGINT,
+		},
+
 		lessonId: {
 			type: BIGINT,
 			allowNull: false,
@@ -48,6 +52,19 @@ module.exports = app => {
 	});
 
 	//model.sync({force:true});
+
+	model.getById = async function(classroomId, userId) {
+		let data = await app.model.Classrooms.findOne({
+			where: {
+				userId,
+				id: classroomId,
+			}
+		});
+
+		if (data) data = data.get({plain:true});
+
+		return data;
+	}
 
 	model.join = async function(classroomId, studentId) {
 		let data = await app.model.Classrooms.findOne({where:{id:classroomId}});

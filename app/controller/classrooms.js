@@ -10,6 +10,13 @@ const {
 } = consts;
 
 class ClassroomsController extends Controller {
+	async ensureTeacher() {
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		const isTeacher = await this.ctx.model.Users.isTeacher(userId);
+		if (!isTeacher) this.ctx.throw(400, "非老师");
+	}
+
 	async index() {
 		const {ctx} = this;
 		const query = ctx.query || {};
@@ -39,10 +46,11 @@ class ClassroomsController extends Controller {
 		const params = ctx.request.body;
 
 		ctx.validate({
+			packageId:"int",
 			lessonId:"int",
 		});
 
-		this.enauthenticated();
+		await this.ensureTeacher();
 		const userId = this.getUser().userId;
 
 		params.userId = userId;
@@ -59,7 +67,7 @@ class ClassroomsController extends Controller {
 		if (!id) ctx.throw(400, "id invalid");
 		const params = ctx.request.body;
 
-		this.enauthenticated();
+		await this.ensureTeacher();
 		const userId = this.getUser().userId;
 		params.userId = userId;
 
@@ -82,19 +90,6 @@ class ClassroomsController extends Controller {
 		return this.success(result);
 	}
 
-	async report() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-		
-		const list = await ctx.model.LearnRecords.findAll({where:{classroomId:id}});
-		
-		return this.success(list);
-	}
-
 	async current() {
 		const {ctx} = this;
 
@@ -113,6 +108,43 @@ class ClassroomsController extends Controller {
 		if (classroom.state != CLASSROOM_STATE_USING) ctx.throw(400, "课堂已结束");
 
 		return this.success(classroom);
+	}
+
+	async getLearnRecords() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		
+		const list = await ctx.model.LearnRecords.findAll({where:{classroomId:id}});
+		
+		return this.success(list);
+	}
+
+	// 更新课堂学习记录
+	async updateLearnRecords() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		const params = ctx.request.body;
+
+		await this.ensureTeacher();
+		const userId = this.getUser().userId;
+
+		const data = await ctx.model.Classrooms.getById(id, userId);
+		if (!data) ctx.throw(400, "args error");
+		
+		const learnRecords = params.learnRecords;
+		for (let i = 0; i < learnRecords.length; i++) {
+			let record = learnRecords[i];
+			if (!record.id) continue;
+			record.classroomId = id;
+			await ctx.model.LearnRecords.update(record, {where:{id:record.id}});
+		}
+		
+		return this.success("OK");
 	}
 }
 

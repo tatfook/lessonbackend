@@ -68,6 +68,8 @@ class UsersController extends Controller {
 	async applyTeacher() {
 		// 发送key email  使用memory 防止一个key 给了多个用户
 		// 动态生成key
+		//
+		this.success("未实现, 空接口");
 	}
 
 	// 成为老师
@@ -83,6 +85,7 @@ class UsersController extends Controller {
 		
 		const user = await ctx.model.Users.getById(id);
 		if (!user) ctx.throw(400, "arg error");
+		if (user.identify & USER_IDENTIFY_TEACHER) ctx.throw(400, "已经是老师");
 
 		let isOk = await ctx.model.TeacherCDKeys.useKey(params.key, id);
 		if (!isOk) ctx.throw(400, "key invalid");

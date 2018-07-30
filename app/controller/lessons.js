@@ -9,6 +9,9 @@ const {
 	PACKAGE_STATE_AUDITING,
 	PACKAGE_STATE_AUDIT_SUCCESS,
 	PACKAGE_STATE_AUDIT_FAILED,
+
+	LEARN_RECORD_STATE_CLASSROOM,
+	LEARN_RECORD_STATE_SELF,
 } = consts;
 
 class LessonsController extends Controller {
@@ -32,7 +35,7 @@ class LessonsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 
-		const data = ctx.model.Lessons.getById(id);
+		const data = await ctx.model.Lessons.getById(id);
 
 		return this.success(data);
 	}
@@ -100,6 +103,18 @@ class LessonsController extends Controller {
 		return this.success(result);
 	}
 
+	async getSkills() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const skills = await ctx.model.Lessons.getSkills(userId, id);
+
+		return this.success(skills);
+	}
+
 	async addSkill() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
@@ -116,7 +131,7 @@ class LessonsController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
-		const result = await this.ctx.model.Lessons.addSkill(userId, id, params.skillId, params.score);
+		const result = await ctx.model.Lessons.addSkill(userId, id, params.skillId, params.score);
 		return this.success(result);
 	}
 
@@ -132,7 +147,7 @@ class LessonsController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
-		const result = await this.ctx.model.Lessons.addSkill(userId, id, skillId);
+		const result = await ctx.model.Lessons.deleteSkill(userId, id, skillId);
 
 		return this.success(result);
 	}
@@ -153,26 +168,43 @@ class LessonsController extends Controller {
 		const lesson = await ctx.model.Lessons.getById(id, userId);
 		if (!lesson) ctx.throw(400, "args error");
 		
-		const result = await ctx.model.LessonContents.release(id, params.content);
+		const result = await ctx.model.LessonContents.release(userId, id, params.content);
+
+		return this.success(result);
 	}
 
-	async learn() {
+	async content() {
 		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		const params = ctx.query || {};
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const result = await ctx.model.LessonContents.content(userId, id, params.version);
+
+		return this.success(result);
+	}
+
+	async createLearnRecords() {
+		const {ctx} = this;
+		const params = ctx.request.body;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
-		const data = await ctx.model.LearnRecords.create({
-			userId,
-			lessonId:id,
-		});
+		params.userId = userId;
+		params.lessonId = id;
+		params.state = LEARN_RECORD_STATE_SELF;
+
+		const data = await ctx.model.LearnRecords.create(params);
 
 		return this.success(data);
 	}
 
-	async learnRecords() {
+	async updateLearnRecords() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -185,12 +217,35 @@ class LessonsController extends Controller {
 
 		params.lessonId = id;
 		params.userId = userId;
+		delete params.state;
 	
 		const result = await ctx.model.LearnRecords.update(params, {
-			where: {id, userId},
+			where: {
+				id: params.id, 
+				userId, 
+				state: LEARN_RECORD_STATE_SELF,
+			},
 		});
 
 		return this.success(result);
+	}
+
+	async getLearnRecords() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const list = await ctx.model.LearnRecords.findAll({
+			where: {
+				lessonId:id,
+				userId,
+			}
+		});
+
+		return this.success(list);
 	}
 }
 

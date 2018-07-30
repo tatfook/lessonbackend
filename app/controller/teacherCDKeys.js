@@ -5,7 +5,13 @@ const consts = require("../core/consts.js");
 const Controller = require("../core/baseController.js");
 
 class TeacherCDKeysController extends Controller {
+	async index() {
+		const {ctx} = this;
 
+		const list = await ctx.model.TeacherCDKeys.findAll();
+
+		return this.success(list);
+	}
 
 	async generate() {
 		const {ctx} = this;

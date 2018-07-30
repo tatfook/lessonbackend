@@ -1,4 +1,12 @@
 
+const consts = require("../core/consts.js");
+const { 
+	USER_IDENTIFY_DEFAULT,
+	USER_IDENTIFY_STUDENT,
+	USER_IDENTIFY_TEACHER,
+	USER_IDENTIFY_APPLY_TEACHER,
+} = consts;
+
 module.exports = app => {
 	const {
 		BIGINT,
@@ -62,6 +70,17 @@ module.exports = app => {
 		data = data.get({plain:true});
 
 		return data;
+	}
+	
+	model.isTeacher = async function(userId) {
+		let user = await app.model.Users.findOne({where:{id:userId}});
+		if (!user) return false;
+
+		user = user.get({plain:true});
+
+		if (user.identify & USER_IDENTIFY_TEACHER) return true;
+
+		return false;
 	}
 
 	return model;

@@ -1,3 +1,4 @@
+const _ = require("lodash");
 
 module.exports = app => {
 	const {
@@ -14,6 +15,11 @@ module.exports = app => {
 			type: BIGINT,
 			autoIncrement: true,
 			primaryKey: true,
+		},
+
+		userId: {
+			type: BIGINT,
+			allowNull: false,
 		},
 
 		lessonId: {
@@ -43,9 +49,12 @@ module.exports = app => {
 		collate: 'utf8mb4_bin',
 	});
 
-	model.release = async function(lessonId, content) {
-		const count = await app.model.LessonContents.count({
+	//model.sync({force:true});
+	
+	model.release = async function(userId, lessonId, content) {
+		let count = await app.model.LessonContents.count({
 			where: {
+				userId,
 				lessonId,
 			}
 		});
@@ -53,6 +62,7 @@ module.exports = app => {
 		count = count + 1;
 
 		const data = await app.model.LessonContents.create({
+			userId,
 			version: count,
 			lessonId,
 			content,
@@ -61,9 +71,9 @@ module.exports = app => {
 		return data;
 	}
 
-	model.content = async function(lessonId, version) {
-		const where = {lessonId};
-		if (version) where.version = version;
+	model.content = async function(userId, lessonId, version) {
+		const where = {lessonId, userId};
+		if (version) where.version = _.toNumber(version);
 
 		const list = await app.model.LessonContents.findAll({
 			where,
@@ -71,12 +81,11 @@ module.exports = app => {
 			order: [["version", "DESC"]],
 		});
 
-		if (list.length > 0) return list[0].get({plain:true}).content;
+		if (list.length > 0) return list[0].get({plain:true});
 
-		return "";
+		return {};
 	}
 
-	//model.sync({force:true});
 
 	return model;
 }
