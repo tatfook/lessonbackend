@@ -1,4 +1,5 @@
 
+const consts = require("../core/consts.js");
 const { 
 	CLASSROOM_STATE_UNUSED,
 	CLASSROOM_STATE_USING,

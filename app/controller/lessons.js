@@ -1,7 +1,15 @@
 
 const _ = require("lodash");
 
+const consts = require("../core/consts.js");
 const Controller = require("../core/baseController.js");
+
+const {
+	PACKAGE_STATE_UNAUDIT,
+	PACKAGE_STATE_AUDITING,
+	PACKAGE_STATE_AUDIT_SUCCESS,
+	PACKAGE_STATE_AUDIT_FAILED,
+} = consts;
 
 class LessonsController extends Controller {
 

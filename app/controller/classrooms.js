@@ -10,7 +10,7 @@ const {
 } = consts;
 
 class ClassroomsController extends Controller {
-	index() {
+	async index() {
 		const {ctx} = this;
 		const query = ctx.query || {};
 
@@ -24,7 +24,7 @@ class ClassroomsController extends Controller {
 		return this.success(list);
 	}
 
-	show() {
+	async show() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -34,7 +34,7 @@ class ClassroomsController extends Controller {
 		return this.success(data);
 	}
 
-	create() {
+	async create() {
 		const {ctx} = this;
 		const params = ctx.request.body;
 
@@ -53,7 +53,7 @@ class ClassroomsController extends Controller {
 		return this.success(data);
 	}
 
-	update() {
+	async update() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -68,7 +68,7 @@ class ClassroomsController extends Controller {
 		return this.success(data);
 	}
 
-	join() {
+	async join() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -82,7 +82,7 @@ class ClassroomsController extends Controller {
 		return this.success(result);
 	}
 
-	report() {
+	async report() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -93,6 +93,26 @@ class ClassroomsController extends Controller {
 		const list = await ctx.model.LearnRecords.findAll({where:{classroomId:id}});
 		
 		return this.success(list);
+	}
+
+	async current() {
+		const {ctx} = this;
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const user = await ctx.model.Users.getById(userId);
+		
+		const classroomId = user.extra.classroomId;
+		if (!classroomId) ctx.throw(404, "not found");
+
+		let classroom = await ctx.model.Classrooms.findOne({where:{id:classroomId}});
+		if (!classroom) ctx.throw(404, "not found");
+
+		classroom = classroom.get({plain:true});
+		if (classroom.state != CLASSROOM_STATE_USING) ctx.throw(400, "课堂已结束");
+
+		return this.success(classroom);
 	}
 }
 

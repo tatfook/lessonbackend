@@ -180,6 +180,7 @@ class PackagesController extends Controller {
 		return this.success(result);
 	}
 
+	// 课程包订阅  购买
 	async subscribe() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
@@ -189,6 +190,14 @@ class PackagesController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
+		let data = await ctx.model.Packages.findOne({
+			userId,
+			packageId:id,
+			state: PACKAGE_SUBSCRIBE_STATE_BUY,
+		});
+		if (data) ctx.throw(400, "已订阅");
+
+	
 		const user = await ctx.model.Users.getById(userId);
 		const _package = await ctx.model.Packages.getById(id);
 
@@ -198,13 +207,13 @@ class PackagesController extends Controller {
 
 		user.coin = user.coin - _package.cost;
 		await ctx.model.Users.update({coin:user.coin}, {where:{id:userId}});
-		await ctx.model.Subscribes.upsert({
+		const result = await ctx.model.Subscribes.upsert({
 			userId,
 			packageId: _package.id,
 			state: PACKAGE_SUBSCRIBE_STATE_BUY,
 		});
 		
-		return this.success();
+		return this.success(result);
 	}
 }
 

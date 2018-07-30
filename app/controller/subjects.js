@@ -11,6 +11,17 @@ class SubjectsController extends Controller {
 		return this.success(list);
 	}
 
+	async show() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		const subject = await ctx.model.Subjects.getOne(id);
+		if (!subject) ctx.throw(404, "not found");
+
+		return this.success(subject);
+	}
+
 	async create() {
 		const {ctx} = this;
 		const params = ctx.request.body;
@@ -45,6 +56,7 @@ class SubjectsController extends Controller {
 
 		return this.success(result);
 	}
+
 }
 
 module.exports = SubjectsController;

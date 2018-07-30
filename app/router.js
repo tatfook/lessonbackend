@@ -36,6 +36,7 @@ module.exports = app => {
 	router.resources("teacherCDKeys", prefix + "teacherCDKeys", teacherCDKeys);
 
 	const classrooms = controller.classrooms;
+	router.get(prefix + "classrooms/current", classrooms.current);
 	router.resources("classrooms", prefix + "classrooms", classrooms);
 	router.post(prefix + "classrooms/:id/join", classrooms.join);
 	router.post(prefix + "classrooms/:id/report", classrooms.report);

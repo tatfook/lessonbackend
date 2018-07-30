@@ -55,6 +55,7 @@ module.exports = app => {
 			data = await app.model.Users.create({
 				id: userId,
 				username,
+				coin: 300,
 			});
 		};
 

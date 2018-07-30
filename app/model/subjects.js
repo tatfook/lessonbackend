@@ -38,6 +38,17 @@ module.exports = app => {
 		return await app.model.Skills.findAll({where:{subjectId}});
 	}
 
+	model.getOne = async function(subjectId) {
+		let subject = await app.model.Subjects.findOne({where:{id:subjectId}});
+		if (!subject) return ;
+
+		subject = subject.get({plain:true});
+
+		subject.skills = await this.getSkills(subjectId);
+
+		return subject
+	}
+
 	model.gets = async function() {
 		const list = await app.model.Subjects.findAll();
 

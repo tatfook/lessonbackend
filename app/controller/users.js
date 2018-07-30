@@ -11,13 +11,34 @@ const {
 } = consts;
 
 class UsersController extends Controller {
+	// 获取当前用户  不存在则创建
+	async index() {
+		const {ctx} = this;
+		this.enauthenticated();
+		const user = this.getUser();
 
+		const data = await ctx.model.Users.getById(user.userId, user.username);
+
+		return this.success(data);
+	}
+
+	// 获取用户信息
 	async show() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 
-		const data = await ctx.model.Packages.getById(id);
+		const data = await ctx.model.Users.getById(id);
+
+		return this.success(data);
+	}
+
+	async create() {
+		const {ctx} = this;
+		this.enauthenticated();
+		const user = this.getUser();
+		
+		const data = await ctx.model.Users.getById(user.userId, user.username);
 
 		return this.success(data);
 	}
@@ -83,7 +104,6 @@ class UsersController extends Controller {
 
 		return this.success(list);
 	}
-
 }
 
 module.exports = UsersController;
