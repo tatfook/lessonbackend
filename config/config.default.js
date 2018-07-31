@@ -1,7 +1,10 @@
 
 exports.keys = "lesson";
-exports.apiUrlPrefix = "/api/v0/";
-exports.keepworkBaseURL = "";
+
+exports.self = {
+	apiUrlPrefix: "/api/v0/",
+	keepworkBaseURL: "",
+}
 
 exports.sequelize = {
 	dialect: "mysql",

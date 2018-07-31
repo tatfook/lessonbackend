@@ -1,9 +1,12 @@
 
 module.exports = app => {
 	const {router, config, controller} = app;
-	const prefix = config.apiUrlPrefix;
+	const selfConfig = config.self;
+	const prefix = selfConfig.apiUrlPrefix;
 
-	router.resources("index", config.apiUrlPrefix + "index", controller.index);
+	console.log(selfConfig);
+
+	router.resources("index", prefix + "index", controller.index);
 
 	const users = controller.users;
 	router.resources("users", prefix + "users", users);
@@ -46,4 +49,7 @@ module.exports = app => {
 	router.post(prefix + "classrooms/:id/join", classrooms.join);
 	router.get(prefix + "classrooms/:id/learnRecords", classrooms.getLearnRecords);
 	router.put(prefix + "classrooms/:id/learnRecords", classrooms.updateLearnRecords);
+
+	const admins = controller.admins;
+	router.resources("admins", prefix + "admins/:resources", admins);
 }

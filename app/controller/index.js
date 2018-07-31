@@ -6,6 +6,7 @@ class IndexController extends Controller {
 	// get
 	async index() {
 		const {ctx} = this;
+		console.log("-------------index test-------------");
 		this.success("hello world");
 	}
 
