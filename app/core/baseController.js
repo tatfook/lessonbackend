@@ -69,7 +69,14 @@ class BaseController extends Controller {
 	}
 	// 确保认证
 	enauthenticated() {
-		if (!this.isAuthenticated()) ctx.throw(400, "unauthenticated");
+		if (!this.isAuthenticated()) this.ctx.throw(400, "unauthenticated");
+	}
+
+	ensureAdmin() {
+		this.enauthenticated();
+		const roleId = this.getUser().roleId;
+
+		if (roleId != 10) this.ctx.throw(400, "not admin");
 	}
 
 	isAuthenticated() {

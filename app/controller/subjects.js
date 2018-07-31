@@ -23,6 +23,7 @@ class SubjectsController extends Controller {
 	}
 
 	async create() {
+		this.ensureAdmin();
 		const {ctx} = this;
 		const params = ctx.request.body;
 
@@ -32,6 +33,7 @@ class SubjectsController extends Controller {
 	}
 
 	async update() {
+		this.ensureAdmin();
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -44,6 +46,7 @@ class SubjectsController extends Controller {
 	}
 
 	async destroy() {
+		this.ensureAdmin();
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");

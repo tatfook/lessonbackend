@@ -14,6 +14,7 @@ class TeacherCDKeysController extends Controller {
 	}
 
 	async generate() {
+		this.ensureAdmin();
 		const {ctx} = this;
 		const params = ctx.query || {};
 
@@ -30,6 +31,7 @@ class TeacherCDKeysController extends Controller {
 	}
 
 	async update() {
+		this.ensureAdmin();
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -43,6 +45,7 @@ class TeacherCDKeysController extends Controller {
 	}
 
 	async destroy() {
+		this.ensureAdmin();
 		const {ctx} = this; 
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
