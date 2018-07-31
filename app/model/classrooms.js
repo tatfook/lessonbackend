@@ -43,6 +43,7 @@ module.exports = app => {
 
 		extra: {
 			type: JSON,
+			defaultValue: {},
 		},
 
 	}, {

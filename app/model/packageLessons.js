@@ -34,6 +34,7 @@ module.exports = app => {
 			type: JSON,
 			defaultValue: {},
 		},
+
 	}, {
 		underscored: false,
 		charset: "utf8mb4",

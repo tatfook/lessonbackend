@@ -61,6 +61,7 @@ module.exports = app => {
 				coverUrl: "",
 			}
 		},
+
 	}, {
 		underscored: false,
 		charset: "utf8mb4",

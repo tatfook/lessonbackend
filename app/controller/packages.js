@@ -30,12 +30,28 @@ class PackagesController extends Controller {
 		return this.success(list);
 	}
 
+	// 获取单一课程包
 	async show() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
+		const data = await ctx.model.Packages.getById(id);
 
-		const data = ctx.model.Packages.getById(id);
+		return this.success(data);
+	}
+
+	// 获取课程详情
+	async detail() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		let data = await ctx.model.Packages.getById(id);
+		if (!data) ctx.throw(400, "args errors");
+
+		data = data.get({plain:true});
+		
+		data.lessons = await ctx.model.Packages.lessons(id);
 
 		return this.success(data);
 	}
@@ -71,6 +87,7 @@ class PackagesController extends Controller {
 		this.success(pack);
 	}
 	
+	// 获取课程列表
 	async lessons() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
