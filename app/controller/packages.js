@@ -15,6 +15,15 @@ const {
 } = consts;
 
 class PackagesController extends Controller {
+	async search() {
+		const {ctx} = this;
+		const query = ctx.query || {};
+
+		const list = await ctx.model.Packages.findAndCount(query);
+
+		return this.success(list);
+	}
+	
 	// get
 	async index() {
 		const {ctx} = this;
@@ -22,10 +31,9 @@ class PackagesController extends Controller {
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
-
 		query.userId = userId;
 
-		const list = await ctx.model.Packages.findAndCount(query);
+		const list = await ctx.model.Packages.findAll(query);
 
 		return this.success(list);
 	}
@@ -49,8 +57,6 @@ class PackagesController extends Controller {
 		let data = await ctx.model.Packages.getById(id);
 		if (!data) ctx.throw(400, "args errors");
 
-		data = data.get({plain:true});
-		
 		data.lessons = await ctx.model.Packages.lessons(id);
 
 		return this.success(data);

@@ -15,12 +15,14 @@ module.exports = app => {
 	router.get(prefix + "users/:id/packages", users.packages);
 
 	const packages = controller.packages;
+	router.get(prefix + "packages/search", packages.search);
 	router.resources("packages", prefix + "packages", packages);
 	router.post(prefix + "packages/:id/lessons", packages.addLesson);
 	router.delete(prefix + "packages/:id/lessons", packages.deleteLesson);
 	router.get(prefix + "packages/:id/lessons", packages.lessons);
 	router.post(prefix + "packages/:id/applyAudit", packages.applyAudit);
 	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
+	router.get(prefix + "packages/:id/detail", packages.detail);
 
 	const lessons = controller.lessons;
 	router.resources("lessons", prefix + "lessons", lessons);
