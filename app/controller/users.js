@@ -8,6 +8,9 @@ const {
 	USER_IDENTIFY_STUDENT,
 	USER_IDENTIFY_TEACHER,
 	USER_IDENTIFY_APPLY_TEACHER,
+
+	PACKAGE_SUBSCRIBE_STATE_UNBUY,
+	PACKAGE_SUBSCRIBE_STATE_BUY,
 } = consts;
 
 class UsersController extends Controller {
@@ -98,7 +101,7 @@ class UsersController extends Controller {
 	}
 
 	// 用户课程包
-	async packages() {
+	async getSubscribes() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -106,6 +109,45 @@ class UsersController extends Controller {
 		const list = await ctx.model.Subscribes.getByUserId(id);
 
 		return this.success(list);
+	}
+
+	async isSubscribe() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		const params = ctx.query;
+		if (!id) ctx.throw(400, "id invalid");
+		
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		if (id != userId) ctx.throw(400, "args error");
+		const packageId = params.packageId && _.toNumber(params.packageId);
+		if (!packageId) ctx.throw(400, "args error");
+
+		const result = await ctx.model.Subscribes.isSubscribePackage(userId, packageId);
+
+		return this.success(result);
+	}
+	// 用户订阅
+	async postSubscribes() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		const params = ctx.request.body;
+		if (!id) ctx.throw(400, "id invalid");
+		
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		if (id != userId) ctx.throw(400, "args error");
+		
+		ctx.validate({
+			packageId: 'int',
+		}, params);
+
+		const packageId = params.packageId;
+		const result = await ctx.model.Subscribes.subscribePackage(userId, packageId);
+
+		if (result.id != 0) ctx.throw(400, result.message);
+		
+		return this.success(result.data);
 	}
 }
 

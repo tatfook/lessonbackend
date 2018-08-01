@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "egg-bin dev",
-    "start": "egg-scripts start" ,
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "egg-scripts start",
+    "test": "egg-bin test"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "egg-bin": "^4.7.1"
+    "egg-bin": "^4.7.1",
+    "egg-mock": "^3.17.3"
   }
 }

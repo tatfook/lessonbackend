@@ -12,7 +12,9 @@ module.exports = app => {
 	router.resources("users", prefix + "users", users);
 	router.post(prefix + "users/:id/applyTeacher", users.applyTeacher);
 	router.post(prefix + "users/:id/teacher", users.teacher);
-	router.get(prefix + "users/:id/packages", users.packages);
+	router.post(prefix + "users/:id/subscribes", users.postSubscribes);
+	router.get(prefix + "users/:id/subscribes", users.getSubscribes);
+	router.get(prefix + "users/:id/isSubscribe", users.isSubscribe);
 
 	const packages = controller.packages;
 	router.get(prefix + "packages/search", packages.search);
@@ -21,8 +23,9 @@ module.exports = app => {
 	router.delete(prefix + "packages/:id/lessons", packages.deleteLesson);
 	router.get(prefix + "packages/:id/lessons", packages.lessons);
 	router.post(prefix + "packages/:id/applyAudit", packages.applyAudit);
-	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
 	router.get(prefix + "packages/:id/detail", packages.detail);
+	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
+	router.get(prefix + "packages/:id/isSubscribe", packages.isSubscribe);
 
 	const lessons = controller.lessons;
 	router.resources("lessons", prefix + "lessons", lessons);

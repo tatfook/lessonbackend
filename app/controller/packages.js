@@ -212,30 +212,24 @@ class PackagesController extends Controller {
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
+		const packageId = id;
 
-		let data = await ctx.model.Subscribes.findOne({
-			userId,
-			packageId:id,
-			state: PACKAGE_SUBSCRIBE_STATE_BUY,
-		});
-		if (data) ctx.throw(400, "已订阅");
+		const result = await ctx.model.Subscribes.subscribePackage(userId, packageId);
 
-	
-		const user = await ctx.model.Users.getById(userId);
-		const _package = await ctx.model.Packages.getById(id);
-
-		if (!user || !_package) ctx.throw(400, "args error");
+		if (result.id != 0) ctx.throw(400, result.message);
 		
-		if (user.coin <= _package.cost) ctx.throw(400, "知识币不足");
+		return this.success(result.data);
+	}
 
-		user.coin = user.coin - _package.cost;
-		await ctx.model.Users.update({coin:user.coin}, {where:{id:userId}});
-		const result = await ctx.model.Subscribes.upsert({
-			userId,
-			packageId: _package.id,
-			state: PACKAGE_SUBSCRIBE_STATE_BUY,
-		});
-		
+	async isSubscribe() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const result = await ctx.model.Subscribes.isSubscribePackage(userId, id);
+
 		return this.success(result);
 	}
 }

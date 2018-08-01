@@ -6,6 +6,7 @@ exports.self = {
 	keepworkBaseURL: "",
 }
 
+
 exports.sequelize = {
 	dialect: "mysql",
 	database: "lesson-dev",
