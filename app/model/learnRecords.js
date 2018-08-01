@@ -20,6 +20,11 @@ module.exports = app => {
 			allowNull: false,
 		},
 
+		packageId: {
+			type: BIGINT,
+			allowNull: false,
+		},
+
 		lessonId: {
 			type: BIGINT,
 			allowNull: false,
@@ -46,6 +51,21 @@ module.exports = app => {
 	});
 
 	//model.sync({force:true});
+	
+	model.isLearned = async function(userId, packageId, lessonId) {
+		const data = await app.model.LearnRecords.findOne({
+			where: {
+				userId,
+				packageId,
+				lessonId,
+			}
+		});
+
+		if (data) return true;
+
+		return false;
+	}
+	
 
 	return model;
 }

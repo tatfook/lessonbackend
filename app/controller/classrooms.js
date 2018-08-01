@@ -26,7 +26,7 @@ class ClassroomsController extends Controller {
 
 		query.userId = userId;
 
-		const list = await ctx.model.Classrooms.findAll(query);
+		const list = await ctx.model.Classrooms.findAndCount(query);
 
 		return this.success(list);
 	}

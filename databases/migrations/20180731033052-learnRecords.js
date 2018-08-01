@@ -23,6 +23,11 @@ module.exports = {
 				allowNull: false,
 			},
 
+			packageId: {
+				type: BIGINT,
+				allowNull: false,
+			},
+
 			lessonId: {
 				type: BIGINT,
 				allowNull: false,

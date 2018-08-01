@@ -67,6 +67,20 @@ module.exports = app => {
 		return data;
 	}
 
+	model.isTeached = async function(userId, packageId, lessonId) {
+		const data = await app.model.Classrooms.findOne({
+			where:{
+				userId,
+				packageId,
+				lessonId
+			}
+		});
+
+		if (data) return true;
+
+		return false;
+	}
+
 	model.join = async function(classroomId, studentId) {
 		let data = await app.model.Classrooms.findOne({where:{id:classroomId}});
 
@@ -87,6 +101,7 @@ module.exports = app => {
 		if (!learnRecord) {
 			learnRecord = await app.model.LearnRecords.create({
 				classroomId,
+				packageId: data.packageId,
 				lessonId: data.lessonId,
 				userId: studentId,
 			});

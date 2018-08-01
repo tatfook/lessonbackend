@@ -8,7 +8,7 @@ class TeacherCDKeysController extends Controller {
 	async index() {
 		const {ctx} = this;
 
-		const list = await ctx.model.TeacherCDKeys.findAll();
+		const list = await ctx.model.TeacherCDKeys.findAndCount();
 
 		return this.success(list);
 	}

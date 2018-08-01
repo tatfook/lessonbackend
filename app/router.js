@@ -37,6 +37,7 @@ module.exports = app => {
 	router.get(prefix + "lessons/:id/learnRecords", lessons.getLearnRecords);
 	router.post(prefix + "lessons/:id/release", lessons.release);
 	router.get(prefix + "lessons/:id/content", lessons.content);
+	router.get(prefix + "lessons/:id/content", lessons.detail);
 
 	const subjects = controller.subjects;
 	router.resources("subjects", prefix + "subjects", subjects);

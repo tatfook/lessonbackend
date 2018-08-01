@@ -30,6 +30,16 @@ class LessonsController extends Controller {
 		return this.success(list);
 	}
 
+	async detail() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		const data = await ctx.model.Lessons.getById(id);
+
+		return this.success(data);
+	}
+
+
 	async show() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);

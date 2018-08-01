@@ -33,9 +33,9 @@ class PackagesController extends Controller {
 		const userId = this.getUser().userId;
 		query.userId = userId;
 
-		const list = await ctx.model.Packages.findAll(query);
+		const result = await ctx.model.Packages.findAndCount(query);
 
-		return this.success(list);
+		return this.success(result);
 	}
 
 	// 获取单一课程包
@@ -51,6 +51,7 @@ class PackagesController extends Controller {
 	// 获取课程详情
 	async detail() {
 		const {ctx} = this;
+		const userId = this.getUser().userId;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 
@@ -58,6 +59,17 @@ class PackagesController extends Controller {
 		if (!data) ctx.throw(400, "args errors");
 
 		data.lessons = await ctx.model.Packages.lessons(id);
+		data.learnedLessons = [];
+		data.teachedLessons = [];
+		if (!userId) return this.success(data);
+
+		for (let i = 0; i < data.lessons.length; i++) {
+			let lesson = data.lessons[i];
+			let isLearned = await ctx.model.LearnRecords.isLearned(userId, id, lesson.id);
+			if (isLearned) data.learnedLessons.push(lesson.id);
+			let isTeached = await ctx.model.Classrooms.isTeached(userId, id, lesson.id);
+			if (isTeached) data.teachedLessons.push(lesson.id);
+		}
 
 		return this.success(data);
 	}

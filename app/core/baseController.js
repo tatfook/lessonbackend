@@ -65,7 +65,7 @@ class BaseController extends Controller {
 	//}
 
 	getUser() {
-		return this.ctx.state.user;
+		return this.ctx.state.user || {};
 	}
 	// 确保认证
 	enauthenticated() {
