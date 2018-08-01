@@ -213,7 +213,7 @@ class PackagesController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
-		let data = await ctx.model.Packages.findOne({
+		let data = await ctx.model.Subscribes.findOne({
 			userId,
 			packageId:id,
 			state: PACKAGE_SUBSCRIBE_STATE_BUY,

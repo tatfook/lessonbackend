@@ -33,6 +33,11 @@ module.exports = {
 				defaultValue: 0
 			},
 
+			extra: {     // 额外数据
+				type: JSON,
+				defaultValue:{},
+			},
+
 			createdAt: {
 				allowNull: false,
 				type: Sequelize.DATE
