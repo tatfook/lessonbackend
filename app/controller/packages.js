@@ -71,6 +71,8 @@ class PackagesController extends Controller {
 			if (isTeached) data.teachedLessons.push(lesson.id);
 		}
 
+		data.isSubscribe = await ctx.model.Subscribes.isSubscribePackage(userId, id);
+
 		return this.success(data);
 	}
 

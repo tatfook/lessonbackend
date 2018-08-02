@@ -117,9 +117,9 @@ module.exports = app => {
 		const lessons = [];
 
 		for (let i = 0; i < list.length; i++) {
-			const lesson = await app.model.Lessons.findOne({where:{id:list[i].lessonId}});
+			const lesson = await app.model.Lessons.getById(list[i].lessonId);
 			if (!lesson) continue;
-			lessons.push(lesson.get({plain:true}));
+			lessons.push(lesson));
 		}
 
 		return lessons;
