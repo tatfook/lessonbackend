@@ -119,7 +119,7 @@ module.exports = app => {
 		for (let i = 0; i < list.length; i++) {
 			const lesson = await app.model.Lessons.getById(list[i].lessonId);
 			if (!lesson) continue;
-			lessons.push(lesson));
+			lessons.push(lesson);
 		}
 
 		return lessons;
