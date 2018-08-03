@@ -15,6 +15,7 @@ module.exports = app => {
 	router.post(prefix + "users/:id/subscribes", users.postSubscribes);
 	router.get(prefix + "users/:id/subscribes", users.getSubscribes);
 	router.get(prefix + "users/:id/isSubscribe", users.isSubscribe);
+	router.get(prefix + "users/:id/coins", users.coins);
 
 	const packages = controller.packages;
 	router.get(prefix + "packages/search", packages.search);
@@ -55,6 +56,7 @@ module.exports = app => {
 	router.post(prefix + "classrooms/:id/join", classrooms.join);
 	router.get(prefix + "classrooms/:id/learnRecords", classrooms.getLearnRecords);
 	router.put(prefix + "classrooms/:id/learnRecords", classrooms.updateLearnRecords);
+	router.put(prefix + "classrooms/:id/dismiss", classrooms.dismiss);
 
 	const admins = controller.admins;
 	router.resources("admins", prefix + "admins/:resources", admins);

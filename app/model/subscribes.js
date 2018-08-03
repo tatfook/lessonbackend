@@ -1,6 +1,9 @@
 
 const consts = require("../core/consts.js");
 const {
+	COIN_TYPE_SUBSCRIBE_PACKAGE,
+	COIN_TYPE_PACKAGE_REWARD,
+
 	PACKAGE_SUBSCRIBE_STATE_UNBUY,
 	PACKAGE_SUBSCRIBE_STATE_BUY,
 } = consts;
@@ -60,9 +63,17 @@ module.exports = app => {
 		const packages = [];
 
 		for (let i = 0; i < list.length; i++) {
-			let data = await app.model.Packages.findOne({where:{id:list[i].packageId}});
-			if (!data)continue;
-			packages.push(data.get({plain:true}));
+			let subscribe = list[i];
+			let data = await app.model.Packages.findOne({where:{id:subscribe.packageId}});
+			if (!data) continue;
+			data = data.get({plain: true});
+
+			data.learnedLessons = subscribe.learnedLessons || [];
+			data.teachedLessons = subscribe.teachedLessons || [];
+			data.isReward = subscribe.isReward;
+			//data.lessons = subscribe.lessons;
+
+			packages.push(data);
 		}
 
 		return packages;
@@ -79,6 +90,37 @@ module.exports = app => {
 		if (data) return true;
 
 		return false;
+	}
+
+	model.packageReward = async function(userId, packageId) {
+		const data = await app.model.Subscribes.findOne({
+			where: {
+				userId,
+				packageId,
+				state: PACKAGE_SUBSCRIBE_STATE_BUY,
+			}
+		});
+		if (!data) return;
+
+		const _package = await app.model.Packages.getById(packageId);
+		if (!_package) return;
+
+		const user = await app.model.Users.getById(userId);
+		if (!user) return;
+
+		await app.model.Users.update({
+			coin: user.coin + _package.reward,
+		}, {
+			where: {id: userId}
+		});
+
+		await app.model.Coins.create({
+			userId,
+			amount: _package.reward,
+			type: COIN_TYPE_PACKAGE_REWARD,
+		});
+
+		return; 
 	}
 
 	model.subscribePackage = async function(userId, packageId) {
@@ -105,7 +147,64 @@ module.exports = app => {
 			state: PACKAGE_SUBSCRIBE_STATE_BUY,
 		});
 		
+		await app.model.Coins.create({
+			userId,
+			amount: 0 - _package.cost,
+			type: COIN_TYPE_SUBSCRIBE_PACKAGE,
+		});
+
 		return {id:0, data: result.get({plain:true})};
+	}
+
+	model.addTeachedLesson = async function(userId, packageId, lessonId) {
+		let subscribe = await app.model.Subscribes.findOne({
+			where: {
+				userId,
+				packageId,
+			}
+		});
+		if (!subscribe) return;
+		subscribe = subscribe.get({plain:true});
+		const extra = subscribe.extra || {};
+		extra.teachedLessons = extra.teachedLessons || [];
+		const index = _.findIndex(extra.teachedLessons, val => val == lessonId);
+		if (index == -1) {
+			extra.teachedLessons.push(lessonId);
+			await app.model.Subscribes.update({
+				extra,
+			}, {
+				where: {
+					id: subscribe.id,
+				}
+			});
+		}
+	
+		return;
+	}
+
+	model.addLearnedLesson = async function(userId, packageId, lessonId) {
+		let subscribe = await app.model.Subscribes.findOne({
+			where: {
+				userId,
+				packageId,
+			}
+		});
+		if (!subscribe) return console.log("未购买此课程包");
+
+		subscribe = subscribe.get({plain:true});
+		const extra = subscribe.extra || {};
+		extra.learnedLessons = extra.learnedLessons || [];
+		const index = _.findIndex(extra.learnedLessons, val => val == lessonId);
+		if (index == -1) {
+			extra.learnedLessons.push(lessonId);
+			await app.model.Subscribes.update({
+				extra,
+			}, {
+				where: {
+					id: subscribe.id,
+				}
+			});
+		}
 	}
 
 	return model;

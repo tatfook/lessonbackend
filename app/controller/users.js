@@ -127,6 +127,7 @@ class UsersController extends Controller {
 
 		return this.success(result);
 	}
+
 	// 用户订阅
 	async postSubscribes() {
 		const {ctx} = this;
@@ -148,6 +149,20 @@ class UsersController extends Controller {
 		if (result.id != 0) ctx.throw(400, result.message);
 		
 		return this.success(result.data);
+	}
+
+	// 获取知识币变更列表
+	async coins() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		if (id != userId) ctx.throw(400, "args error");
+	
+		const list = await ctx.model.Coins.findAll({where:{userId}});
+		return this.success(list);
 	}
 }
 

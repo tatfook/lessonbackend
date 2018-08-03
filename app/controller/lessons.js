@@ -202,6 +202,10 @@ class LessonsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 
+		ctx.validate({
+			packageId:'int',
+		}, params);
+
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
@@ -210,6 +214,8 @@ class LessonsController extends Controller {
 		params.state = LEARN_RECORD_STATE_SELF;
 
 		const data = await ctx.model.LearnRecords.create(params);
+
+		await ctx.model.Subscribes.addLearnedLesson(userId, params.packageId, id);
 
 		return this.success(data);
 	}

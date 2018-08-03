@@ -52,9 +52,16 @@ class ClassroomsController extends Controller {
 
 		await this.ensureTeacher();
 		const userId = this.getUser().userId;
-
+		const _package = await ctx.model.Packages.getById(params.packageId);
+		const lesson = await ctx.model.Lessons.getById(params.lessonId);
+		if (!_package || !lesson) ctx.throw(400, "args error");
+		
 		params.userId = userId;
 		params.state = CLASSROOM_STATE_UNUSED;
+		params.extra = params.extra || {};
+		params.extra.packageName = _package.packageName;
+		params.extra.lessonName = lesson.lessonName;
+		params.extra.lessonGoals = lesson.goals;
 
 		const data = await ctx.model.Classrooms.create(params);
 
@@ -144,6 +151,20 @@ class ClassroomsController extends Controller {
 			await ctx.model.LearnRecords.update(record, {where:{id:record.id}});
 		}
 		
+		return this.success("OK");
+	}
+
+	// 下课
+	async dismiss() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		const params = ctx.request.body;
+
+		await this.ensureTeacher();
+		const userId = this.getUser().userId;
+
+		await ctx.model.Classrooms.dismiss(userId, id);
 		return this.success("OK");
 	}
 }

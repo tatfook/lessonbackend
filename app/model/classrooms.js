@@ -29,6 +29,7 @@ module.exports = app => {
 
 		packageId: {   // 所属课程包ID
 			type: BIGINT,
+			allowNull: false,
 		},
 
 		lessonId: {
@@ -112,5 +113,31 @@ module.exports = app => {
 		return learnRecord;
 	}
 
+	model.dismiss = async function(userId, classroomId) {
+		let data = await app.model.Classrooms.getById(classroomId, userId);
+		if (!data) app.throw(400, "args error");
+		data = data.get({plain:true});
+	
+		// 更新课堂状态
+		await app.model.Classrooms.update({
+			state: CLASSROOM_STATE_USED,
+		}, {
+			where: {
+				userId, 
+				id: data.id,
+			}
+		}),
+
+		// 更新订阅包信息
+		await app.model.Subscribes.addTeachedLesson(userId, data.packageId, data.lessonId);
+
+		const list = await app.LearnRecords.findAll({where:{classroomId}});
+		for (let i = 0; i < list.length; i++) {
+			let lr = list[i].get({plain:true});
+			await app.model.Subscribes.addLearnedLesson(lr.userId, data.packageId, data.lessonId);
+		}
+		
+		return;
+	}
 	return model;
 }

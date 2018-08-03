@@ -5,6 +5,8 @@ const {
 	USER_IDENTIFY_STUDENT,
 	USER_IDENTIFY_TEACHER,
 	USER_IDENTIFY_APPLY_TEACHER,
+
+	COIN_TYPE_SYSTEM_DONATE,
 } = consts;
 
 module.exports = app => {
@@ -59,11 +61,19 @@ module.exports = app => {
 	model.getById = async function(userId, username) {
 		let data = await app.model.Users.findOne({where: {id:userId}});
 
+		const amount = 300;
 		if (!data) {
 			data = await app.model.Users.create({
 				id: userId,
 				username,
-				coin: 300,
+				coin: amount,
+			});
+			// 
+			await app.model.Coins.create({
+				userId,
+				amount: amount,
+				type: COIN_TYPE_SYSTEM_DONATE,
+				desc: "系统赠送",
 			});
 		};
 

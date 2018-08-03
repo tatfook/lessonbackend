@@ -246,6 +246,15 @@ class PackagesController extends Controller {
 
 		return this.success(result);
 	}
+
+	async reward() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		
+	}
 }
 
 module.exports = PackagesController;
