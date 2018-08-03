@@ -54,11 +54,6 @@ module.exports = app => {
 			defaultValue: 0,
 		},
 
-		reward: {
-			type: INTEGER,
-			defaultValue: 0,
-		},
-
 		extra: {
 			type: JSON,
 			defaultValue: {
@@ -72,7 +67,7 @@ module.exports = app => {
 		collate: 'utf8mb4_bin',
 	});
 
-	//model.sync({force:true});
+	model.sync({force:true});
 	
 	model.getById = async function(id, userId) {
 		const where = {id};

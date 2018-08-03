@@ -57,11 +57,6 @@ module.exports = {
 				defaultValue: 0,
 			},
 
-			reward: {
-				type: INTEGER,
-				defaultValue: 0,
-			},
-
 			extra: {
 				type: JSON,
 				defaultValue: {
