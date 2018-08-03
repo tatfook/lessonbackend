@@ -1,9 +1,13 @@
 
+const _ = require("lodash");
 const consts = require("../core/consts.js");
 const { 
 	CLASSROOM_STATE_UNUSED,
 	CLASSROOM_STATE_USING,
 	CLASSROOM_STATE_USED,
+
+	LEARN_RECORD_STATE_START,
+	LEARN_RECORD_STATE_FINISH,
 } = consts;
 
 module.exports = app => {
@@ -37,6 +41,11 @@ module.exports = app => {
 			allowNull: false,
 		},
 
+		key: {
+			type: STRING(24),
+			unique: true,
+		},
+
 		state: { // 0 -- 未上课  1 -- 上可中  2 -- 上课结束 
 			type: INTEGER,
 			defaultValue: 0,
@@ -54,6 +63,26 @@ module.exports = app => {
 	});
 
 	//model.sync({force:true});
+
+	model.createClassroom = async function(params) {
+		let classroom = await app.model.Classrooms.create(params);
+		if (!classroom) return ;
+		classroom = classroom.get({plain:true});
+		classroom.key = _.padStart(_.toString(classroom.id), 6, "0") + _.random(100, 999);
+		await app.model.Classrooms.update(classroom, {where:{id:classroom.id}});
+		
+		const userId = classroom.userId;
+		const user = await app.model.Users.getById(userId);
+		const extra = user.extra || {};
+		// 下课旧学堂
+		if (extra.classroomId) await this.dismiss(userId, extra.classroomId);
+		extra.classroomId = classroom.id;
+
+		// 设置用户当前课堂id
+		await app.model.Users.update({extra}, {where:{id:userId}});
+
+		return classroom;
+	}
 
 	model.getById = async function(classroomId, userId) {
 		let data = await app.model.Classrooms.findOne({
@@ -82,15 +111,20 @@ module.exports = app => {
 		return false;
 	}
 
-	model.join = async function(classroomId, studentId) {
-		let data = await app.model.Classrooms.findOne({where:{id:classroomId}});
+	model.join = async function(studentId, key) {
+		let data = await app.model.Classrooms.findOne({where:{key}});
 
 		if (!data) return;
 
 		data = data.get({plain:true});
 
+		const classroomId = data.id;
+
 		// 课程未开始或结束
 		if (data.state != CLASSROOM_STATE_USING) return ;
+
+		// 设置用户当前课堂id
+		await app.model.Users.updateExtra(studentId, {classroomId});
 
 		let learnRecord = await app.model.LearnRecords.findOne({
 			where: {
@@ -105,6 +139,7 @@ module.exports = app => {
 				packageId: data.packageId,
 				lessonId: data.lessonId,
 				userId: studentId,
+				state: LEARN_RECORD_STATE_START,
 			});
 		}
 
@@ -114,8 +149,15 @@ module.exports = app => {
 	}
 
 	model.dismiss = async function(userId, classroomId) {
-		let data = await app.model.Classrooms.getById(classroomId, userId);
-		if (!data) app.throw(400, "args error");
+		let data = await app.model.Classrooms.findOne({
+			where: {
+				id: classroomId,
+				userId,
+				state: CLASSROOM_STATE_USING,
+			}
+		});
+
+		if (!data) return;
 		data = data.get({plain:true});
 	
 		// 更新课堂状态
@@ -131,12 +173,6 @@ module.exports = app => {
 		// 更新订阅包信息
 		await app.model.Subscribes.addTeachedLesson(userId, data.packageId, data.lessonId);
 
-		const list = await app.LearnRecords.findAll({where:{classroomId}});
-		for (let i = 0; i < list.length; i++) {
-			let lr = list[i].get({plain:true});
-			await app.model.Subscribes.addLearnedLesson(lr.userId, data.packageId, data.lessonId);
-		}
-		
 		return;
 	}
 	return model;

@@ -1,4 +1,5 @@
 
+const _ = require("lodash");
 const consts = require("../core/consts.js");
 const { 
 	USER_IDENTIFY_DEFAULT,
@@ -58,6 +59,17 @@ module.exports = app => {
 
 	//model.sync({force:true});
 	
+	model.updateExtra = async function(userId, extra) {
+		const user = await app.model.Users.getById(userId);
+
+		if (!user) return;
+
+		const userExtra = user.extra || {};
+		_.merge(userExtra, extra);
+
+		await app.model.Users.update({extra}, {where:{id:user.id}});
+	}
+
 	model.getById = async function(userId, username) {
 		let data = await app.model.Users.findOne({where: {id:userId}});
 

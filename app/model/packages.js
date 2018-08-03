@@ -26,6 +26,10 @@ module.exports = app => {
 			unique: true,
 		},
 
+		subjectId: {
+			type: BIGINT,
+		},
+
 		minAge: {
 			type: INTEGER,
 			defaultValue: 0,

@@ -7,6 +7,9 @@ const {
 	CLASSROOM_STATE_UNUSED,
 	CLASSROOM_STATE_USING,
 	CLASSROOM_STATE_USED,
+
+	LEARN_RECORD_STATE_START,
+	LEARN_RECORD_STATE_FINISH,
 } = consts;
 
 class ClassroomsController extends Controller {
@@ -57,13 +60,13 @@ class ClassroomsController extends Controller {
 		if (!_package || !lesson) ctx.throw(400, "args error");
 		
 		params.userId = userId;
-		params.state = CLASSROOM_STATE_UNUSED;
+		params.state = CLASSROOM_STATE_USING;
 		params.extra = params.extra || {};
 		params.extra.packageName = _package.packageName;
 		params.extra.lessonName = lesson.lessonName;
 		params.extra.lessonGoals = lesson.goals;
 
-		const data = await ctx.model.Classrooms.create(params);
+		const data = await ctx.model.Classrooms.createClassroom(params);
 
 		return this.success(data);
 	}
@@ -85,13 +88,16 @@ class ClassroomsController extends Controller {
 
 	async join() {
 		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
+		const params = ctx.request.body;
+
+		ctx.validate({
+			key:"string",
+		}, params);
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 		
-		const result = await ctx.model.Classrooms.join(id, userId);
+		const result = await ctx.model.Classrooms.join(userId, params.key);
 		if (!result) ctx.throw(400, "classroomId invalid");
 		
 		return this.success(result);
@@ -140,15 +146,16 @@ class ClassroomsController extends Controller {
 		await this.ensureTeacher();
 		const userId = this.getUser().userId;
 
-		const data = await ctx.model.Classrooms.getById(id, userId);
-		if (!data) ctx.throw(400, "args error");
+		const classroom = await ctx.model.Classrooms.getById(id, userId);
+		if (!classroom) ctx.throw(400, "args error");
+		classroom = classroom.get({plain:true});
 		
 		const learnRecords = params.learnRecords;
 		for (let i = 0; i < learnRecords.length; i++) {
 			let record = learnRecords[i];
-			if (!record.id) continue;
+			if (!record.id || !record.userId) continue;
 			record.classroomId = id;
-			await ctx.model.LearnRecords.update(record, {where:{id:record.id}});
+			await ctx.model.LearnRecords.updateLearnRecord(record);
 		}
 		
 		return this.success("OK");

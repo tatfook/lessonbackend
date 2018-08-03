@@ -33,8 +33,8 @@ module.exports = app => {
 	router.post(prefix + "lessons/:id/skills", lessons.addSkill);
 	router.delete(prefix + "lessons/:id/skills", lessons.deleteSkill);
 	router.get(prefix + "lessons/:id/skills", lessons.getSkills);
-	router.post(prefix + "lessons/:id/learnRecords", lessons.createLearnRecords);
-	router.put(prefix + "lessons/:id/learnRecords", lessons.updateLearnRecords);
+	//router.post(prefix + "lessons/:id/learnRecords", lessons.createLearnRecords);
+	//router.put(prefix + "lessons/:id/learnRecords", lessons.updateLearnRecords);
 	router.get(prefix + "lessons/:id/learnRecords", lessons.getLearnRecords);
 	router.post(prefix + "lessons/:id/release", lessons.release);
 	router.get(prefix + "lessons/:id/content", lessons.content);
@@ -52,11 +52,14 @@ module.exports = app => {
 
 	const classrooms = controller.classrooms;
 	router.get(prefix + "classrooms/current", classrooms.current);
+	router.post(prefix + "classrooms/join", classrooms.join);
 	router.resources("classrooms", prefix + "classrooms", classrooms);
-	router.post(prefix + "classrooms/:id/join", classrooms.join);
 	router.get(prefix + "classrooms/:id/learnRecords", classrooms.getLearnRecords);
 	router.put(prefix + "classrooms/:id/learnRecords", classrooms.updateLearnRecords);
 	router.put(prefix + "classrooms/:id/dismiss", classrooms.dismiss);
+
+	const learnRecords = controller.learnRecords;
+	router.resources("learnRecords", prefix + "learnRecords", learnRecords);
 
 	const admins = controller.admins;
 	router.resources("admins", prefix + "admins/:resources", admins);

@@ -23,11 +23,6 @@ module.exports = {
 				allowNull: false,
 			},
 
-			subjectId: {
-				type: BIGINT,
-				allowNull: false,
-			},
-			
 			extra: {
 				type: JSON,
 				defaultValue: {},

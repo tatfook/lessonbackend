@@ -22,7 +22,7 @@ class TeacherCDKeysController extends Controller {
 		const list = [];
 
 		for (let i = 0; i < count; i++) {
-			let key = uuidv1();
+			let key = uuidv1().replace(/\-/g, "");
 			let data = await ctx.model.TeacherCDKeys.create({key});
 			list.push(data);
 		}

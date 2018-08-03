@@ -26,10 +26,14 @@ module.exports = app => {
 			allowNull: false,
 		},
 
+		subjectId: {
+			type: BIGINT,
+		},
+
 		url: {
 			type: STRING,
 			unique: true,
-			allowNull: false,
+			//allowNull: false,
 		},
 
 		goals: {

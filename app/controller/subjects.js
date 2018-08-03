@@ -6,7 +6,8 @@ class SubjectsController extends Controller {
 	// get
 	async index() {
 		const {ctx} = this;
-		const list = await ctx.model.Subjects.gets();
+
+		const list = await ctx.model.Subjects.findAll();
 
 		return this.success(list);
 	}

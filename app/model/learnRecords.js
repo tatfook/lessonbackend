@@ -1,4 +1,10 @@
 
+const consts = require("../core/consts.js");
+const { 
+	LEARN_RECORD_STATE_START,
+	LEARN_RECORD_STATE_FINISH,
+} = consts;
+
 module.exports = app => {
 	const {
 		BIGINT,
@@ -35,7 +41,7 @@ module.exports = app => {
 			defaultValue: 0,
 		},
 
-		state: { // 0 -- 课堂学习  1 -- 自学
+		state: { // 0 -- 开始学习  1 -- 学习完成
 			type: INTEGER,
 			defaultValue: 0,
 		},
@@ -52,6 +58,14 @@ module.exports = app => {
 
 	//model.sync({force:true});
 	
+	model.getById = async function(id, userId) {
+		const where = {id};
+		if (userId) where.userId = userId;
+		const data = await app.model.LearnRecords.findOne({where});
+		
+		return data && data.get({plain:true});
+	}
+
 	model.isLearned = async function(userId, packageId, lessonId) {
 		const data = await app.model.LearnRecords.findOne({
 			where: {
@@ -64,6 +78,29 @@ module.exports = app => {
 		if (data) return true;
 
 		return false;
+	}
+
+	model.updateLearnRecord = async function(params) {
+		const where = {};
+		if (!params.id) return;
+		where.id = params.id;
+		if (params.userId) where.userId = params.userId;
+		if (params.classroomId) where.classroomId = params.classroomId;
+
+		delete params.packageId;
+		delete params.lessonId;
+
+		let lr = await app.model.LearnRecords.findOne({where});
+		if (!lr) return;
+		lr = lr.get({plain:true});
+	
+		await app.model.LearnRecords.update(params, {where});
+
+		if (params.state == LEARN_RECORD_STATE_FINISH) {
+			await app.model.Subscribes.addLearnedLesson(lr.userId, lr.packageId, lr.lessonId);
+		}
+
+		return;
 	}
 	
 

@@ -1,4 +1,4 @@
-
+const _ = require("lodash");
 const consts = require("../core/consts.js");
 const {
 	COIN_TYPE_SUBSCRIBE_PACKAGE,
