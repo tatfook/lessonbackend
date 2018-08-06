@@ -52,8 +52,6 @@ class SubjectsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 
-		await ctx.model.Skills.destroy({where:{subjectId:id}}); 
-
 		const result = await ctx.model.Subjects.destroy({
 			where: {id},
 		});
