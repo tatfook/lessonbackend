@@ -34,6 +34,10 @@ class LessonsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 		const data = await ctx.model.Lessons.getById(id);
+		
+		if (!data) ctx.throw("404", "not found");
+
+		data.skills = await ctx.model.LessonSkills.getSkillsByLessonId(id);
 
 		return this.success(data);
 	}
@@ -73,6 +77,7 @@ class LessonsController extends Controller {
 			if (!skill) continue;
 
 			await ctx.model.LessonSkills.create({
+				userId: userId,
 				skillId: skill.id,
 				lessonId: lesson.id,
 				score: skillParams.score,

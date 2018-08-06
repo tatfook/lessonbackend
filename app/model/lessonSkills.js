@@ -1,4 +1,5 @@
 
+const _ = require("lodash");
 module.exports = app => {
 	const {
 		BIGINT,
@@ -55,5 +56,13 @@ module.exports = app => {
 
 	//model.sync({force:true});
 
+	model.getSkillsByLessonId = async function(lessonId) {
+		const list = await app.model.LessonSkills.findAll({where:{lessonId}});
+		const skills = [];
+
+		_.each(list, val => skills.push(val.get({plain:true})));
+
+		return skills;
+	}
 	return model;
 }

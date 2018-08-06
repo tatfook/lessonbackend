@@ -16,8 +16,6 @@ class LearnRecordsController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
-		const t = await ctx.model.LearnRecords.findAll({where:{userId}});
-		console.log(t);
 		const list = await ctx.model.LearnRecords.findAndCount({where: {userId}});
 
 		return this.success(list);
@@ -50,8 +48,8 @@ class LearnRecordsController extends Controller {
 		ctx.validate({
 			packageId: "int",
 			lessonId: "int",
-			classroomId: {type:"int"},
-			state: {type: 'int'},
+			classroomId: {type:"int", required: false},
+			state: 'int',
 		}, params);
 
 		let learnRecord = await ctx.model.LearnRecords.create(params);

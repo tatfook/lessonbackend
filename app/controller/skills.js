@@ -18,7 +18,7 @@ class SkillsController extends Controller {
 		const params = ctx.request.body;
 
 		ctx.validate({
-			lessonName: "string",
+			skillName: "string",
 		}, params);
 
 		const result = await ctx.model.Skills.create(params);

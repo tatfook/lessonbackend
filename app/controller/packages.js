@@ -86,7 +86,8 @@ class PackagesController extends Controller {
 		const userId = this.getUser().userId;
 		params.userId = userId;
 
-		let pack= await ctx.model.Packages.create(params);
+		//console.log(params);
+		let pack = await ctx.model.Packages.create(params);
 		if (!pack) ctx.throw("500", "DB failed");
 
 		pack = pack.get({plain:true});
@@ -94,11 +95,14 @@ class PackagesController extends Controller {
 		if (!lessons || !_.isArray(lessons)) return this.success(pack);
 
 		for (let i = 0; i < lessons.length; i++) {
-			let lessonId = Lessons[i];
+			let lessonId = lessons[i];
 			let lesson = await ctx.model.Lessons.findOne({where:{id: lessonId}});
 			if (!lesson) continue;
+			
+			//console.log(pack.id, lessonId);
 
 			await ctx.model.PackageLessons.create({
+				userId,
 				packageId: pack.id,
 				lessonId: lessonId,
 			});

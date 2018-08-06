@@ -68,6 +68,7 @@ module.exports = app => {
 			if (!data) continue;
 			data = data.get({plain: true});
 
+			data.lessons = await app.model.Packages.lessons(data.id);
 			data.learnedLessons = subscribe.learnedLessons || [];
 			data.teachedLessons = subscribe.teachedLessons || [];
 			data.isReward = subscribe.isReward;
