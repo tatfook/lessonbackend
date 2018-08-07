@@ -41,7 +41,10 @@ module.exports = app => {
 			defaultValue: 0,
 		},
 
-
+		lockCoin: {   // 待解锁的知识币
+			type: INTEGER,
+			defaultValue: 0,
+		},
 
 		identify: {  // 身份
 			type: INTEGER,  // 0 = 默认 1 - 学生  2 - 教师 4 - 申请老师

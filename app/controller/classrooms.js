@@ -54,6 +54,10 @@ class ClassroomsController extends Controller {
 		});
 
 		await this.ensureTeacher();
+
+		const ok = await ctx.model.Teachers.isAllowTeach(id);
+		if (!ok) ctx.throw(400, "no privilege");
+
 		const userId = this.getUser().userId;
 		const _package = await ctx.model.Packages.getById(params.packageId);
 		const lesson = await ctx.model.Lessons.getById(params.lessonId);

@@ -85,6 +85,7 @@ class PackagesController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 		params.userId = userId;
+		params.coin = params.rmb * 10;
 
 		//console.log(params);
 		let pack = await ctx.model.Packages.create(params);

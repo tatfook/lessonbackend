@@ -138,21 +138,23 @@ module.exports = app => {
 		const _package = await app.model.Packages.getById(packageId);
 
 		if (!user || !_package) return {id:400, message:"args error"};
-		if (user.coin <= _package.cost) return {id:400, message:"知识币不足"};
+		if (user.coin <= _package.coin) return {id:400, message:"知识币不足"};
 
-		user.coin = user.coin - _package.cost;
-		await app.model.Users.update({coin:user.coin}, {where:{id:userId}});
+		user.coin = user.coin - _package.coin;
+		user.lockCoin = user.lockCoin + _package.rmb;
+		await app.model.Users.update({coin:user.coin, lockCoin: user.lockCoin}, {where:{id:userId}});
+
 		const result = await app.model.Subscribes.create({
 			userId,
 			packageId: _package.id,
 			state: PACKAGE_SUBSCRIBE_STATE_BUY,
 		});
 		
-		await app.model.Coins.create({
-			userId,
-			amount: 0 - _package.cost,
-			type: COIN_TYPE_SUBSCRIBE_PACKAGE,
-		});
+		//await app.model.Coins.create({
+			//userId,
+			//amount: 0 - _package.cost,
+			//type: COIN_TYPE_SUBSCRIBE_PACKAGE,
+		//});
 
 		return {id:0, data: result.get({plain:true})};
 	}

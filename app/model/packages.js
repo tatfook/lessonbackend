@@ -49,7 +49,12 @@ module.exports = app => {
 			type: STRING(512),
 		},
 
-		cost: {
+		rmb: {   // 人民币
+			type: INTEGER,
+			defaultValue: 0,
+		},
+
+		coin: {
 			type: INTEGER,
 			defaultValue: 0,
 		},

@@ -11,6 +11,8 @@ const {
 
 	PACKAGE_SUBSCRIBE_STATE_UNBUY,
 	PACKAGE_SUBSCRIBE_STATE_BUY,
+
+	TEACHER_PRIVILEGE_TEACH,
 } = consts;
 
 class UsersController extends Controller {
@@ -94,10 +96,26 @@ class UsersController extends Controller {
 		if (!isOk) ctx.throw(400, "key invalid");
 
 		user.identify = (user.identify | USER_IDENTIFY_TEACHER) & (~USER_IDENTIFY_APPLY_TEACHER);
+		await ctx.model.Teachers.create({
+			userId:id,
+			key:params.key,
+			privilege: TEACHER_PRIVILEGE_TEACH,
+		});
 
 		const result = await ctx.model.Users.update(user, {where:{id}});
 
 		return this.success(result);
+	}
+
+	// 是否允许教课
+	async isTeach() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		const ok = await ctx.model.Teachers.isAllowTeach(id);
+
+		return this.success(ok);
 	}
 
 	// 用户课程包
@@ -163,6 +181,17 @@ class UsersController extends Controller {
 	
 		const list = await ctx.model.Coins.findAll({where:{userId}});
 		return this.success(list);
+	}
+
+	// 获取用户已学习的技能列表
+	async skills() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		const list = await ctx.model.UserLearnRecords.getSkills(id);
+
+		this.success(list);
 	}
 }
 

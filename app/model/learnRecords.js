@@ -80,6 +80,27 @@ module.exports = app => {
 		return false;
 	}
 
+	model.learnFinish = async function(params) {
+		await app.model.UserLearnRecords.upsert(params);
+
+		if (params.reward) {
+			await app.model.LessonRewards.rewards(params.userId, params.packageId, params.lessonId);
+		}
+
+	}
+
+	model.createLearnRecord = async function(params) {
+		let lr = await app.model.LearnRecords.create(params);
+		if (!lr) return;
+
+		lr = lr.get({plain:true});
+		if (lr.state == LEARN_RECORD_STATE_FINISH) {
+			await this.learnFinish(params);
+		}
+
+		return lr; 
+	}
+
 	model.updateLearnRecord = async function(params) {
 		const where = {};
 		if (!params.id) return;
@@ -87,22 +108,24 @@ module.exports = app => {
 		if (params.userId) where.userId = params.userId;
 		if (params.classroomId) where.classroomId = params.classroomId;
 
-		delete params.packageId;
-		delete params.lessonId;
-
 		let lr = await app.model.LearnRecords.findOne({where});
 		if (!lr) return;
 		lr = lr.get({plain:true});
+
+		lr.reward = params.reward;
+		lr.state = params.state;
+		lr.extra = params.extra;
+		lr.classroomId = params.classroomId;
 	
-		await app.model.LearnRecords.update(params, {where});
+		await app.model.LearnRecords.update(lr, {where});
 
 		if (params.state == LEARN_RECORD_STATE_FINISH) {
+			await this.learnFinish(lr);
 			await app.model.Subscribes.addLearnedLesson(lr.userId, lr.packageId, lr.lessonId);
 		}
 
 		return;
 	}
-	
 
 	return model;
 }

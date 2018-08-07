@@ -52,11 +52,7 @@ class LearnRecordsController extends Controller {
 			state: 'int',
 		}, params);
 
-		let learnRecord = await ctx.model.LearnRecords.create(params);
-
-		if (params.state == LEARN_RECORD_STATE_FINISH) {
-			await ctx.model.Subscribes.addLearnedLesson(userId, params.packageId, params.lessonId);
-		}
+		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
 
 		return this.success(learnRecord);
 	}
