@@ -54,11 +54,11 @@ class ClassroomsController extends Controller {
 		});
 
 		await this.ensureTeacher();
+		const userId = this.getUser().userId;
 
-		const ok = await ctx.model.Teachers.isAllowTeach(id);
+		const ok = await ctx.model.Teachers.isAllowTeach(userId);
 		if (!ok) ctx.throw(400, "no privilege");
 
-		const userId = this.getUser().userId;
 		const _package = await ctx.model.Packages.getById(params.packageId);
 		const lesson = await ctx.model.Lessons.getById(params.lessonId);
 		if (!_package || !lesson) ctx.throw(400, "args error");
