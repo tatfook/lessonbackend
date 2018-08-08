@@ -4,6 +4,13 @@ exports.keys = "lesson";
 exports.self = {
 	apiUrlPrefix: "/api/v0/",
 	keepworkBaseURL: "",
+	trustIps: [
+		"127.0.0.1",
+		"120.132.120.183",
+	    "120.132.120.161",
+	    "121.14.117.252",
+	    "121.14.117.251",
+	]
 }
 
 
