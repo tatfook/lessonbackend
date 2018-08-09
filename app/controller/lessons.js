@@ -200,55 +200,45 @@ class LessonsController extends Controller {
 		return this.success(result);
 	}
 
-	//async createLearnRecords() {
-		//const {ctx} = this;
-		//const params = ctx.request.body;
-		//const id = _.toNumber(ctx.params.id);
-		//if (!id) ctx.throw(400, "id invalid");
+	async createLearnRecords() {
+		const {ctx} = this;
+		const params = ctx.request.body;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
 
-		//ctx.validate({
-			//packageId:'int',
-		//}, params);
+		ctx.validate({
+			packageId:'int',
+		}, params);
 
-		//this.enauthenticated();
-		//const userId = this.getUser().userId;
+		this.enauthenticated();
+		const userId = this.getUser().userId;
 
-		//params.userId = userId;
-		//params.lessonId = id;
-		//params.state = LEARN_RECORD_STATE_SELF;
+		params.userId = userId;
+		params.lessonId = id;
 
-		//const data = await ctx.model.LearnRecords.create(params);
+		const data = await ctx.model.LearnRecords.createLearnRecord(params);
 
-		//await ctx.model.Subscribes.addLearnedLesson(userId, params.packageId, id);
+		return this.success(data);
+	}
 
-		//return this.success(data);
-	//}
+	async updateLearnRecords() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
 
-	//async updateLearnRecords() {
-		//const {ctx} = this;
-		//const id = _.toNumber(ctx.params.id);
-		//if (!id) ctx.throw(400, "id invalid");
+		this.enauthenticated();
+		const userId = this.getUser().userId;
 
-		//this.enauthenticated();
-		//const userId = this.getUser().userId;
+		const params = ctx.request.body || {};
+		if (!params.id) ctx.throw(400, "args error");
 
-		//const params = ctx.request.body || {};
-		//if (!params.id) ctx.throw(400, "args error");
-
-		//params.lessonId = id;
-		//params.userId = userId;
-		//delete params.state;
+		params.lessonId = id;
+		params.userId = userId;
 	
-		//const result = await ctx.model.LearnRecords.update(params, {
-			//where: {
-				//id: params.id, 
-				//userId, 
-				//state: LEARN_RECORD_STATE_SELF,
-			//},
-		//});
+		const result = await ctx.model.LearnRecords.updateLearnRecord(params);
 
-		//return this.success(result);
-	//}
+		return this.success("OK");
+	}
 
 	async getLearnRecords() {
 		const {ctx} = this;

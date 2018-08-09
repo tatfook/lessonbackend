@@ -141,6 +141,28 @@ class ClassroomsController extends Controller {
 	}
 
 	// 更新课堂学习记录
+	async createLearnRecords() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		const params = ctx.request.body;
+
+		await this.ensureTeacher();
+		const userId = this.getUser().userId;
+
+		const classroom = await ctx.model.Classrooms.getById(id, userId);
+		if (!classroom) ctx.throw(400, "args error");
+		
+		params.classroomId = id;
+		params.packageId = classroom.packageId;
+		params.lessonId = classroom.lessonId;
+		if (!params.userId) ctx.throw(400, "args error");
+		const lr = await ctx.model.LearnRecords.createLearnRecord(params);
+		
+		return this.success(lr);
+	}
+
+	// 更新课堂学习记录
 	async updateLearnRecords() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
@@ -152,9 +174,8 @@ class ClassroomsController extends Controller {
 
 		const classroom = await ctx.model.Classrooms.getById(id, userId);
 		if (!classroom) ctx.throw(400, "args error");
-		classroom = classroom.get({plain:true});
 		
-		const learnRecords = params.learnRecords;
+		const learnRecords = _.isArray(params) ? params : [params];
 		for (let i = 0; i < learnRecords.length; i++) {
 			let record = learnRecords[i];
 			if (!record.id || !record.userId) continue;

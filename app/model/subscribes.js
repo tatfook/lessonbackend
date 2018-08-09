@@ -138,7 +138,7 @@ module.exports = app => {
 		const _package = await app.model.Packages.getById(packageId);
 
 		if (!user || !_package) return {id:400, message:"args error"};
-		if (user.coin <= _package.coin) return {id:400, message:"知识币不足"};
+		if (user.coin < _package.coin) return {id:400, message:"知识币不足"};
 
 		user.coin = user.coin - _package.coin;
 		user.lockCoin = user.lockCoin + _package.rmb;

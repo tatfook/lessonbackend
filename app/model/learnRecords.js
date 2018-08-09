@@ -91,7 +91,7 @@ module.exports = app => {
 
 	model.createLearnRecord = async function(params) {
 		let lr = await app.model.LearnRecords.create(params);
-		if (!lr) return;
+		if (!lr) return console.log("create learn records failed", params);
 
 		lr = lr.get({plain:true});
 		if (lr.state == LEARN_RECORD_STATE_FINISH) {

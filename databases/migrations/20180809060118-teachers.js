@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('classrooms', { 
+		return queryInterface.createTable('teachers', { 
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -23,29 +23,19 @@ module.exports = {
 				allowNull: false,
 			},
 
-			packageId: {   // 所属课程包ID
-				type: BIGINT,
-				allowNull: false,
-			},
-
-			lessonId: {
-				type: BIGINT,
-				allowNull: false,
-			},
-
 			key: {
-				type: STRING(24),
-				unique: true,
+				type: STRING(64),
+				allowNull: false,
 			},
 
-			state: { // 0 -- 未上课  1 -- 上可中  2 -- 上课结束 
+			privilege: {
 				type: INTEGER,
 				defaultValue: 0,
 			},
 
-			extra: {
+			extra: {     // 额外数据
 				type: JSON,
-				defaultValue: {},
+				defaultValue:{},
 			},
 
 			createdAt: {
@@ -66,6 +56,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('classrooms');
+		return queryInterface.dropTable('teachers');
 	}
 };

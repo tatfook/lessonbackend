@@ -52,7 +52,12 @@ module.exports = {
 				type: STRING(512),
 			},
 
-			cost: {
+			rmb: {
+				type: INTEGER,
+				defaultValue: 0,
+			},
+
+			coin: {
 				type: INTEGER,
 				defaultValue: 0,
 			},

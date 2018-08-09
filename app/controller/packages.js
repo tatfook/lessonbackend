@@ -190,12 +190,12 @@ class PackagesController extends Controller {
 
 		this.enauthenticated();
 
-		const data = ctx.model.Packages.getById(id);
+		const data = await ctx.model.Packages.getById(id);
 		if (!data) ctx.throw(400, "not found");
 
 		data.state = PACKAGE_STATE_AUDITING;
 
-		const result = ctx.model.Packages.update(data, {where:{id}});
+		const result = await ctx.model.Packages.update(data, {where:{id}});
 
 		return this.success(result);
 	}

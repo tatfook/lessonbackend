@@ -17,7 +17,7 @@ class SubjectsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 
-		const subject = await ctx.model.Subjects.getOne(id);
+		const subject = await ctx.model.Subjects.findOne({where:{id}});
 		if (!subject) ctx.throw(404, "not found");
 
 		return this.success(subject);

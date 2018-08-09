@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('classrooms', { 
+		return queryInterface.createTable('userLearnRecords', { 
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -23,7 +23,7 @@ module.exports = {
 				allowNull: false,
 			},
 
-			packageId: {   // 所属课程包ID
+			packageId: {
 				type: BIGINT,
 				allowNull: false,
 			},
@@ -31,16 +31,6 @@ module.exports = {
 			lessonId: {
 				type: BIGINT,
 				allowNull: false,
-			},
-
-			key: {
-				type: STRING(24),
-				unique: true,
-			},
-
-			state: { // 0 -- 未上课  1 -- 上可中  2 -- 上课结束 
-				type: INTEGER,
-				defaultValue: 0,
 			},
 
 			extra: {
@@ -62,10 +52,17 @@ module.exports = {
 				underscored: false,
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
+
+				indexes: [
+				{
+					unique: true,
+					fields: ["userId", "packageId", "lessonId"],
+				},
+				],
 			});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('classrooms');
+		return queryInterface.dropTable('userLearnRecords');
 	}
 };

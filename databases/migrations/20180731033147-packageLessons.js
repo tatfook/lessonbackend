@@ -48,17 +48,17 @@ module.exports = {
 				type: Sequelize.DATE
 			},
 
-			}, {
-				underscored: false,
-				charset: "utf8mb4",
-				collate: 'utf8mb4_bin',
-				indexes: [
-				{
-					unique: true,
-					fields: ["packageId", "lessonId"],
-				},
-				],
-			});
+		}, {
+			underscored: false,
+			charset: "utf8mb4",
+			collate: 'utf8mb4_bin',
+			indexes: [
+			{
+				unique: true,
+				fields: ["packageId", "lessonId"],
+			},
+			],
+		});
 	},
 
 	down: (queryInterface, Sequelize) => {
