@@ -207,7 +207,7 @@ class PackagesController extends Controller {
 		const params = ctx.request.body;
 
 		ctx.validate({
-			state: 'int',
+			state: joi.number().valid(PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING),
 		}, params);
 
 		this.enauthenticated();

@@ -5,6 +5,7 @@ module.exports = app => {
 	const prefix = selfConfig.apiUrlPrefix;
 
 	console.log(selfConfig);
+	console.log(config.sequelize);
 
 	router.resources("index", prefix + "index", controller.index);
 

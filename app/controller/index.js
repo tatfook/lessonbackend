@@ -5,13 +5,11 @@ const Controller = require("../core/baseController.js");
 class IndexController extends Controller {
 	// get
 	async index() {
-		const {ctx} = this;
-		console.log("-------------index test-------------");
 		this.success("hello world");
 	}
 
 	show() {
-		ctx.throw(400);
+		this.ctx.throw(400);
 	}
 
 	async create() {
@@ -22,6 +20,16 @@ class IndexController extends Controller {
 
 	async destroy() {
 
+	}
+
+	async config() {
+		const params = this.ctx.request.body;
+
+		this.ensureAdmin();
+
+		_.merge(this.app.config.self, params);
+
+		return this.success("OK");
 	}
 }
 
