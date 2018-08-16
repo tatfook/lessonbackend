@@ -10,6 +10,10 @@ class IndexController extends Controller {
 		this.success("hello world");
 	}
 
+	show() {
+		ctx.throw(400);
+	}
+
 	async create() {
 	}
 
