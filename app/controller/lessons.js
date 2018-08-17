@@ -33,7 +33,7 @@ class LessonsController extends Controller {
 			lessons.push(lesson);
 		}
 
-		return this.success(Lessons);
+		return this.success(lessons);
 	}
 
 	async detail() {
