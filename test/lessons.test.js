@@ -73,6 +73,7 @@ describe('test/controller/lessons.test.js', () => {
 		lesson = await app.httpRequest().get("/lessons/1/detail").expect(200).then(res => res.body);
 		//console.log(lesson);
 		assert.equal(lesson.skills.length, 2);
+		assert.equal(lesson.packages.length, 1);
 	});
 
 	it("POST|DELETE|GET /lessons/1/skills", async ()=> {

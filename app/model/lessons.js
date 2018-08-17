@@ -122,5 +122,21 @@ module.exports = app => {
 		});
 	}
 
+	model.getPackagesByLessonId = async function(lessonId) {
+		let sql = `select packages.* 
+			from packageLessons, packages 
+			where packageLessons.packageId = packages.id and
+			packageLessons.lessonId = :lessonId`;
+
+		const list = await app.model.query(sql, {
+			type: app.model.QueryTypes.SELECT,
+			replacements: {
+				lessonId,
+			}
+		});
+
+		return list;
+	}
+
 	return model;
 }

@@ -25,8 +25,15 @@ class LessonsController extends Controller {
 		query.userId = userId;
 
 		const list = await ctx.model.Lessons.findAndCount(query);
+		const lessons = [];
+		for (let i = 0; i < list.length; i++) {
+			const lesson = Lessons[i];
+			lesson = lesson.get({plain:true});
+			lesson.packages = await ctx.model.Lessons.getPackagesByLessonId(lesson.id);
+			lessons.push(lesson);
+		}
 
-		return this.success(list);
+		return this.success(Lessons);
 	}
 
 	async detail() {
@@ -38,6 +45,7 @@ class LessonsController extends Controller {
 		if (!data) ctx.throw("404", "not found");
 
 		data.skills = await ctx.model.LessonSkills.getSkillsByLessonId(id);
+		data.packages = await ctx.model.Lessons.getPackagesByLessonId(id);
 
 		return this.success(data);
 	}
