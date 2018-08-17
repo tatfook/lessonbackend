@@ -26,7 +26,7 @@ module.exports = app => {
 	router.post(prefix + "packages/:id/lessons", packages.addLesson);
 	router.delete(prefix + "packages/:id/lessons", packages.deleteLesson);
 	router.get(prefix + "packages/:id/lessons", packages.lessons);
-	router.post(prefix + "packages/:id/applyAudit", packages.applyAudit);
+	//router.post(prefix + "packages/:id/applyAudit", packages.applyAudit);
 	router.get(prefix + "packages/:id/detail", packages.detail);
 	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
 	router.get(prefix + "packages/:id/isSubscribe", packages.isSubscribe);
@@ -43,16 +43,6 @@ module.exports = app => {
 	router.get(prefix + "lessons/:id/contents", lessons.content);
 	router.get(prefix + "lessons/:id/detail", lessons.detail);
 
-	const subjects = controller.subjects;
-	router.resources("subjects", prefix + "subjects", subjects);
-
-	const skills = controller.skills;
-	router.resources("skills", prefix + "skills", skills);
-
-	const teacherCDKeys = controller.teacherCDKeys;
-	router.get(prefix + "teacherCDKeys/generate", teacherCDKeys.generate);
-	router.resources("teacherCDKeys", prefix + "teacherCDKeys", teacherCDKeys);
-
 	const classrooms = controller.classrooms;
 	router.get(prefix + "classrooms/current", classrooms.current);
 	router.post(prefix + "classrooms/join", classrooms.join);
@@ -64,6 +54,17 @@ module.exports = app => {
 
 	const learnRecords = controller.learnRecords;
 	router.resources("learnRecords", prefix + "learnRecords", learnRecords);
+
+	const subjects = controller.subjects;
+	router.resources("subjects", prefix + "subjects", subjects);
+	router.resources("subjects", prefix + "admins/subjects", subjects);
+	const skills = controller.skills;
+	router.resources("skills", prefix + "skills", skills);
+	router.resources("skills", prefix + "admins/skills", skills);
+
+	const teacherCDKeys = controller.teacherCDKeys;
+	router.get(prefix + "admins/teacherCDKeys/generate", teacherCDKeys.generate);
+	router.resources("teacherCDKeys", prefix + "admins/teacherCDKeys", teacherCDKeys);
 
 	const admins = controller.admins;
 	router.resources("admins", prefix + "admins/:resources", admins);
