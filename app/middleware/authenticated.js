@@ -22,6 +22,7 @@ module.exports = (options, app) => {
 				memoryCache.put(Authorization, user, 1000 * 60 * 60);
 			}
 		}
+
 		ctx.state.user = user || {};
 		console.log(ctx.state.user);
 

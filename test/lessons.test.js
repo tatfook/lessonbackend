@@ -49,6 +49,10 @@ describe('test/controller/lessons.test.js', () => {
 		}).expect(200).then(res => res.body);
 		assert.equal(lesson.id,1);
 
+		let data = await app.httpRequest().get("/lessons").expect(200).then(res => res.body);
+		assert.equal(data.rows.length, 1);
+		assert.equal(data.count, 1);
+
 		const package_ = await app.httpRequest().post("/packages").send({
 			packageName: "前端",
 			lessons: [1],

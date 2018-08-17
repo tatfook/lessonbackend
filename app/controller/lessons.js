@@ -21,19 +21,18 @@ class LessonsController extends Controller {
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
-
 		query.userId = userId;
 
-		const list = await ctx.model.Lessons.findAndCount(query);
+		const data = await ctx.model.Lessons.findAndCount(query);
 		const lessons = [];
-		for (let i = 0; i < list.length; i++) {
-			const lesson = Lessons[i];
+		for (let i = 0; i < data.rows.length; i++) {
+			let lesson = data.rows[i];
 			lesson = lesson.get({plain:true});
 			lesson.packages = await ctx.model.Lessons.getPackagesByLessonId(lesson.id);
 			lessons.push(lesson);
 		}
 
-		return this.success(lessons);
+		return this.success({count:data.count, rows: lessons});
 	}
 
 	async detail() {
