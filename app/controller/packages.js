@@ -19,7 +19,7 @@ class PackagesController extends Controller {
 		const {ctx} = this;
 		const query = ctx.query || {};
 
-		const list = await ctx.model.Packages.findAndCount(query);
+		const list = await ctx.model.Packages.findAndCount({where:query});
 
 		return this.success(list);
 	}
@@ -33,7 +33,7 @@ class PackagesController extends Controller {
 		const userId = this.getUser().userId;
 		query.userId = userId;
 
-		const result = await ctx.model.Packages.findAndCount(query);
+		const result = await ctx.model.Packages.findAndCount({where:query});
 
 		return this.success(result);
 	}

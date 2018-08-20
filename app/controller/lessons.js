@@ -24,7 +24,7 @@ class LessonsController extends Controller {
 		query.userId = userId;
 		query.order = [["updatedAt", "DESC"]];
 
-		const data = await ctx.model.Lessons.findAndCount(query);
+		const data = await ctx.model.Lessons.findAndCount({where:query});
 		const lessons = [];
 		for (let i = 0; i < data.rows.length; i++) {
 			let lesson = data.rows[i];
