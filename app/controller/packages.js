@@ -162,6 +162,8 @@ class PackagesController extends Controller {
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
+		
+		delete params.state;
 
 		const result = await ctx.model.Packages.update(params, {where:{id}});
 
@@ -259,6 +261,14 @@ class PackagesController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 		
+	}
+
+	async hots() {
+		const {ctx} = this;
+
+		const list = await ctx.model.PackageSorts.getHots();
+
+		return this.success(list);
 	}
 }
 

@@ -21,12 +21,12 @@ module.exports = app => {
 	router.get(prefix + "users/:id/isTeach", users.isTeach);
 
 	const packages = controller.packages;
+	router.get(prefix + "packages/hots", packages.hots);
 	router.get(prefix + "packages/search", packages.search);
 	router.resources("packages", prefix + "packages", packages);
 	router.post(prefix + "packages/:id/lessons", packages.addLesson);
 	router.delete(prefix + "packages/:id/lessons", packages.deleteLesson);
 	router.get(prefix + "packages/:id/lessons", packages.lessons);
-	//router.post(prefix + "packages/:id/applyAudit", packages.applyAudit);
 	router.get(prefix + "packages/:id/detail", packages.detail);
 	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
 	router.get(prefix + "packages/:id/isSubscribe", packages.isSubscribe);
