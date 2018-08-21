@@ -112,10 +112,10 @@ module.exports = app => {
 		if (!lr) return;
 		lr = lr.get({plain:true});
 
-		lr.reward = params.reward;
-		lr.state = params.state;
-		lr.extra = params.extra;
-		lr.classroomId = params.classroomId;
+		if(params.reward) lr.reward = params.reward;
+		if(params.state) lr.state = params.state;
+		if(params.extra) lr.extra = params.extra;
+		if(params.classroomId) lr.classroomId = params.classroomId;
 	
 		await app.model.LearnRecords.update(lr, {where});
 

@@ -1,4 +1,3 @@
 
-module.exports = app => {
-	console.log("-----------------------------");
+module.exports = async (app) => {
 }
