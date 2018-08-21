@@ -175,5 +175,19 @@ module.exports = app => {
 
 		return;
 	}
+
+	// 获取最后一次教课记录 
+	model.getLastTeach = async function(userId, packageId) {
+		const list = await app.model.Classrooms.findAll({	
+			order: [["createdAt", "DESC"]],
+			limit: 1,
+			where: {userId, packageId},
+		});
+
+		if (list.length == 1) return list[0];
+
+		return ;
+	}
+
 	return model;
 }

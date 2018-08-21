@@ -129,5 +129,10 @@ module.exports = app => {
 		return lessons;
 	}
 
+	// 课程包通过审核
+	model.passAudit = async function(packageId) {
+		
+	}
+
 	return model;
 }

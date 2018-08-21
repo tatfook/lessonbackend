@@ -58,6 +58,20 @@ module.exports = app => {
 
 	//model.sync({force:true});
 	
+	model.getPackagesByUserId = async function(userId) {
+		const sql = `select packages.* 
+			from subscribes, packages 
+			where subscribes.packageId = packages.id and
+			subscribes.userId = :userId`;
+
+		const list = await app.model.query(sql, {
+			type: app.model.QueryTypes.SELECT,
+			replacements: {userId},
+		});
+
+		return list;
+	}
+
 	model.getByUserId = async function(userId) {
 		const list = await app.model.Subscribes.findAll({where:{userId}});
 		const packages = [];

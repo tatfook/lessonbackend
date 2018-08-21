@@ -7,6 +7,7 @@ module.exports = (options, app) => {
 	return async function(ctx, next) {
 		if (config.debug) {
 			ctx.state.user = {userId:1, username:"xiaoyao", roleId:10};
+			//ctx.state.user = {userId:37, username:"xiaoyao", roleId:10};
 			await next();
 			return ;
 		}

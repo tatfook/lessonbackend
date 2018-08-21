@@ -159,6 +159,8 @@ class BaseController extends Controller {
 	// 确保认证
 	enauthenticated() {
 		if (!this.isAuthenticated()) this.ctx.throw(401, "unauthenticated");
+
+		return this.getUser();
 	}
 
 	ensureAdmin() {

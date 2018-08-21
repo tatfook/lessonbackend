@@ -21,6 +21,7 @@ module.exports = app => {
 	router.get(prefix + "users/:id/isTeach", users.isTeach);
 
 	const packages = controller.packages;
+	router.get(prefix + "packages/teach", packages.teach);
 	router.get(prefix + "packages/hots", packages.hots);
 	router.get(prefix + "packages/search", packages.search);
 	router.resources("packages", prefix + "packages", packages);

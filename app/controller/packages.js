@@ -270,6 +270,30 @@ class PackagesController extends Controller {
 
 		return this.success(list);
 	}
+
+	async teach() {
+		const {ctx} = this;
+		const {userId} = this.enauthenticated();
+		// 获取自己创建的课程包
+		let packages = await ctx.model.Packages.findAll({where:{userId}});
+		// 获取购买的课程包
+		const subscribes = await ctx.model.Subscribes.findAll({where:{userId}});
+		
+		packages = packages.concat(subscribes);
+
+		console.log(packages.length);
+		for (let i = 0; i < packages.length; i++) {
+			let pack = packages[i];
+			let obj = await ctx.model.Classrooms.getLastTeach(userId, pack.id);
+			console.log(obj);
+			pack = pack.get ? pack.get({plain:true}) : pack;
+			pack.lastTeachDate = obj ? obj.createdAt : "";
+		}
+
+		packages = _.sortBy(packages, ["lastTeachDate", "createdAt"], ["desc", "desc"]);
+
+		return this.success(packages);
+	}
 }
 
 module.exports = PackagesController;
