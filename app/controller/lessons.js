@@ -18,13 +18,13 @@ class LessonsController extends Controller {
 	async index() {
 		const {ctx} = this;
 		const query = ctx.query || {};
+		const order = [["updatedAt", "DESC"]];
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 		query.userId = userId;
-		query.order = [["updatedAt", "DESC"]];
 
-		const data = await ctx.model.Lessons.findAndCount({where:query});
+		const data = await ctx.model.Lessons.findAndCount({where:query, order});
 		const lessons = [];
 		for (let i = 0; i < data.rows.length; i++) {
 			let lesson = data.rows[i];
