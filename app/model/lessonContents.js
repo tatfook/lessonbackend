@@ -71,8 +71,8 @@ module.exports = app => {
 		return data;
 	}
 
-	model.content = async function(userId, lessonId, version) {
-		const where = {lessonId, userId};
+	model.content = async function(lessonId, version) {
+		const where = {lessonId};
 		if (version) where.version = _.toNumber(version);
 
 		const list = await app.model.LessonContents.findAll({

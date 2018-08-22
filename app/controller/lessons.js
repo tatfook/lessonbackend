@@ -200,10 +200,8 @@ class LessonsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 		const params = ctx.query || {};
-		this.enauthenticated();
-		const userId = this.getUser().userId;
 
-		const result = await ctx.model.LessonContents.content(userId, id, params.version);
+		const result = await ctx.model.LessonContents.content(id, params.version);
 
 		return this.success(result);
 	}
