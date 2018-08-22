@@ -8,7 +8,7 @@ describe('test/controller/admins/teacherCDKeys.test.js', () => {
 	});
 
 	it('POST /admins/teacherCDKeys/generate', async ()=> {
-		let data = await app.httpRequest().get("/admins/teacherCDKeys/generate?count=20").expect(200).then(res => res.body);
+		let data = await app.httpRequest().post("/admins/teacherCDKeys/generate?count=20").expect(200).then(res => res.body);
 		assert(data.length, 20);
 	});
 

@@ -128,6 +128,10 @@ describe('test/controller/packages.test.js', () => {
 		const package_ = await app.httpRequest().get("/packages/1").expect(200).then(res => res.body);
 		assert.equal(package_.state, 1);
 	});
+
+	//it("GET /packages/teach", async ()=> {
+		//await app.httpRequest().get("/packages/teach").expect(200);
+	//});
 });
 
 

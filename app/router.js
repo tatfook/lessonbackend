@@ -64,7 +64,7 @@ module.exports = app => {
 	router.resources("skills", prefix + "admins/skills", skills);
 
 	const teacherCDKeys = controller.teacherCDKeys;
-	router.get(prefix + "admins/teacherCDKeys/generate", teacherCDKeys.generate);
+	router.post(prefix + "admins/teacherCDKeys/generate", teacherCDKeys.generate);
 	router.resources("teacherCDKeys", prefix + "admins/teacherCDKeys", teacherCDKeys);
 
 	const admins = controller.admins;

@@ -102,7 +102,7 @@ class ClassroomsController extends Controller {
 		const userId = this.getUser().userId;
 		
 		const result = await ctx.model.Classrooms.join(userId, params.key);
-		if (!result) ctx.throw(400, "classroomId invalid");
+		if (!result) ctx.throw(400, "key invalid");
 		
 		return this.success(result);
 	}
