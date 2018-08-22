@@ -85,12 +85,10 @@ module.exports = app => {
 	}
 
 	model.getById = async function(classroomId, userId) {
-		let data = await app.model.Classrooms.findOne({
-			where: {
-				userId,
-				id: classroomId,
-			}
-		});
+		const where = {id: classroomId};
+
+		if (userId) where.userId = userId;
+		let data = await app.model.Classrooms.findOne({where});
 
 		if (data) data = data.get({plain:true});
 
@@ -109,6 +107,28 @@ module.exports = app => {
 		if (data) return true;
 
 		return false;
+	}
+
+	model.quit = async function(studentId) {
+		const user = await app.model.Users.getById(studentId);
+		
+		const classroomId = user.extra.classroomId;
+		if (!classroomId) return;
+
+		const classroom = await app.model.Classrooms.getById(classroomId);
+		if (classroom.state != CLASSROOM_STATE_USING) return;
+
+		app.model.LearnRecords.destroy({
+			where: {
+				classroomId,
+				userId: studentId,
+			}
+		});
+
+		user.extra.classroomId = undefined;
+		await app.model.Users.update({extra:user.extra}, {where:{id:user.id}});
+
+		return;
 	}
 
 	model.join = async function(studentId, key) {

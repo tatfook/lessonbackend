@@ -66,7 +66,7 @@ describe('test/controller/skills.test.js', () => {
 	});
 
 	it("POST|GET|PUT /classrooms", async ()=> {
-		let data = await app.httpRequest().get("/teacherCDKeys/generate?count=20").expect(200).then(res => res.body);
+		let data = await app.httpRequest().post("/admins/teacherCDKeys/generate?count=20").expect(200).then(res => res.body);
 		assert(data.length, 20);
 		const key = data[0].key;
 		await app.httpRequest().post("/users/1/teacher").send({key}).expect(200);
@@ -99,6 +99,21 @@ describe('test/controller/skills.test.js', () => {
 
 		const list = await app.httpRequest().get(url).expect(200).then(res => res.body);
 		assert.equal(list[0].extra.key, 1);
+	});
+
+	it ("join quit classrooms", async () => {
+		// 创建课堂
+		let data = await app.httpRequest().post("/classrooms").send({packageId:1, lessonId:1}).expect(200).then(res => res.body);
+		assert.equal(data.id,2);
+
+		await app.httpRequest().post("/classrooms/join").send({key:data.key}).expect(200);
+
+		data = await app.httpRequest().get("/classrooms/current").expect(200).then(res => res.body);
+		assert.equal(data.id,2);
+		
+		await app.httpRequest().post("/classrooms/quit").expect(200);
+
+		await app.httpRequest().get("/classrooms/current").expect(404);
 	});
 });
 

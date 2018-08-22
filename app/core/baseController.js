@@ -13,7 +13,7 @@ class BaseController extends Controller {
 		query.userId = userId;
 
 		const model = this.model[this.modelName];
-		const result = await model.findAndCount(params);
+		const result = await model.findAndCount({...this.queryOptions, where:query});
 
 		this.success(result);
 	}
@@ -161,6 +161,14 @@ class BaseController extends Controller {
 		if (!this.isAuthenticated()) this.ctx.throw(401, "unauthenticated");
 
 		return this.getUser();
+	}
+
+	get queryOptions() {
+		return this.ctx.state.queryOptions
+	}
+
+	get model() {
+		return this.app.model;
 	}
 
 	ensureAdmin() {

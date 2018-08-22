@@ -24,7 +24,7 @@ class AdminsController extends Controller {
 		const {ctx} = this;
 
 		const query = ctx.query || {};
-		const list = await this.model.findAndCount({where:query});
+		const list = await this.model.findAndCount({...this.queryOptions, where:query});
 
 		this.success(list);
 	}

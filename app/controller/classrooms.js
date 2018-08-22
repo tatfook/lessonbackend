@@ -107,6 +107,14 @@ class ClassroomsController extends Controller {
 		return this.success(result);
 	}
 
+	async quit() {
+		const {userId} = this.enauthenticated();
+		
+		await this.model.Classrooms.quit(userId);
+
+		return this.success("OK");
+	}
+
 	async current() {
 		const {ctx} = this;
 

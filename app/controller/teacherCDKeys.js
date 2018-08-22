@@ -6,9 +6,11 @@ const Controller = require("../core/baseController.js");
 
 class TeacherCDKeysController extends Controller {
 	async index() {
+		this.ensureAdmin();
 		const {ctx} = this;
+		const query = ctx.query;
 
-		const list = await ctx.model.TeacherCDKeys.findAndCount();
+		const list = await ctx.model.TeacherCDKeys.findAndCount({...this.queryOptions, where:query});
 
 		return this.success(list);
 	}
