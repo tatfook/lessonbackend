@@ -31,6 +31,7 @@ module.exports = app => {
 	router.get(prefix + "packages/:id/detail", packages.detail);
 	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
 	router.get(prefix + "packages/:id/isSubscribe", packages.isSubscribe);
+	router.post(prefix + "packages/:id/audit", packages.audit);
 
 	const lessons = controller.lessons;
 	router.resources("lessons", prefix + "lessons", lessons);

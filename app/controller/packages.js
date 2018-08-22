@@ -1,4 +1,3 @@
-
 const _ = require("lodash");
 const consts = require("../core/consts.js");
 const Controller = require("../core/baseController.js");
@@ -209,7 +208,7 @@ class PackagesController extends Controller {
 		const params = ctx.request.body;
 
 		ctx.validate({
-			state: joi.number().valid(PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING),
+			state: [PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING],
 		}, params);
 
 		this.enauthenticated();
@@ -217,9 +216,7 @@ class PackagesController extends Controller {
 		const data = ctx.model.Packages.getById(id);
 		if (!data) ctx.throw(400, "not found");
 
-		data.state = params.state;
-
-		const result = ctx.model.Packages.update(data, {where:{id}});
+		const result = await ctx.model.Packages.update({state:params.state}, {where:{id}});
 
 		return this.success(result);
 	}
