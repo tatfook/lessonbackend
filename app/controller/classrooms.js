@@ -133,6 +133,10 @@ class ClassroomsController extends Controller {
 		classroom = classroom.get({plain:true});
 		if (classroom.state != CLASSROOM_STATE_USING) ctx.throw(400, "课堂已结束");
 
+		const learnRecord = await ctx.model.LearnRecords.findOne({where:{classroomId: classroom.id, userId}});
+		if (learnRecord) {
+			classroom.learnRecordId = learnRecord.get({plain:true}).id;
+		}
 		return this.success(classroom);
 	}
 
