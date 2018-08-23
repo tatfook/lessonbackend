@@ -8,7 +8,7 @@ class SubjectsController extends Controller {
 		const {ctx} = this;
 		const query = ctx.query || {};
 
-		const list = await ctx.model.Subjects.findAndCount({...this.queryOptions, where:query});
+		const list = await ctx.model.Subjects.findAll({...this.queryOptions, where:query});
 
 		return this.success(list);
 	}
