@@ -7,7 +7,7 @@ class AdminsController extends Controller {
 		const params = this.ctx.params || {};
 		const resourceName = params["resources"] || "";
 
-		this.resource = this.ctx.model[resourceName];
+		this.resource = this.ctx.model[_.upperFirst(resourceName)];
 
 		if (!this.resource) this.ctx.throw(400, "args error");
 
