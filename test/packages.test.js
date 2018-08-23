@@ -123,15 +123,15 @@ describe('test/controller/packages.test.js', () => {
 		assert.equal(user.lockCoin, 10);
 	});
 
-	it("POST /packages/1/applyAudit", async ()=> {
-		await app.httpRequest().post("/packages/1/applyAudit").expect(200);
+	it("POST /packages/1/audit", async ()=> {
+		await app.httpRequest().post("/packages/1/audit").send({state:1}).expect(200);
 		const package_ = await app.httpRequest().get("/packages/1").expect(200).then(res => res.body);
 		assert.equal(package_.state, 1);
 	});
 
-	//it("GET /packages/teach", async ()=> {
-		//await app.httpRequest().get("/packages/teach").expect(200);
-	//});
+	it("GET /packages/teach", async ()=> {
+		await app.httpRequest().get("/packages/teach").expect(200);
+	});
 });
 
 

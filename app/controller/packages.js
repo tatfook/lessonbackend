@@ -274,7 +274,7 @@ class PackagesController extends Controller {
 		// 获取自己创建的课程包
 		let packages = await ctx.model.Packages.findAll({where:{userId}});
 		// 获取购买的课程包
-		const subscribes = await ctx.model.Subscribes.findAll({where:{userId}});
+		const subscribes = await ctx.model.Subscribes.getPackagesByUserId(userId);
 		
 		packages = packages.concat(subscribes);
 
@@ -282,7 +282,7 @@ class PackagesController extends Controller {
 		for (let i = 0; i < packages.length; i++) {
 			let pack = packages[i];
 			let obj = await ctx.model.Classrooms.getLastTeach(userId, pack.id);
-			console.log(obj);
+			//console.log(obj);
 			pack = pack.get ? pack.get({plain:true}) : pack;
 			pack.lastTeachDate = obj ? obj.createdAt : "";
 		}
