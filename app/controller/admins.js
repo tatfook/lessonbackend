@@ -19,6 +19,18 @@ class AdminsController extends Controller {
 		return;
 	}
 	
+	async search() {
+		this.parseParams();
+		const {ctx} = this;
+		const query = ctx.request.body || {};
+
+		this.formatQuery(query);
+
+		const list = await this.resource.findAndCount({...this.queryOptions, where:query});
+
+		this.success(list);
+	}
+
 	async index() {
 		this.parseParams();
 		const {ctx} = this;

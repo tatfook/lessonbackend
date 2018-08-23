@@ -209,8 +209,8 @@ class ClassroomsController extends Controller {
 		await this.ensureTeacher();
 		const userId = this.getUser().userId;
 
-		await ctx.model.Classrooms.dismiss(userId, id);
-		return this.success("OK");
+		const result = await ctx.model.Classrooms.dismiss(userId, id);
+		return this.success(result);
 	}
 }
 

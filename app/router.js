@@ -71,6 +71,7 @@ module.exports = app => {
 
 	const admins = controller.admins;
 	router.resources("admins", prefix + "admins/:resources", admins);
+	router.post("admins", prefix + "admins/:resources/search", admins.search);
 
 	const pays = controller.pays;
 	router.post("pays", prefix + "pays/callback",  pays.callback);

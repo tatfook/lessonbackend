@@ -5,14 +5,16 @@ module.exports = (options, app) => {
 	return async function(ctx, next) {
 		const headers = ctx.request.headers;
 		const query = ctx.query || {};
+		const body = ctx.request.body || {};
 
 		//_.merge(query, ctx.request.body);
 
-		const perPage = parseInt(headers["x-per-page"] || query["x-per-page"] || 200);
-		const page = parseInt(headers["x-page"] || query["x-page"] || 1);
-		const order = headers["x-order"] || query["x-order"] || "id-asc";
+		const perPage = parseInt(headers["x-per-page"] || query["x-per-page"] || body["x-per-page"] || 200);
+		const page = parseInt(headers["x-page"] || query["x-page"] || body["x-page"] || 1);
+		const order = headers["x-order"] || query["x-order"] || body["x-order"] || "id-asc";
 		const orders = [];
 		const arrs = order.split("-");
+
 		for (let i = 0; i < arrs.length; i+=2) {
 			orders.push([arrs[i], arrs[i+1]]);
 		}
@@ -20,6 +22,9 @@ module.exports = (options, app) => {
 		delete query["x-per-page"];
 		delete query["x-page"];
 		delete query["x-order"];
+		delete body["x-per-page"];
+		delete body["x-page"];
+		delete body["x-order"];
 
 		ctx.state.queryOptions = {
 			offset: (page - 1) * perPage,

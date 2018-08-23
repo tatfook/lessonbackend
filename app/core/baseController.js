@@ -1,8 +1,48 @@
-
 const _ = require("lodash");
 const Controller = require("egg").Controller;
 
 class BaseController extends Controller {
+	
+	formatQuery(query) {
+		const Op = this.app.Sequelize.Op;
+		for (let key in query) {
+			const arr = key.split("-");
+			if (arr.length != 2) continue;
+
+			const val = query[key];
+			delete query[key];
+			
+			const newkey = arr[0];
+			const op = arr[1];
+			const oldval = query[newkey];
+
+			if (!_.isPlainObject(oldval)) {
+				query[newkey] = {};
+				if (oldval) {
+					query[newkey][Op["eq"]] = oldval;
+				}
+			}
+			console.log(op, Op[op]);
+			query[newkey][Op[op]] = val;
+		}
+	}
+
+	async search() {
+		const {ctx} = this;
+		const query = ctx.request.body;
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		query.userId = userId;
+
+		this.formatQuery(query);
+
+		const model = this.model[this.modelName];
+		const result = await model.findAndCount({...this.queryOptions, where:query});
+
+		this.success(result);
+	}
+	
 	async index() {
 		const {ctx} = this;
 		const query = ctx.query;

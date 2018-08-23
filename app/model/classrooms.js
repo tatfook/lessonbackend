@@ -177,7 +177,7 @@ module.exports = app => {
 			}
 		});
 
-		if (!data) return;
+		if (!data) return false;
 		data = data.get({plain:true});
 	
 		// 更新课堂状态
@@ -193,7 +193,7 @@ module.exports = app => {
 		// 更新订阅包信息
 		await app.model.Subscribes.addTeachedLesson(userId, data.packageId, data.lessonId);
 
-		return;
+		return true;
 	}
 
 	// 获取最后一次教课记录 
