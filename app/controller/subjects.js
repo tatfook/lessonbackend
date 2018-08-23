@@ -6,8 +6,9 @@ class SubjectsController extends Controller {
 	// get
 	async index() {
 		const {ctx} = this;
+		const query = ctx.query || {};
 
-		const list = await ctx.model.Subjects.findAll();
+		const list = await this.resource.findAndCount({...this.queryOptions, where:query});
 
 		return this.success(list);
 	}

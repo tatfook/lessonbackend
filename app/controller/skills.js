@@ -6,8 +6,9 @@ class SkillsController extends Controller {
 	// get
 	async index() {
 		const {ctx} = this;
+		const query = ctx.query || {};
 
-		const list = await ctx.model.Skills.findAll();
+		const list = await this.resource.findAndCount({...this.queryOptions, where:query});
 
 		return this.success(list);
 	}
