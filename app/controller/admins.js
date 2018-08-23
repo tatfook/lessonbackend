@@ -7,9 +7,9 @@ class AdminsController extends Controller {
 		const params = this.ctx.params || {};
 		const resourceName = params["resources"] || "";
 
-		this.model = this.ctx.model[resourceName];
+		this.resource = this.ctx.model[resourceName];
 
-		if (!this.model) this.ctx.throw(400, "args error");
+		if (!this.resource) this.ctx.throw(400, "args error");
 
 		this.enauthenticated();
 		const roleId = this.getUser().roleId;
@@ -24,7 +24,7 @@ class AdminsController extends Controller {
 		const {ctx} = this;
 
 		const query = ctx.query || {};
-		const list = await this.model.findAndCount({...this.queryOptions, where:query});
+		const list = await this.resource.findAndCount({...this.queryOptions, where:query});
 
 		this.success(list);
 	}
@@ -36,7 +36,7 @@ class AdminsController extends Controller {
 
 		if (!id) ctx.throw(400, "args error");
 
-		const data = await this.model.findOne({where:{id}});
+		const data = await this.resource.findOne({where:{id}});
 
 		return this.success(data);
 	}
@@ -46,7 +46,7 @@ class AdminsController extends Controller {
 		const {ctx} = this;
 		const params = ctx.request.body;
 
-		const data = await this.model.create(params);
+		const data = await this.resource.create(params);
 
 		return this.success(data);
 	}
@@ -59,7 +59,7 @@ class AdminsController extends Controller {
 
 		if (!id) ctx.throw(400, "args error");
 
-		const data = await this.model.update(params, {where:{id}});
+		const data = await this.resource.update(params, {where:{id}});
 
 		return this.success(data);
 	}
@@ -71,7 +71,7 @@ class AdminsController extends Controller {
 
 		if (!id) ctx.throw(400, "args error");
 
-		const data = await this.model.destroy({where:{id}});
+		const data = await this.resource.destroy({where:{id}});
 
 		return this.success(data);
 	}
