@@ -1,3 +1,4 @@
+const _ = require("lodash");
 
 module.exports = app => {
 	const {
@@ -84,23 +85,40 @@ module.exports = app => {
 		return data && data.get({plain: true});
 	}
 
-	model.addLesson = async function(userId, packageId, lessonId) {
+	model.addLesson = async function(userId, packageId, lessonId, lessonNo) {
 		let data = await app.model.Packages.findOne({where: {userId, id: packageId}});
 		if (!data) return false;
 
 		data = await app.model.Lessons.findOne({where: {id:lessonId}});
 
 		if (!data) return false;
+		if (!lessonNo) {
+			lessonNo = await app.model.PackageLessons.count({where:{packageId, lessonId}});
+			lessonNo += 1;
+		}
 
 		data = await app.model.PackageLessons.create({
 			userId,
 			packageId,
 			lessonId,
+			extra: {
+				lessonNo,
+			},
 		});
 
 		if (data) return true;
 		
 		return false;
+	}
+
+	model.putLesson = async function(userId, packageId, lessonId, lessonNo) {
+		return await app.model.PackageLessons.update({extra:{lessonNo}}, {
+			where: {
+				userId,
+				packageId,
+				lessonId,
+			}
+		});
 	}
 
 	model.deleteLesson = async function(userId, packageId, lessonId) {
@@ -117,14 +135,21 @@ module.exports = app => {
 	}
 
 	model.lessons = async function(packageId) {
-		const list = await app.model.PackageLessons.findAll({where:{packageId}});
-		const lessons = [];
+		const sql = `select l.*, pl.extra plExtra from packageLessons as pl, lessons as l 
+		   where pl.lessonId = l.id and pl.packageId = :packageId`;
 
-		for (let i = 0; i < list.length; i++) {
-			const lesson = await app.model.Lessons.getById(list[i].lessonId);
-			if (!lesson) continue;
-			lessons.push(lesson);
-		}
+		const lessons = [];
+		const list = await app.model.query(sql, {
+			type: app.model.QueryTypes.SELECT,
+			replacements: {packageId},
+		});
+
+		_.each(list, o => {
+			o = o.get ? o.get({plain:true}) : o;
+			o.lessonNo = o.plExtra.lessonNo;
+			delete o.plExtra;
+			lessons.push(o);
+		});
 
 		return lessons;
 	}

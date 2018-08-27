@@ -128,11 +128,31 @@ class PackagesController extends Controller {
 		if (!id) ctx.throw(400, "id invalid");
 
 		const params = ctx.request.body;
+		ctx.validate({
+			lessonId: "int",
+		});
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
-		const result = await this.ctx.model.Packages.addLesson(userId, id, params.lessonId);
+		const result = await this.ctx.model.Packages.addLesson(userId, id, params.lessonId, params.lessonNo);
+		return this.success(result);
+	}
+
+	async putLesson() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		const params = ctx.request.body;
+		ctx.validate({
+			lessonId: "int",
+		});
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const result = await this.ctx.model.Packages.putLesson(userId, id, params.lessonId, params.lessonNo);
 		return this.success(result);
 	}
 

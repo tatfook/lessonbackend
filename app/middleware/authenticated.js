@@ -1,19 +1,28 @@
 
 const axios = require("axios");
 const memoryCache = require('memory-cache');
+const jwt = require("jwt-simple");
 
 module.exports = (options, app) => {
 	const config = app.config.self;
 	return async function(ctx, next) {
-		if (config.debug) {
-			ctx.state.user = {userId:60, username:"xiaoyao", roleId:10};
-			await next();
-			return ;
-		}
+		//if (config.debug) {
+			//ctx.state.user = {userId:1, username:"xiaoyao", roleId:10};
+			//await next();
+			//return ;
+		//}
 
 		const Authorization =  ctx.request.header["authorization"] || ("Bearer " + ctx.cookies.get("token"));
+		const token = Authorization.split(" ")[1] || "";
 		const headers = {"Authorization": Authorization};
-		let user = memoryCache.get(Authorization);
+		let user = undefined;
+
+		try {
+			user = jwt.decode(token, config.secret);
+		} catch(e) {
+			user = memoryCache.get(Authorization);
+		}
+
 		if (!user) {
 			user = await axios.get(config.keepworkBaseURL + "user/tokeninfo", {headers})
 				.then(res => res.data)

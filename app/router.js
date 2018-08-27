@@ -10,6 +10,7 @@ module.exports = app => {
 	router.resources("index", prefix + "index", controller.index);
 
 	const users = controller.users;
+	router.get(prefix + "users/token", users.token);
 	router.resources("users", prefix + "users", users);
 	router.post(prefix + "users/:id/applyTeacher", users.applyTeacher);
 	router.post(prefix + "users/:id/teacher", users.teacher);
@@ -26,6 +27,7 @@ module.exports = app => {
 	router.get(prefix + "packages/search", packages.search);
 	router.resources("packages", prefix + "packages", packages);
 	router.post(prefix + "packages/:id/lessons", packages.addLesson);
+	router.put(prefix + "packages/:id/lessons", packages.putLesson);
 	router.delete(prefix + "packages/:id/lessons", packages.deleteLesson);
 	router.get(prefix + "packages/:id/lessons", packages.lessons);
 	router.get(prefix + "packages/:id/detail", packages.detail);

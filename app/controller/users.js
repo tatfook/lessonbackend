@@ -1,5 +1,6 @@
 
 const _ = require("lodash");
+const jwt = require("jwt-simple");
 const consts = require("../core/consts.js");
 const Controller = require("../core/baseController.js");
 
@@ -16,6 +17,17 @@ const {
 } = consts;
 
 class UsersController extends Controller {
+
+	token() {
+		const env = this.app.config.env;
+		this.enauthenticated();
+		const user = this.getUser();
+		user.exp = Date.now() / 1000 + (env == "prod" ? 3600 * 24 * 1000 : 3600 * 24);
+		const token = jwt.encode(user, this.app.config.self.secret);
+
+		return this.success(token);
+	}
+
 	// 获取当前用户  不存在则创建
 	async index() {
 		const {ctx} = this;

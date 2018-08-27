@@ -56,6 +56,12 @@ class ClassroomsController extends Controller {
 		await this.ensureTeacher();
 		const userId = this.getUser().userId;
 
+		const packageLesson = await ctx.model.PackageLessons.findOne({where:{
+			packageId: params.packageId,
+			lessonId: params.lessonId,
+		}});
+		if (!packageLesson) ctx.throw(400);
+
 		const ok = await ctx.model.Teachers.isAllowTeach(userId);
 		if (!ok) ctx.throw(400, "no privilege");
 
@@ -70,6 +76,7 @@ class ClassroomsController extends Controller {
 		params.extra.lessonName = lesson.lessonName;
 		params.extra.lessonGoals = lesson.goals;
 		params.extra.coverUrl = (_package.extra || {}).coverUrl;
+		params.extra.lessonNo = packageLesson.extra.lessonNo;
 
 		const data = await ctx.model.Classrooms.createClassroom(params);
 
