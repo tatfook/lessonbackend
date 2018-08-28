@@ -132,7 +132,7 @@ class LessonsController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 
-		const skills = await ctx.model.Lessons.getSkills(userId, id);
+		const skills = await ctx.model.Lessons.getSkills(id);
 
 		return this.success(skills);
 	}

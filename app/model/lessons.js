@@ -90,11 +90,10 @@ module.exports = app => {
 	}
 
 
-	model.getSkills = async function(userId, lessonId) {
+	model.getSkills = async function(lessonId) {
 		const skills = [];
 		const list = await app.model.LessonSkills.findAll({
 			where: {
-				userId,
 				lessonId,
 			}
 		});
