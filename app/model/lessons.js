@@ -105,7 +105,7 @@ module.exports = app => {
 				where: {id: lessonSkill.skillId},
 			});
 			if (skill) skill = skill.get({plain:true});
-			lessonSkill.skill = skill;
+			lessonSkill.skillName = skill.skillName;
 			skills.push(lessonSkill);
 		}
 

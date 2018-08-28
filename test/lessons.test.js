@@ -84,6 +84,7 @@ describe('test/controller/lessons.test.js', () => {
 		const url = "/lessons/1/skills";
 		await app.httpRequest().delete(url + "?skillId=1").expect(200);
 		let list = await app.httpRequest().get(url).expect(200).then(res => res.body);
+		//console.log(list);
 		assert.equal(list.length, 1);
 
 		await app.httpRequest().post(url).send({skillId:1, score:8}).expect(200);

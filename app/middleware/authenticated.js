@@ -6,11 +6,11 @@ const jwt = require("jwt-simple");
 module.exports = (options, app) => {
 	const config = app.config.self;
 	return async function(ctx, next) {
-		//if (config.debug) {
-			//ctx.state.user = {userId:1, username:"xiaoyao", roleId:10};
-			//await next();
-			//return ;
-		//}
+		if (config.debug) {
+			ctx.state.user = {userId:1, username:"xiaoyao", roleId:10};
+			await next();
+			return ;
+		}
 
 		const Authorization =  ctx.request.header["authorization"] || ("Bearer " + ctx.cookies.get("token"));
 		const token = Authorization.split(" ")[1] || "";
