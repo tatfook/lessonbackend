@@ -146,12 +146,12 @@ module.exports = app => {
 
 		_.each(list, o => {
 			o = o.get ? o.get({plain:true}) : o;
-			o.lessonNo = o.plExtra.lessonNo;
+			o.lessonNo = o.plExtra.lessonNo || 10000;
 			delete o.plExtra;
 			lessons.push(o);
 		});
 
-		return lessons;
+		return _.sortBy(lessons, ['lessonNo']);
 	}
 
 	// 课程包通过审核

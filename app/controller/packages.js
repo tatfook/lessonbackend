@@ -105,6 +105,9 @@ class PackagesController extends Controller {
 				userId,
 				packageId: pack.id,
 				lessonId: lessonId,
+				extra: {
+					lessonNo: i + 1,
+				}
 			});
 		}
 
