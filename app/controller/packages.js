@@ -18,9 +18,15 @@ class PackagesController extends Controller {
 		const {ctx} = this;
 		const query = ctx.query || {};
 
-		const list = await ctx.model.Packages.findAndCount({where:query});
+		const data = await ctx.model.Packages.findAndCount({where:query});
+		const list = data.rows;
+		for (let i = 0; i < list.length; i++) {
+			let pack = list[i].get ? list[i].get({plain:true}) : list[i];
+			pack.lessons = await ctx.model.Packages.lessons(pack.id);
+			list[i] = pack;
+		}
 
-		return this.success(list);
+		return this.success(data);
 	}
 	
 	// get
