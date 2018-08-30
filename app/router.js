@@ -9,6 +9,9 @@ module.exports = app => {
 
 	router.resources("index", prefix + "index", controller.index);
 
+	const email = controller.email;
+	router.resources(prefix + "emails", email);
+
 	const users = controller.users;
 	router.get(prefix + "users/token", users.token);
 	router.resources("users", prefix + "users", users);
