@@ -292,9 +292,15 @@ class PackagesController extends Controller {
 	async hots() {
 		const {ctx} = this;
 
-		const list = await ctx.model.PackageSorts.getHots();
+		const data = await ctx.model.PackageSorts.getHots();
+		const list = data.rows;
+		for (let i = 0; i < list.length; i++) {
+			let pack = list[i].get ? list[i].get({plain:true}) : list[i];
+			pack.lessons = await ctx.model.Packages.lessons(pack.id);
+			list[i] = pack;
+		}
 
-		return this.success(list);
+		return this.success(data);
 	}
 
 	async teach() {
