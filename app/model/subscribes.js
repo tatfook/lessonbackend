@@ -77,15 +77,16 @@ module.exports = app => {
 		const packages = [];
 
 		for (let i = 0; i < list.length; i++) {
-			let subscribe = list[i];
+			let subscribe = list[i].get ? list[i].get({plain:true}) : list[i];
 			let data = await app.model.Packages.findOne({where:{id:subscribe.packageId}});
+			//console.log(subscribe);
 			if (!data) continue;
 			data = data.get({plain: true});
 
 			data.lessons = await app.model.Packages.lessons(data.id);
-			data.learnedLessons = subscribe.learnedLessons || [];
-			data.teachedLessons = subscribe.teachedLessons || [];
-			data.isReward = subscribe.isReward;
+			data.learnedLessons = subscribe.extra.learnedLessons || [];
+			data.teachedLessons = subscribe.extra.teachedLessons || [];
+			data.isReward = subscribe.extra.isReward;
 			//data.lessons = subscribe.lessons;
 
 			packages.push(data);
