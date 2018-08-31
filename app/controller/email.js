@@ -1,5 +1,6 @@
 const axios = require("axios");
 const _ = require("lodash");
+const email = require("../core/email.js");
 const Controller = require("../core/baseController.js");
 
 class EmailController extends Controller {
@@ -19,7 +20,8 @@ class EmailController extends Controller {
 		}, params);
 
 		const {to, subject, html, from} = params;
-		const ok = await this.app.sendEmail(to, subject, html, params.from);
+		const ok = await email(this.app)(to, subject, html, params.from);
+		//const ok = await this.app.sendEmail(to, subject, html, params.from);
 
 		return this.success(ok);
 	}

@@ -47,4 +47,6 @@ module.exports = app => {
 	}
 
 	app.sendEmail = sendEmail;
+
+	return sendEmail;
 };
