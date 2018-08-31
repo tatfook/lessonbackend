@@ -95,6 +95,18 @@ class LearnRecordsController extends Controller {
 
 		return this.success(result);
 	}
+
+	async reward() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const lr = await ctx.model.LearnRecords.getById(id, userId);
+		const amount = await ctx.model.LessonRewards.rewards(userId, lr.packageId, lr.lessonId);
+		return this.success(amount);
+	}
 }
 
 module.exports = LearnRecordsController;

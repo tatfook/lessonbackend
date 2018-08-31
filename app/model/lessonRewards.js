@@ -63,15 +63,15 @@ module.exports = app => {
 
 		// 是否已领取
 		let data = await app.model.LessonRewards.findOne({where});
-		if (data) return;
+		if (data) return 0;
 
 		// 是否学习完成
 		data = await app.model.UserLearnRecords.findOne({where});
-		if (!data) return ;
+		if (!data) return 0;
 
 		let user = await app.model.Users.getById(userId);
 		const amount = _.random(10, 15);
-		if (user.lockCoin < amount) return;
+		if (user.lockCoin < amount) return 0;
 		
 		const lockCoin = user.lockCoin - amount;
 
@@ -81,7 +81,7 @@ module.exports = app => {
 		// 扣除用户可返还余额
 		await app.model.Users.update({lockCoin}, {where: {id:userId}});
 
-		return;
+		return amount;
 	}
 
 	return model;

@@ -82,11 +82,6 @@ module.exports = app => {
 
 	model.learnFinish = async function(params) {
 		await app.model.UserLearnRecords.upsert(params);
-
-		if (params.reward) {
-			await app.model.LessonRewards.rewards(params.userId, params.packageId, params.lessonId);
-		}
-
 	}
 
 	model.createLearnRecord = async function(params) {
@@ -116,7 +111,6 @@ module.exports = app => {
 		if(params.state) lr.state = params.state;
 		if(params.extra) lr.extra = params.extra;
 		if(params.classroomId) lr.classroomId = params.classroomId;
-		if(params.reward) lr.reward = params.reward;
 	
 		await app.model.LearnRecords.update(lr, {where});
 
