@@ -69,6 +69,10 @@ class LearnRecordsController extends Controller {
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
 		if (!lr) ctx.throw(400, "args error");
 
+		if(lr.classroomId) {
+			const isClassing = await ctx.model.Classrooms.isClassing(lr.classroomId);
+			if (!isClassing) ctx.throw(400, "已下课");
+		}
 		params.id = id;
 		params.userId = userId;
 

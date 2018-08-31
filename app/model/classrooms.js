@@ -95,6 +95,13 @@ module.exports = app => {
 		return data;
 	}
 
+	model.isClassing = async function(classroomId) {
+		const classroom = await this.getById(classroomId);
+		if (classroom && classroom.state == CLASSROOM_STATE_USING) return true;
+
+		return false;
+	}
+
 	model.isTeached = async function(userId, packageId, lessonId) {
 		const data = await app.model.Classrooms.findOne({
 			where:{
