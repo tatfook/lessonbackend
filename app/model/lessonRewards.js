@@ -69,9 +69,9 @@ module.exports = app => {
 		data = await app.model.UserLearnRecords.findOne({where});
 		if (!data) return 0;
 
+		if (user.lockCoin < 10) return 0;
 		let user = await app.model.Users.getById(userId);
-		const amount = _.random(10, 15);
-		if (user.lockCoin < amount) return 0;
+		const amount = _.random(10, user.lockCoin > 15 ? 15 : user.lockCoin);
 		
 		const lockCoin = user.lockCoin - amount;
 
