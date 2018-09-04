@@ -15,15 +15,15 @@ module.exports = app => {
 			primaryKey: true,
 		},
 
-		packageId: {
+		packageId: {          // 课程包ID
 			type: BIGINT,
 			unique: true,
 			allowNull: false,
 		},
 
-		hotNo: {              // 热门课程包
+		hotNo: {              // 热门序号
 			type: INTEGER,
-			defaultValue: 0,  // 0 -- 不存在此分类
+			defaultValue: 0,  // 
 		},
 
 	}, {

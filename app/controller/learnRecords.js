@@ -111,6 +111,26 @@ class LearnRecordsController extends Controller {
 		const amount = await ctx.model.LessonRewards.rewards(userId, lr.packageId, lr.lessonId);
 		return this.success(amount);
 	}
+
+	async isReward() {
+		const {ctx} = this;
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+		const params = this.validate({"packageId": "int", "lessonId": "int"});
+		console.log(params);
+
+		const data = await this.model.LessonRewards.findOne({
+			where: {
+				userId,
+				packageId: params.packageId,
+				lessonId: params.lessonId,
+			}
+		});
+
+		const ok = data ? true : false;
+
+		return this.success(ok);
+	}
 }
 
 module.exports = LearnRecordsController;

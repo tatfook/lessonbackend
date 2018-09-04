@@ -1,7 +1,42 @@
+const joi = require("joi");
 const _ = require("lodash");
 const Controller = require("egg").Controller;
 
+const rules = {
+	"int": joi.number().required(),
+	"int_optional": joi.number(),
+	"number": joi.number().required(),
+	"number_optional": joi.number(),
+	"string": joi.string().required(),
+	"string_optional": joi.string(),
+	"boolean": joi.boolean().required(),
+	"boolean_optional": joi.boolean(),
+}
+
 class BaseController extends Controller {
+	getParams() {
+		return _.merge({}, this.ctx.request.body, this.ctx.query, this.ctx.params);
+	}
+
+	validate(schema = {}, options = {allowUnknown:true}) {
+		const params = this.getParams();
+
+		_.each(schema, (val, key) => {
+			schema[key] = rules[val] || val;
+		});
+
+		const result = joi.validate(params, schema, options);
+
+		if (result.error) {
+			const errmsg = result.error.details[0].message.replace(/"/g, '');
+			console.log(params);
+			this.ctx.throw(400, "invalid params:" + errmsg);
+		}
+
+		_.assignIn(params, result.value);
+
+		return params;
+	}
 	
 	formatQuery(query) {
 		const Op = this.app.Sequelize.Op;
