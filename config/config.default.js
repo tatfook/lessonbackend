@@ -16,6 +16,11 @@ exports.security = {
 	},
 }
 
+exports.bodyParser = {
+	jsonLimit: '1mb',
+	formLimit: '1mb',
+}
+
 exports.onerror = {
 	all: (e, ctx) => {
 		const message = e.stack || e.message || e.toString();
