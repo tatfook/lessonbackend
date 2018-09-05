@@ -78,7 +78,7 @@ module.exports = app => {
 	model.getById = async function(userId, username) {
 		let data = await app.model.Users.findOne({where: {id:userId}});
 
-		const amount = 300;
+		const amount = 0;
 		if (!data) {
 			data = await app.model.Users.create({
 				id: userId,
@@ -86,12 +86,12 @@ module.exports = app => {
 				coin: amount,
 			});
 			// 
-			await app.model.Coins.create({
-				userId,
-				amount: amount,
-				type: COIN_TYPE_SYSTEM_DONATE,
-				desc: "系统赠送",
-			});
+			//await app.model.Coins.create({
+				//userId,
+				//amount: amount,
+				//type: COIN_TYPE_SYSTEM_DONATE,
+				//desc: "系统赠送",
+			//});
 		};
 
 		data = data.get({plain:true});
