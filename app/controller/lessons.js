@@ -87,23 +87,24 @@ class LessonsController extends Controller {
 
 		let lesson = await ctx.model.Lessons.create(params);
 		if (!lesson) ctx.throw("500", "DB failed");
-
 		lesson = lesson.get({plain:true});
 
 		if (!skills || !_.isArray(skills)) return this.success(lesson);
-
+		const lessonSkills = [];
 		for (let i = 0; i < skills.length; i++) {
 			let skillParams = skills[i];
 			if (!skillParams.id) continue;
-			let skill = await ctx.model.Skills.findOne({where:{id:skillParams.id}});
-			if (!skill) continue;
-
-			await ctx.model.LessonSkills.create({
+			const skillId = skillParams.id;
+			const skillScore = skillParams.score || 0;
+			lessonSkills.push({
 				userId: userId,
-				skillId: skill.id,
+				skillId: skillId,
 				lessonId: lesson.id,
-				score: skillParams.score,
+				score: skillScore,
 			});
+		}
+		if (lessonSkills.length>0) {
+			await ctx.model.LessonSkills.bulkCreate(lessonSkills);
 		}
 
 		return this.success(lesson);
@@ -117,10 +118,26 @@ class LessonsController extends Controller {
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
-
 		delete params.state;
-
 		const result = await ctx.model.Lessons.update(params, {where:{id}});
+		const skills = params.skills || [];
+		const lessonSkills = [];
+		for (let i = 0; i < skills.length; i++) {
+			let skillParams = skills[i];
+			if (!skillParams.id) continue;
+			const skillId = skillParams.id;
+			const skillScore = skillParams.score || 0;
+			lessonSkills.push({
+				userId: userId,
+				skillId: skillId,
+				lessonId: id,
+				score: skillScore,
+			});
+		}
+		if (lessonSkills.length>0) {
+			await ctx.model.LessonSkills.destroy({where:{lessonId:id}});
+			await ctx.model.LessonSkills.bulkCreate(lessonSkills);
+		}
 
 		return this.success(result);
 	}

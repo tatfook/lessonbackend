@@ -95,26 +95,16 @@ class PackagesController extends Controller {
 		//console.log(params);
 		let pack = await ctx.model.Packages.create(params);
 		if (!pack) ctx.throw("500", "DB failed");
-
 		pack = pack.get({plain:true});
-
+		const id = pack.id;
+		const records = [];
 		if (!lessons || !_.isArray(lessons)) return this.success(pack);
-
 		for (let i = 0; i < lessons.length; i++) {
 			let lessonId = lessons[i];
-			let lesson = await ctx.model.Lessons.findOne({where:{id: lessonId}});
-			if (!lesson) continue;
-			
-			//console.log(pack.id, lessonId);
-
-			await ctx.model.PackageLessons.create({
-				userId,
-				packageId: pack.id,
-				lessonId: lessonId,
-				extra: {
-					lessonNo: i + 1,
-				}
-			});
+			records.push({userId, packageId: id, lessonId, extra: {lessonNo: i + 1}});
+		}
+		if (records.length > 0){
+			await ctx.model.PackageLessons.bulkCreate(records);
 		}
 
 		this.success(pack);
@@ -129,6 +119,7 @@ class PackagesController extends Controller {
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 		
+		if (params.rmb != undefined) params.coin = params.rmb * 10;
 		delete params.state;
 
 		const result = await ctx.model.Packages.update(params, {where:{id}});
@@ -138,7 +129,7 @@ class PackagesController extends Controller {
 		const records = [];
 		for (let i = 0; i < lessons.length; i++) {
 			let lessonId = lessons[i];
-			records.push({userId, packageId: id, lessonId: lessonId, extra: {lessonNo: i + 1}});
+			records.push({userId, packageId: id, lessonId, extra: {lessonNo: i + 1}});
 		}
 		if (records.length > 0){
 			await ctx.model.PackageLessons.destroy({where:{packageId:id}});
