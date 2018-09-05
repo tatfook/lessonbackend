@@ -143,7 +143,7 @@ class PackagesController extends Controller {
 			
 			await ctx.model.PackageLessons.create({
 				userId,
-				packageId: pack.id,
+				packageId: id,
 				lessonId: lessonId,
 				extra: {
 					lessonNo: i + 1,
