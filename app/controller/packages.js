@@ -135,20 +135,14 @@ class PackagesController extends Controller {
 		const lessons = params.lessons;
 		if (!lessons || !_.isArray(lessons)) return this.success(result);
 
-		await ctx.model.PackageLessons.destroy({where:{packageId:id}});
+		const records = [];
 		for (let i = 0; i < lessons.length; i++) {
 			let lessonId = lessons[i];
-			let lesson = await ctx.model.Lessons.findOne({where:{id: lessonId}});
-			if (!lesson) continue;
-			
-			await ctx.model.PackageLessons.create({
-				userId,
-				packageId: id,
-				lessonId: lessonId,
-				extra: {
-					lessonNo: i + 1,
-				}
-			});
+			records.push({userId, packageId: id, lessonId: lessonId, extra: {lessonNo: i + 1}});
+		}
+		if (records.length > 0){
+			await ctx.model.PackageLessons.destroy({where:{packageId:id}});
+			await ctx.model.PackageLessons.bulkCreate(records);
 		}
 
 		return this.success(result);

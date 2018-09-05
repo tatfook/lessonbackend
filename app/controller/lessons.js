@@ -50,6 +50,20 @@ class LessonsController extends Controller {
 		return this.success(data);
 	}
 
+	async detailByUrl() {
+		const {ctx} = this;
+		const {url} = this.validate({url:'string'});
+		let data = await ctx.model.Lessons.findOne({where:{url}});
+		if (!data) ctx.throw("404", "not found");
+		data = data.get({plain:true});
+		
+		const id = data.id;
+
+		data.skills = await ctx.model.LessonSkills.getSkillsByLessonId(id);
+		data.packages = await ctx.model.Lessons.getPackagesByLessonId(id);
+
+		return this.success(data);
+	}
 
 	async show() {
 		const {ctx} = this;

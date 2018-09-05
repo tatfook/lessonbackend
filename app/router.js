@@ -39,6 +39,7 @@ module.exports = app => {
 	router.post(prefix + "packages/:id/audit", packages.audit);
 
 	const lessons = controller.lessons;
+	router.get(prefix + "lessons/detail", lessons.detailByUrl);
 	router.resources("lessons", prefix + "lessons", lessons);
 	router.post(prefix + "lessons/:id/skills", lessons.addSkill);
 	router.delete(prefix + "lessons/:id/skills", lessons.deleteSkill);
