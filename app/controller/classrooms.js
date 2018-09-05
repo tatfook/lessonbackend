@@ -75,7 +75,7 @@ class ClassroomsController extends Controller {
 		params.extra.packageName = _package.packageName;
 		params.extra.lessonName = lesson.lessonName;
 		params.extra.lessonGoals = lesson.goals;
-		params.extra.coverUrl = (_package.extra || {}).coverUrl;
+		params.extra.coverUrl = (lesson.extra || {}).coverUrl;
 		params.extra.lessonNo = packageLesson.extra.lessonNo;
 
 		const data = await ctx.model.Classrooms.createClassroom(params);

@@ -120,68 +120,6 @@ class PackagesController extends Controller {
 		this.success(pack);
 	}
 	
-	// 获取课程列表
-	async lessons() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-		
-		const list = await ctx.model.Packages.lessons(id);
-
-		return this.success(list);
-	}
-
-	async addLesson() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-
-		const params = ctx.request.body;
-		ctx.validate({
-			lessonId: "int",
-		});
-
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-
-		const result = await this.ctx.model.Packages.addLesson(userId, id, params.lessonId, params.lessonNo);
-		return this.success(result);
-	}
-
-	async putLesson() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-
-		const params = ctx.request.body;
-		ctx.validate({
-			lessonId: "int",
-		});
-
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-
-		const result = await this.ctx.model.Packages.putLesson(userId, id, params.lessonId, params.lessonNo);
-		return this.success(result);
-	}
-
-	async deleteLesson() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-
-		const params = ctx.query || {};
-		const lessonId = params.lessonId && _.toNumber(params.lessonId);
-		if (!lessonId) ctx.throw(401, "args error");
-
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-
-		const result = await this.ctx.model.Packages.deleteLesson(userId, id, lessonId);
-		return this.success(result);
-
-	}
-
 	async update() {
 		const {ctx} = this;
 		const params = ctx.request.body;
@@ -194,6 +132,24 @@ class PackagesController extends Controller {
 		delete params.state;
 
 		const result = await ctx.model.Packages.update(params, {where:{id}});
+		const lessons = params.lessons;
+		if (!lessons || !_.isArray(lessons)) return this.success(result);
+
+		await ctx.model.PackageLessons.destroy({where:{packageId:id}});
+		for (let i = 0; i < lessons.length; i++) {
+			let lessonId = lessons[i];
+			let lesson = await ctx.model.Lessons.findOne({where:{id: lessonId}});
+			if (!lesson) continue;
+			
+			await ctx.model.PackageLessons.create({
+				userId,
+				packageId: pack.id,
+				lessonId: lessonId,
+				extra: {
+					lessonNo: i + 1,
+				}
+			});
+		}
 
 		return this.success(result);
 	}
@@ -280,15 +236,6 @@ class PackagesController extends Controller {
 		return this.success(result);
 	}
 
-	async reward() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-		
-	}
-
 	async hots() {
 		const {ctx} = this;
 
@@ -325,6 +272,69 @@ class PackagesController extends Controller {
 
 		return this.success(packages);
 	}
+	
+	// 获取课程列表
+	async lessons() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+		
+		const list = await ctx.model.Packages.lessons(id);
+
+		return this.success(list);
+	}
+
+	async addLesson() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		const params = ctx.request.body;
+		ctx.validate({
+			lessonId: "int",
+		});
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const result = await this.ctx.model.Packages.addLesson(userId, id, params.lessonId, params.lessonNo);
+		return this.success(result);
+	}
+
+	async putLesson() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		const params = ctx.request.body;
+		ctx.validate({
+			lessonId: "int",
+		});
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const result = await this.ctx.model.Packages.putLesson(userId, id, params.lessonId, params.lessonNo);
+		return this.success(result);
+	}
+
+	async deleteLesson() {
+		const {ctx} = this;
+		const id = _.toNumber(ctx.params.id);
+		if (!id) ctx.throw(400, "id invalid");
+
+		const params = ctx.query || {};
+		const lessonId = params.lessonId && _.toNumber(params.lessonId);
+		if (!lessonId) ctx.throw(401, "args error");
+
+		this.enauthenticated();
+		const userId = this.getUser().userId;
+
+		const result = await this.ctx.model.Packages.deleteLesson(userId, id, lessonId);
+		return this.success(result);
+
+	}
+
 }
 
 module.exports = PackagesController;
