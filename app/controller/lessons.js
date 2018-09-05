@@ -52,7 +52,9 @@ class LessonsController extends Controller {
 
 	async detailByUrl() {
 		const {ctx} = this;
-		const {url} = this.validate({url:'string'});
+		let {url} = this.validate({url:'string'});
+
+		url = decodeURIComponent(url);
 		let data = await ctx.model.Lessons.findOne({where:{url}});
 		if (!data) ctx.throw("404", "not found");
 		data = data.get({plain:true});
