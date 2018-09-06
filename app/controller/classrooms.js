@@ -98,6 +98,16 @@ class ClassroomsController extends Controller {
 		return this.success(data);
 	}
 
+	async valid() {
+		const {key} = this.validate({key:"string"});
+		
+		let data = await this.model.Classrooms.findOne({where:{key}});
+		if (!data) return this.success(false);
+		data = data.get({plain:true});
+
+		return this.success(data.state & CLASSROOM_STATE_USING);
+	}
+
 	async join() {
 		const {ctx} = this;
 		const params = ctx.request.body;
