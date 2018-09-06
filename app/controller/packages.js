@@ -242,9 +242,9 @@ class PackagesController extends Controller {
 		// 获取购买的课程包
 		const subscribes = await ctx.model.Subscribes.getPackagesByUserId(userId);
 		
-		packages = packages.concat(subscribes);
+		packages = _.uniqBy(packages.concat(subscribes), id);
 
-		console.log(packages.length);
+		//console.log(packages.length);
 		for (let i = 0; i < packages.length; i++) {
 			let pack = packages[i];
 			let obj = await ctx.model.Classrooms.getLastTeach(userId, pack.id);

@@ -56,7 +56,7 @@ class LessonsController extends Controller {
 
 		url = decodeURIComponent(url);
 		let data = await ctx.model.Lessons.findOne({where:{url}});
-		if (!data) ctx.throw("404", "not found");
+		if (!data) ctx.throw("404", "not found" + url);
 		data = data.get({plain:true});
 		
 		const id = data.id;
