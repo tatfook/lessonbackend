@@ -105,7 +105,7 @@ class ClassroomsController extends Controller {
 		if (!data) return this.success(false);
 		data = data.get({plain:true});
 
-		return this.success(data.state & CLASSROOM_STATE_USING);
+		return this.success(data.state & CLASSROOM_STATE_USING ? true : false);
 	}
 
 	async join() {

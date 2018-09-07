@@ -247,13 +247,14 @@ class PackagesController extends Controller {
 		//console.log(packages.length);
 		for (let i = 0; i < packages.length; i++) {
 			let pack = packages[i];
+			pack = pack.get ? pack.get({plain:true}) : pack;
+			pack.joinAt = pack.joinAt || pack.createdAt;
 			let obj = await ctx.model.Classrooms.getLastTeach(userId, pack.id);
 			//console.log(obj);
-			pack = pack.get ? pack.get({plain:true}) : pack;
 			pack.lastTeachDate = obj ? obj.createdAt : "";
 		}
 
-		packages = _.sortBy(packages, ["lastTeachDate", "createdAt"], ["desc", "desc"]);
+		packages = _.orderBy(packages, ["lastTeachDate", "joinAt"], ["desc", "desc"]);
 
 		return this.success(packages);
 	}
