@@ -8,6 +8,7 @@ class AdminsController extends Controller {
 		const resourceName = params["resources"] || "";
 
 		this.resource = this.ctx.model[_.upperFirst(resourceName)];
+		this.resourceName = resourceName;
 
 		if (!this.resource) this.ctx.throw(400, "args error");
 
@@ -73,6 +74,7 @@ class AdminsController extends Controller {
 
 		const data = await this.resource.update(params, {where:{id}});
 
+		if (this.resource.adminUpdateHook) await this.resource.adminUpdateHook(params);
 		return this.success(data);
 	}
 

@@ -21,6 +21,7 @@ class PackagesController extends Controller {
 		//if (query.state == undefined) query.state = PACKAGE_STATE_AUDIT_SUCCESS;
 
 		const data = await ctx.model.Packages.findAndCount({...this.queryOptions, where:query});
+		//const data = await ctx.model.Packages.findAndCount({where:query});
 		const list = data.rows;
 		for (let i = 0; i < list.length; i++) {
 			let pack = list[i].get ? list[i].get({plain:true}) : list[i];
@@ -94,6 +95,7 @@ class PackagesController extends Controller {
 		const userId = this.getUser().userId;
 		params.userId = userId;
 		params.coin = (params.rmb || 0) * 10;
+		params.state = 0;
 
 		//console.log(params);
 		let pack = await ctx.model.Packages.create(params);
@@ -110,7 +112,7 @@ class PackagesController extends Controller {
 			await ctx.model.PackageLessons.bulkCreate(records);
 		}
 
-		await ctx.model.Packages.audit(pack.id, userId, pack.state);
+		//await ctx.model.Packages.audit(pack.id, userId, pack.state);
 
 		this.success(pack);
 	}
@@ -125,7 +127,7 @@ class PackagesController extends Controller {
 		const userId = this.getUser().userId;
 		
 		if (params.rmb != undefined) params.coin = params.rmb * 10;
-		//delete params.state;
+		delete params.state;
 
 		const result = await ctx.model.Packages.update(params, {where:{id}});
 		const lessons = params.lessons;
@@ -141,7 +143,7 @@ class PackagesController extends Controller {
 			await ctx.model.PackageLessons.bulkCreate(records);
 		}
 
-		await ctx.model.Packages.audit(id, userId, params.state);
+		//await ctx.model.Packages.audit(id, userId, params.state);
 
 		return this.success(result);
 	}
@@ -185,7 +187,8 @@ class PackagesController extends Controller {
 		const params = ctx.request.body;
 
 		ctx.validate({
-			state: [PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING, PACKAGE_STATE_AUDIT_SUCCESS],
+			//state: [PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING, PACKAGE_STATE_AUDIT_SUCCESS],
+			state: [PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING],
 		}, params);
 
 		const {userId} = this.enauthenticated();
@@ -195,7 +198,7 @@ class PackagesController extends Controller {
 
 		const result = await ctx.model.Packages.update({state:params.state}, {where:{id}});
 
-		await ctx.model.Packages.audit(id, userId, params.state);
+		//await ctx.model.Packages.audit(id, userId, params.state);
 
 		return this.success(result);
 	}

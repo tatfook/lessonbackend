@@ -93,7 +93,7 @@ module.exports = app => {
 	}
 
 	model.audit = async function(packageId, userId, state) {
-		if (state != PACKAGE_STATE_AUDIT_SUCCESS)  return;
+		if (state != PACKAGE_STATE_AUDIT_SUCCESS || !userId)  return;
 
 		await app.model.Subscribes.upsert({userId, packageId, state});
 	}
@@ -165,6 +165,10 @@ module.exports = app => {
 		});
 
 		return _.sortBy(lessons, ['lessonNo']);
+	}
+
+	model.adminUpdateHook = async function(obj) {
+		await this.audit(obj.id, obj.userId, obj.state);
 	}
 
 	return model;
