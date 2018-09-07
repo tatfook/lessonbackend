@@ -18,6 +18,8 @@ class PackagesController extends Controller {
 		const {ctx} = this;
 		const query = ctx.query || {};
 
+		//if (query.state == undefined) query.state = PACKAGE_STATE_AUDIT_SUCCESS;
+
 		const data = await ctx.model.Packages.findAndCount({where:query});
 		const list = data.rows;
 		for (let i = 0; i < list.length; i++) {
@@ -33,6 +35,7 @@ class PackagesController extends Controller {
 	async index() {
 		const {ctx} = this;
 		const query = ctx.query || {};
+		//if (query.state == undefined) query.state = PACKAGE_STATE_AUDIT_SUCCESS;
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
@@ -107,6 +110,8 @@ class PackagesController extends Controller {
 			await ctx.model.PackageLessons.bulkCreate(records);
 		}
 
+		await ctx.model.Packages.audit(pack.id, userId, pack.state);
+
 		this.success(pack);
 	}
 	
@@ -120,7 +125,7 @@ class PackagesController extends Controller {
 		const userId = this.getUser().userId;
 		
 		if (params.rmb != undefined) params.coin = params.rmb * 10;
-		delete params.state;
+		//delete params.state;
 
 		const result = await ctx.model.Packages.update(params, {where:{id}});
 		const lessons = params.lessons;
@@ -135,6 +140,8 @@ class PackagesController extends Controller {
 			await ctx.model.PackageLessons.destroy({where:{packageId:id}});
 			await ctx.model.PackageLessons.bulkCreate(records);
 		}
+
+		await ctx.model.Packages.audit(id, userId, params.state);
 
 		return this.success(result);
 	}
@@ -178,15 +185,17 @@ class PackagesController extends Controller {
 		const params = ctx.request.body;
 
 		ctx.validate({
-			state: [PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING],
+			state: [PACKAGE_STATE_UNAUDIT, PACKAGE_STATE_AUDITING, PACKAGE_STATE_AUDIT_SUCCESS],
 		}, params);
 
-		this.enauthenticated();
+		const {userId} = this.enauthenticated();
 
-		const data = ctx.model.Packages.getById(id);
+		const data = ctx.model.Packages.getById(id, userId);
 		if (!data) ctx.throw(400, "not found");
 
 		const result = await ctx.model.Packages.update({state:params.state}, {where:{id}});
+
+		await ctx.model.Packages.audit(id, userId, params.state);
 
 		return this.success(result);
 	}
@@ -237,8 +246,9 @@ class PackagesController extends Controller {
 	async teach() {
 		const {ctx} = this;
 		const {userId} = this.enauthenticated();
+		let packages = [];
 		// 获取自己创建的课程包
-		let packages = await ctx.model.Packages.findAll({where:{userId}});
+		//let packages = await ctx.model.Packages.findAll({where:{userId, state:PACKAGE_STATE_AUDIT_SUCCESS}});
 		// 获取购买的课程包
 		const subscribes = await ctx.model.Subscribes.getPackagesByUserId(userId);
 		
@@ -254,7 +264,7 @@ class PackagesController extends Controller {
 			pack.lastTeachDate = obj ? obj.createdAt : "";
 		}
 
-		packages = _.orderBy(packages, ["lastTeachDate", "joinAt"], ["desc", "desc"]);
+		packages = _.orderBy(packages, ["lastTeachDate", "createdAt"], ["desc", "desc"]);
 
 		return this.success(packages);
 	}

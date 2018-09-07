@@ -1,5 +1,12 @@
 const _ = require("lodash");
 
+const {
+	PACKAGE_STATE_UNAUDIT,
+	PACKAGE_STATE_AUDITING,
+	PACKAGE_STATE_AUDIT_SUCCESS,
+	PACKAGE_STATE_AUDIT_FAILED,
+} = require("../core/consts.js");
+
 module.exports = app => {
 	const {
 		BIGINT,
@@ -85,6 +92,12 @@ module.exports = app => {
 		return data && data.get({plain: true});
 	}
 
+	model.audit = async function(packageId, userId, state) {
+		if (state != PACKAGE_STATE_AUDIT_SUCCESS)  return;
+
+		await app.model.Subscribes.upsert({userId, packageId, state});
+	}
+
 	model.addLesson = async function(userId, packageId, lessonId, lessonNo) {
 		let data = await app.model.Packages.findOne({where: {userId, id: packageId}});
 		if (!data) return false;
@@ -152,11 +165,6 @@ module.exports = app => {
 		});
 
 		return _.sortBy(lessons, ['lessonNo']);
-	}
-
-	// 课程包通过审核
-	model.passAudit = async function(packageId) {
-		
 	}
 
 	return model;

@@ -57,11 +57,17 @@ module.exports = app => {
 	//model.sync({force:true});
 
 	model.getSkillsByLessonId = async function(lessonId) {
-		const list = await app.model.LessonSkills.findAll({where:{lessonId}});
+		const sql = `select lessonSkills.*, skills.skillName skillName from
+		   	lessonSkills, skills 
+			where lessonSkills.skillId = skills.id and lessonSkills.lessonId = :lessonId`;
+
+		const list = await app.model.query(sql, {
+			type: app.model.QueryTypes.SELECT,
+			replacements:{lessonId},
+		});
+
 		const skills = [];
-
-		_.each(list, val => skills.push(val.get({plain:true})));
-
+		_.each(list, val => skills.push(val.get ? val.get({plain:true}) : val));
 		return skills;
 	}
 	return model;
