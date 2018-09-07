@@ -20,7 +20,7 @@ class PackagesController extends Controller {
 
 		//if (query.state == undefined) query.state = PACKAGE_STATE_AUDIT_SUCCESS;
 
-		const data = await ctx.model.Packages.findAndCount({where:query});
+		const data = await ctx.model.Packages.findAndCount({...this.queryOptions, where:query});
 		const list = data.rows;
 		for (let i = 0; i < list.length; i++) {
 			let pack = list[i].get ? list[i].get({plain:true}) : list[i];
