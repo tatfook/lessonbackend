@@ -57,7 +57,7 @@ module.exports = app => {
 	//model.sync({force:true});
 
 	model.getSkillsByLessonId = async function(lessonId) {
-		const sql = `select lessonSkills.*, skills.skillName skillName from
+		const sql = `select lessonSkills.*, skills.skillName skillName, skills.enSkillName enSkillName from
 		   	lessonSkills, skills 
 			where lessonSkills.skillId = skills.id and lessonSkills.lessonId = :lessonId`;
 
