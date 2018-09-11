@@ -21,6 +21,10 @@ module.exports = app => {
 			allowNull: false,
 		},
 		
+		enSubjectName: {
+			type: STRING(64),
+		},
+
 		extra: {
 			type: JSON,
 			defaultValue: {},

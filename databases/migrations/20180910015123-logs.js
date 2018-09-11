@@ -11,25 +11,16 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('skills', { 
+		return queryInterface.createTable('logs', { 
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
 
-			skillName: {
-				type: STRING(64),
-				allowNull: false,
-			},
-
-			enSkillName: {
-				type: STRING(64),
-			},
-
-			extra: {
-				type: JSON,
-				defaultValue: {},
+			text: {
+				type: TEXT,
+				defaultValue: "",
 			},
 
 			createdAt: {
@@ -50,6 +41,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('skills');
+		return queryInterface.dropTable('logs');
 	}
 };

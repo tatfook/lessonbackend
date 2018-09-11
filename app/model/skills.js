@@ -17,7 +17,12 @@ module.exports = app => {
 
 		skillName: {
 			type: STRING(64),
+			unique: true,
 			allowNull: false,
+		},
+
+		enSkillName: {
+			type: STRING(64),
 		},
 
 		extra: {

@@ -11,25 +11,22 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('skills', { 
+		return queryInterface.createTable('packageSorts', { 
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
 
-			skillName: {
-				type: STRING(64),
+			packageId: {          // 课程包ID
+				type: BIGINT,
+				unique: true,
 				allowNull: false,
 			},
 
-			enSkillName: {
-				type: STRING(64),
-			},
-
-			extra: {
-				type: JSON,
-				defaultValue: {},
+			hotNo: {              // 热门序号
+				type: INTEGER,
+				defaultValue: 0,  // 
 			},
 
 			createdAt: {
@@ -50,6 +47,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('skills');
+		return queryInterface.dropTable('packageSorts');
 	}
 };
