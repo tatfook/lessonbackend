@@ -36,7 +36,7 @@ class PackagesController extends Controller {
 	async index() {
 		const {ctx} = this;
 		const query = ctx.query || {};
-		if (query.state == undefined) query.state = PACKAGE_STATE_AUDIT_SUCCESS;
+		//if (query.state == undefined) query.state = PACKAGE_STATE_AUDIT_SUCCESS;
 
 		this.enauthenticated();
 		const userId = this.getUser().userId;
