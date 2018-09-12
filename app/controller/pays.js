@@ -11,7 +11,6 @@ const {
 class PayController extends Controller {
 	// 前端跳转至 https://stage.keepwork.com/wiki/pay?username=xioayao&app_name=lessons&app_goods_id=1&price=1&additional=%7B%22packageId%22%3A1%7D
 	async callback() {
-		console.log("------------");
 		const {ctx, app} = this;
 		const query = ctx.query;
 		const username = query.username;
@@ -25,22 +24,39 @@ class PayController extends Controller {
 		//console.log(ctx.path);
 		//console.log(ctx.query);
 
-		if (_.indexOf(config.trustIps, ip) < 0) ctx.throw(400, "不可信任请求");
+		if (_.indexOf(config.trustIps, ip) < 0) {
+			await ctx.model.Logs.create({text:"支付-不可信任请求"});
+			ctx.throw(400, "不可信任请求");
+		}
 
-		if (!username || !price || !packageId) ctx.throw(400, "params invalid");
-
+		if (!username || !price || !packageId)  {
+			await ctx.model.Logs.create({text:"支付-参数错误"});
+			ctx.throw(400, "params invalid");
+		}
 
 		let user = await ctx.model.Users.findOne({where: {username}});
-		if (!user) ctx.throw(400, "user not exist");
+		if (!user) {
+			await ctx.model.Logs.create({text:"支付-用户不存在"});
+			ctx.throw(400, "user not exist");
+		}
 		user = user.get({plain:true});
 
 		let package_ = await ctx.model.Packages.findOne({where:{id:packageId}});
-		if (!package_) ctx.throw(400, "package not exist");
+		if (!package_) {
+			await ctx.model.Logs.create({text:"支付-课程包不存在"});
+			ctx.throw(400, "package not exist");
+		} 
 		package_ = package_.get({plain: true});
-		if (package_.rmb > price) ctx.throw(400, "金额不对");
+		if (package_.rmb > price) {
+			await ctx.model.Logs.create({text:"支付-支付金额错误"});
+			ctx.throw(400, "金额不对");
+		}
 
 		const subscribe = await ctx.model.Subscribes.findOne({where:{userId: user.id, packageId: package_.id}});
-		if (subscribe) ctx.throw(400, "package already subscribe");
+		if (subscribe){
+			await ctx.model.Logs.create({text:"支付-课程包已购买"});
+			ctx.throw(400, "package already subscribe");
+		} 
 
 		// 更新用户待解锁金币数
 		const lockCoin = user.lockCoin + package_.coin;
