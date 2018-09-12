@@ -24,19 +24,19 @@ class PayController extends Controller {
 		//console.log(ctx.path);
 		//console.log(ctx.query);
 
-		if (_.indexOf(config.trustIps, ip) < 0) {
-			await ctx.model.Logs.create({text:"支付-不可信任请求:" + ip});
-			ctx.throw(400, "不可信任请求");
-		}
+		//if (_.indexOf(config.trustIps, ip) < 0) {
+			//await ctx.model.Logs.create({text:"支付-不可信任请求:" + ip});
+			//ctx.throw(400, "不可信任请求");
+		//}
 
 		if (!username || !price || !packageId)  {
-			await ctx.model.Logs.create({text:"支付-参数错误"});
+			await ctx.model.Logs.create({text:"支付-参数错误" + JSON.stringify(query)});
 			ctx.throw(400, "params invalid");
 		}
 
 		let user = await ctx.model.Users.findOne({where: {username}});
 		if (!user) {
-			await ctx.model.Logs.create({text:"支付-用户不存在"});
+			await ctx.model.Logs.create({text:"支付-用户不存在" + username});
 			ctx.throw(400, "user not exist");
 		}
 		user = user.get({plain:true});
@@ -44,11 +44,11 @@ class PayController extends Controller {
 		let package_ = await ctx.model.Packages.findOne({where:{id:packageId}});
 		if (!package_) {
 			await ctx.model.Logs.create({text:"支付-课程包不存在"});
-			ctx.throw(400, "package not exist");
+			ctx.throw(400, "package not exist" + packageId);
 		} 
 		package_ = package_.get({plain: true});
 		if (package_.rmb > price) {
-			await ctx.model.Logs.create({text:"支付-支付金额错误"});
+			await ctx.model.Logs.create({text:"支付-支付金额错误" + price});
 			ctx.throw(400, "金额不对");
 		}
 
