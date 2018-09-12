@@ -25,7 +25,7 @@ class PayController extends Controller {
 		//console.log(ctx.query);
 
 		if (_.indexOf(config.trustIps, ip) < 0) {
-			await ctx.model.Logs.create({text:"支付-不可信任请求"});
+			await ctx.model.Logs.create({text:"支付-不可信任请求:" + ip});
 			ctx.throw(400, "不可信任请求");
 		}
 
