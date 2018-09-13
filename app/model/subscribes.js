@@ -73,21 +73,22 @@ module.exports = app => {
 	}
 
 	model.getByUserId = async function(userId) {
-		const list = await app.model.Subscribes.findAll({where:{userId}});
+		const sql = `select packages.*, subscribes.extra subscribeExtra, subscribes.createdAt joinAt, subscribes.state subscribeState 
+			from subscribes, packages 
+			where subscribes.packageId = packages.id and
+			subscribes.userId = :userId`;
+
+		const list = await app.model.query(sql, {
+			type: app.model.QueryTypes.SELECT,
+			replacements: {userId},
+		});
 		const packages = [];
 
 		for (let i = 0; i < list.length; i++) {
-			let subscribe = list[i].get ? list[i].get({plain:true}) : list[i];
-			let data = await app.model.Packages.findOne({where:{id:subscribe.packageId}});
-			//console.log(subscribe);
-			if (!data) continue;
-			data = data.get({plain: true});
-
+			let data = list[i].get ? list[i].get({plain:true}) : list[i];
 			data.lessons = await app.model.Packages.lessons(data.id);
-			data.learnedLessons = subscribe.extra.learnedLessons || [];
-			data.teachedLessons = subscribe.extra.teachedLessons || [];
-			data.isReward = subscribe.extra.isReward;
-			//data.lessons = subscribe.lessons;
+			data.learnedLessons = data.subscribeExtra.learnedLessons || [];
+			data.teachedLessons = data.subscribeExtra.teachedLessons || [];
 
 			packages.push(data);
 		}
