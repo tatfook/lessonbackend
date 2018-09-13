@@ -59,7 +59,7 @@ module.exports = app => {
 	//model.sync({force:true});
 	
 	model.getPackagesByUserId = async function(userId) {
-		const sql = `select packages.*, subscribes.createdAt joinAt 
+		const sql = `select packages.*, subscribes.createdAt joinAt, subscribes.state subscribeState 
 			from subscribes, packages 
 			where subscribes.packageId = packages.id and
 			subscribes.userId = :userId`;

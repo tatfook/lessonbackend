@@ -172,6 +172,8 @@ module.exports = app => {
 
 		learnRecord = learnRecord.get({plain:true});
 
+		await app.model.Subscribes.upsert({userId:studentId, packageId:data.packageId});
+
 		return learnRecord;
 	}
 
