@@ -52,7 +52,7 @@ class PayController extends Controller {
 			ctx.throw(400, "金额不对");
 		}
 
-		const subscribe = await ctx.model.Subscribes.findOne({where:{userId: user.id, packageId: package_.id}});
+		const subscribe = await ctx.model.Subscribes.findOne({where:{userId: user.id, packageId: package_.id, state:1}});
 		if (subscribe){
 			await ctx.model.Logs.create({text:"支付-课程包已购买"});
 			ctx.throw(400, "package already subscribe");
