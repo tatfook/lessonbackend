@@ -62,7 +62,7 @@ class PayController extends Controller {
 		const lockCoin = user.lockCoin + package_.coin;
 		await ctx.model.Users.update({lockCoin}, {where:{id:user.id}});
 
-		await ctx.model.Subscribes.create({
+		await ctx.model.Subscribes.upsert({
 			userId: user.id,
 			packageId: package_.id,
 			state: PACKAGE_SUBSCRIBE_STATE_BUY,
