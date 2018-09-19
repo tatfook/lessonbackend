@@ -74,6 +74,7 @@ describe('test/controller/skills.test.js', () => {
 		// 创建课堂
 		let classroom = await app.httpRequest().post("/classrooms").send({packageId:1, lessonId:1}).expect(200).then(res => res.body);
 		assert.equal(classroom.id,1);
+		console.log(classroom);
 
 		// 获取课堂
 		classroom = await app.httpRequest().get("/classrooms/1").expect(200).then(res => res.body);

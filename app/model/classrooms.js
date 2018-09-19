@@ -68,7 +68,7 @@ module.exports = app => {
 		let classroom = await app.model.Classrooms.create(params);
 		if (!classroom) return ;
 		classroom = classroom.get({plain:true});
-		classroom.key = _.padStart(_.toString(classroom.id), 6, "0") + _.random(100, 999);
+		classroom.key = _.padEnd(_.toString(classroom.id), 9, "" + _.random(10000000, 99999999));
 		await app.model.Classrooms.update(classroom, {where:{id:classroom.id}});
 		
 		const userId = classroom.userId;
