@@ -70,6 +70,10 @@ class PayController extends Controller {
 
 		this.success("OK");
 	}
+
+	create() {
+		return this.success("OK");
+	}
 }
 
 module.exports = PayController;
