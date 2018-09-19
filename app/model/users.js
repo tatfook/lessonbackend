@@ -85,7 +85,7 @@ module.exports = app => {
 				username,
 				coin: amount,
 			});
-			// 
+			 
 			//await app.model.Coins.create({
 				//userId,
 				//amount: amount,
@@ -108,6 +108,21 @@ module.exports = app => {
 		if (user.identify & USER_IDENTIFY_TEACHER) return true;
 
 		return false;
+	}
+
+	model.learn = async function(userId) {
+		const user = await this.getById(userId);
+		if (!user) return ;
+
+		const datestr = app.util.getDate().datestr;
+		const learn = user.extra.learn || {learnDayCount: 0, lastLearnDate:""};
+		user.extra.learn = learn;
+
+		if (datestr != learn.lastLearnDate) {
+			learn.learnDayCount = (learn.learnDayCount || 0) + 1;
+			learn.lastLearnDate = datestr;
+			await app.model.Users.update({extra: user.extra}, {where:{id:user.id}});
+		}
 	}
 
 	return model;
