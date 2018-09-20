@@ -160,7 +160,7 @@ module.exports = app => {
 		user.lockCoin = user.lockCoin + _package.rmb;
 		await app.model.Users.update({coin:user.coin, lockCoin: user.lockCoin}, {where:{id:userId}});
 
-		const result = await app.model.Subscribes.create({
+		const result = await app.model.Subscribes.upsert({
 			userId,
 			packageId: _package.id,
 			state: PACKAGE_SUBSCRIBE_STATE_BUY,
