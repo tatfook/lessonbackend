@@ -160,7 +160,7 @@ module.exports = app => {
 		user.lockCoin = user.lockCoin + _package.rmb;
 		await app.model.Users.update({coin:user.coin, lockCoin: user.lockCoin}, {where:{id:userId}});
 
-		const result = await app.model.Subscribes.upsert({
+		await app.model.Subscribes.upsert({
 			userId,
 			packageId: _package.id,
 			state: PACKAGE_SUBSCRIBE_STATE_BUY,
@@ -172,7 +172,7 @@ module.exports = app => {
 			//type: COIN_TYPE_SUBSCRIBE_PACKAGE,
 		//});
 
-		return {id:0, data: result.get({plain:true})};
+		return {id:0};
 	}
 
 	model.addTeachedLesson = async function(userId, packageId, lessonId) {
