@@ -6,21 +6,21 @@ describe('test/controller/skills.test.js', () => {
 		const lessons = app.model.Lessons;
 		const subjects = app.model.Subjects;
 		const skills = app.model.Skills;
-		await lessons.truncate();
-		await subjects.truncate();
-		await skills.truncate();
-		await app.model.LessonSkills.truncate();
-		await app.model.LearnRecords.truncate();
-		await app.model.UserLearnRecords.truncate();
-		await app.model.Packages.truncate();
-		await app.model.Subscribes.truncate();
-		await app.model.LessonRewards.truncate();
-		await app.model.PackageLessons.truncate();
-		await app.model.LessonContents.truncate();
-		await app.model.Teachers.truncate();
-		await app.model.TeacherCDKeys.truncate();
-		await app.model.Classrooms.truncate();
-		await app.model.Users.truncate();
+		await lessons.sync({force:true});
+		await subjects.sync({force:true});
+		await skills.sync({force:true});
+		await app.model.LessonSkills.sync({force:true});
+		await app.model.LearnRecords.sync({force:true});
+		await app.model.UserLearnRecords.sync({force:true});
+		await app.model.Packages.sync({force:true});
+		await app.model.Subscribes.sync({force:true});
+		await app.model.LessonRewards.sync({force:true});
+		await app.model.PackageLessons.sync({force:true});
+		await app.model.LessonContents.sync({force:true});
+		await app.model.Teachers.sync({force:true});
+		await app.model.TeacherCDKeys.sync({force:true});
+		await app.model.Classrooms.sync({force:true});
+		await app.model.Users.sync({force:true});
 
 		await app.httpRequest().get("/users").expect(200);
 
@@ -74,6 +74,7 @@ describe('test/controller/skills.test.js', () => {
 		// 创建课堂
 		let classroom = await app.httpRequest().post("/classrooms").send({packageId:1, lessonId:1}).expect(200).then(res => res.body);
 		assert.equal(classroom.id,1);
+		//console.log(classroom);
 
 		// 获取课堂
 		classroom = await app.httpRequest().get("/classrooms/1").expect(200).then(res => res.body);

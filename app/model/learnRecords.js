@@ -85,6 +85,10 @@ module.exports = app => {
 	}
 
 	model.createLearnRecord = async function(params) {
+		const userId = params.userId;
+
+		await app.model.Users.learn(userId);
+
 		let lr = await app.model.LearnRecords.create(params);
 		if (!lr) return console.log("create learn records failed", params);
 

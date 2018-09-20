@@ -84,4 +84,5 @@ module.exports = app => {
 
 	const pays = controller.pays;
 	router.post("pays", prefix + "pays/callback",  pays.callback);
+	router.resources(prefix + "pays", pays);
 }

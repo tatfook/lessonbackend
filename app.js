@@ -1,7 +1,10 @@
 
 const email = require("./app/core/email.js");
+const util = require("./app/core/util.js");
 
 module.exports = async (app) => {
+	app.util = util;
+
 	email(app);
 
 	//console.log("--------构建表-------");

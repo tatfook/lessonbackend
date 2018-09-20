@@ -178,7 +178,7 @@ class UsersController extends Controller {
 
 		if (result.id != 0) ctx.throw(400, result.message);
 		
-		return this.success(result.data);
+		return this.success("OK");
 	}
 
 	// 获取知识币变更列表

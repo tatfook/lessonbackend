@@ -218,7 +218,7 @@ class PackagesController extends Controller {
 
 		if (result.id != 0) ctx.throw(400, result.message);
 		
-		return this.success(result.data);
+		return this.success("OK");
 	}
 
 	async isSubscribe() {

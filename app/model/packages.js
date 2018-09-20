@@ -67,6 +67,10 @@ module.exports = app => {
 			defaultValue: 0,
 		},
 
+		auditAt: {
+			type: DATE,
+		},
+
 		extra: {
 			type: JSON,
 			defaultValue: {
@@ -95,7 +99,8 @@ module.exports = app => {
 	model.audit = async function(packageId, userId, state) {
 		if (state != PACKAGE_STATE_AUDIT_SUCCESS || !userId)  return;
 
-		await app.model.Subscribes.upsert({userId, packageId, state});
+		await app.model.Packages.update({auditAt: new Date()}, {where:{id:packageId}});
+		await app.model.Subscribes.upsert({userId, packageId});
 	}
 
 	model.addLesson = async function(userId, packageId, lessonId, lessonNo) {
