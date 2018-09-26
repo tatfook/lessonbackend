@@ -7,7 +7,7 @@ module.exports = (options, app) => {
 	const config = app.config.self;
 	return async function(ctx, next) {
 		if (config.debug) {
-			ctx.state.user = {userId:68, username:"wxaxiaoyao", roleId:10};
+			ctx.state.user = {userId:1, username:"wxaxiaoyao", roleId:10};
 			await next();
 			return ;
 		}

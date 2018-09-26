@@ -238,12 +238,20 @@ class BaseController extends Controller {
 		return this.getUser();
 	}
 
+	authenticated() {
+		return this.enauthenticated();
+	}
+
 	get queryOptions() {
 		return this.ctx.state.queryOptions
 	}
 
 	get model() {
 		return this.app.model;
+	}
+
+	throw(...args) {
+		return this.ctx.throw(...args);
 	}
 
 	ensureAdmin() {

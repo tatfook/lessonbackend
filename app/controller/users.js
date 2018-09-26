@@ -72,7 +72,9 @@ class UsersController extends Controller {
 
 		const params = ctx.request.body;
 
+		delete params.lockCoin;
 		delete params.coin;
+		delete params.bean;
 		delete params.identify;
 		delete params.username;
 
@@ -204,6 +206,21 @@ class UsersController extends Controller {
 		const list = await ctx.model.UserLearnRecords.getSkills(id);
 
 		this.success(list);
+	}
+
+	// 用户花费知识币和知识豆
+	async expense() {
+		const {userId} = this.enauthenticated();
+		const {coin, bean} = this.validate({coin:"int_optional", bean:"int_optional"});
+		
+		const user = await this.model.Users.getById(userId);
+		if (!user) this.throw(400);
+		if (user.bean && bean && user.bean >= bean) user.bean = user.bean - bean;
+		if (user.coin && coin && user.coin >= coin) user.coin = user.coin - coin;
+
+		await this.model.Users.update(User, {fields:["coin", "bean"], where:{id:userId}});
+
+		return this.success("OK");
 	}
 }
 
