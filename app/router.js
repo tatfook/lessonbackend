@@ -63,8 +63,8 @@ module.exports = app => {
 	router.put(prefix + "classrooms/:id/dismiss", classrooms.dismiss);
 
 	const learnRecords = controller.learnRecords;
-	router.get(prefix + "learnRecords/isReward", learnRecords.isReward);
-	router.post(prefix + "learnRecords/:id/reward", learnRecords.reward);
+	router.get(prefix + "learnRecords/reward", learnRecords.getReward);
+	router.post(prefix + "learnRecords/:id/reward", learnRecords.createReward);
 	router.resources( prefix + "learnRecords", learnRecords);
 
 	const subjects = controller.subjects;

@@ -32,9 +32,14 @@ module.exports = app => {
 			allowNull: false,
 		},
 
-		amount: {  // 返还金额
+		coin: {        // 奖励知识币数量
 			type: INTEGER,
 			defaultValue: 0,
+		},
+
+		bean: {        // 奖励知识豆数量
+			type: INTEGER,
+			defaultValue:0,
 		},
 
 		extra: {
@@ -60,29 +65,33 @@ module.exports = app => {
 
 	model.rewards = async function(userId, packageId, lessonId) {
 		const where = {userId, packageId, lessonId};
-
-		// 是否已领取
-		let data = await app.model.LessonRewards.findOne({where});
-		if (data) return 0;
+		let user = await app.model.Users.getById(userId);
+		if (!user) return;
 
 		// 是否学习完成
-		data = await app.model.UserLearnRecords.findOne({where});
-		if (!data) return 0;
+		let data = await app.model.UserLearnRecords.findOne({where});
+		if (!data) return;
 
-		let user = await app.model.Users.getById(userId);
-		if (!user) return 0;
-		if (user.lockCoin < 10) return 0;
-		const amount = _.random(10, user.lockCoin > 15 ? 15 : user.lockCoin);
-		
-		const lockCoin = user.lockCoin - amount;
+		// 是否已领取
+		let lessonReward = await app.model.LessonRewards.findOne({where});
+		lessonReward = lessonReward ? lessonReward.get({plain:true}) : {userId, packageId, lessonId, coin:0, bean:0};
+
+		let beanCount = lessonReward.bean ? 0 : 10; // 已奖励则不再奖励
+		let coinCount = (user.lockCoin < 10 || lessonReward.coin) ? 0 : _.random(10, user.lockCoin > 15 ? 15 : user.lockCoin);
+
+		user.lockCoin = user.lockCoin - coinCount;
+		user.coin = user.coin + coinCount;
+		user.bean = user.bean + beanCount;
+		lessonReward.coin = lessonReward.coin + coinCount;
+		lessonReward.bean = lessonReward.bean + beanCount;
 
 		// 创建返还记录
-		await app.model.LessonRewards.create({userId, packageId, lessonId, amount});
+		await app.model.LessonRewards.upsert(lessonReward);
 
 		// 扣除用户可返还余额
-		await app.model.Users.update({lockCoin}, {where: {id:userId}});
+		await app.model.Users.update(user, {fields:["lockCoin", "coin", "bean"], where: {id:userId}});
 
-		return amount;
+		return {coin:coinCount, bean: beanCount};
 	}
 
 	return model;

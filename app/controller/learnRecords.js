@@ -100,7 +100,7 @@ class LearnRecordsController extends Controller {
 		return this.success(result);
 	}
 
-	async reward() {
+	async createReward() {
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -108,28 +108,26 @@ class LearnRecordsController extends Controller {
 		const userId = this.getUser().userId;
 
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
-		const amount = await ctx.model.LessonRewards.rewards(userId, lr.packageId, lr.lessonId);
-		return this.success(amount);
+		const data = await ctx.model.LessonRewards.rewards(userId, lr.packageId, lr.lessonId);
+		return this.success(data || {coin:0, bean:0});
 	}
 
-	async isReward() {
+	async getReward() {
 		const {ctx} = this;
 		this.enauthenticated();
 		const userId = this.getUser().userId;
 		const params = this.validate({"packageId": "int", "lessonId": "int"});
-		console.log(params);
 
-		const data = await this.model.LessonRewards.findOne({
+		let data = await this.model.LessonRewards.findOne({
 			where: {
 				userId,
 				packageId: params.packageId,
 				lessonId: params.lessonId,
 			}
 		});
+		data = data ? data.get({plain:true}) : {coin:0, bean:0};
 
-		const ok = data ? true : false;
-
-		return this.success(ok);
+		return this.success(data);
 	}
 }
 
