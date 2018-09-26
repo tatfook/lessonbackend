@@ -94,29 +94,28 @@ class UsersController extends Controller {
 	// 成为老师
 	async teacher() {
 		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-		const params = ctx.request.body;
-
-		ctx.validate({
+		const {id, key, school} = this.validate({
+			id: "int",
 			key: "string",
-		}, params);
+			school: "string_optional"
+		});
 		
-		const user = await ctx.model.Users.getById(id);
-		if (!user) ctx.throw(400, "arg error");
-		if (user.identify & USER_IDENTIFY_TEACHER) ctx.throw(400, "已经是老师");
+		const user = await this.model.Users.getById(id);
+		if (!user) this.throw(400, "arg error");
+		if (user.identify & USER_IDENTIFY_TEACHER) this.throw(400, "已经是老师");
 
-		let isOk = await ctx.model.TeacherCDKeys.useKey(params.key, id);
-		if (!isOk) ctx.throw(400, "key invalid");
+		let isOk = await this.model.TeacherCDKeys.useKey(key, id);
+		if (!isOk) this.throw(400, "key invalid");
 
 		user.identify = (user.identify | USER_IDENTIFY_TEACHER) & (~USER_IDENTIFY_APPLY_TEACHER);
-		await ctx.model.Teachers.create({
+		await this.model.Teachers.create({
 			userId:id,
-			key:params.key,
+			key:key,
 			privilege: TEACHER_PRIVILEGE_TEACH,
+			school,
 		});
 
-		const result = await ctx.model.Users.update(user, {where:{id}});
+		const result = await this.model.Users.update(user, {where:{id}});
 
 		return this.success(result);
 	}
