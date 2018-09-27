@@ -1,5 +1,9 @@
 
 const _ = require("lodash");
+const {
+	TRADE_TYPE_BEAN,
+	TRADE_TYPE_COIN,
+} = require("../core/consts.js");
 
 module.exports = app => {
 	const {
@@ -90,6 +94,12 @@ module.exports = app => {
 
 		// 扣除用户可返还余额
 		await app.model.Users.update(user, {fields:["lockCoin", "coin", "bean"], where: {id:userId}});
+
+		if (beanCount) {
+			const lesson = await app.model.Lessons.getById(lessonId);
+			const decription = "课程" + lesson.lessonName + "学习完成";
+			await app.model.Trades.create({userId,type: TRADE_TYPE_BEAN, amount: beanCount, description });
+		}
 
 		return {coin:coinCount, bean: beanCount};
 	}

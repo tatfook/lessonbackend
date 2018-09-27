@@ -14,10 +14,12 @@ const {
 	PACKAGE_SUBSCRIBE_STATE_BUY,
 
 	TEACHER_PRIVILEGE_TEACH,
+
+	TRADE_TYPE_BEAN,
+	TRADE_TYPE_COIN,
 } = consts;
 
 class UsersController extends Controller {
-
 	token() {
 		const env = this.app.config.env;
 		this.enauthenticated();
@@ -210,12 +212,18 @@ class UsersController extends Controller {
 	// 用户花费知识币和知识豆
 	async expense() {
 		const {userId} = this.enauthenticated();
-		const {coin, bean} = this.validate({coin:"int_optional", bean:"int_optional"});
+		const {coin, bean, description} = this.validate({coin:"int_optional", bean:"int_optional", description:"string_optional"});
 		
 		const user = await this.model.Users.getById(userId);
 		if (!user) this.throw(400);
-		if (user.bean && bean && user.bean >= bean) user.bean = user.bean - bean;
-		if (user.coin && coin && user.coin >= coin) user.coin = user.coin - coin;
+		if (user.bean && bean && user.bean >= bean && bean > 0) {
+			user.bean = user.bean - bean;
+			await this.model.Trades.create({userId, type: TRADE_TYPE_BEAN, amount: bean * -1, description});
+		} 
+		if (user.coin && coin && user.coin >= coin && coin > 0){
+			user.coin = user.coin - coin;
+			await this.model.Trades.create({userId, type: TRADE_TYPE_COIN, amount: coin * -1, description});
+		} 
 
 		await this.model.Users.update(User, {fields:["coin", "bean"], where:{id:userId}});
 
