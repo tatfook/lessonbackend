@@ -216,6 +216,7 @@ class UsersController extends Controller {
 		
 		const user = await this.model.Users.getById(userId);
 		if (!user) this.throw(400);
+		if ((bean && bean < user.bean) || (coin && coin < user.coin)) this.throw(400, "余额不足");
 		if (user.bean && bean && user.bean >= bean && bean > 0) {
 			user.bean = user.bean - bean;
 			await this.model.Trades.create({userId, type: TRADE_TYPE_BEAN, amount: bean * -1, description});
