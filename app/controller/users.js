@@ -225,7 +225,7 @@ class UsersController extends Controller {
 			await this.model.Trades.create({userId, type: TRADE_TYPE_COIN, amount: coin * -1, description});
 		} 
 
-		await this.model.Users.update(User, {fields:["coin", "bean"], where:{id:userId}});
+		await this.model.Users.update(user, {fields:["coin", "bean"], where:{id:userId}});
 
 		return this.success("OK");
 	}
