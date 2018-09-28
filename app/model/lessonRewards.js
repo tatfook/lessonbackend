@@ -97,7 +97,7 @@ module.exports = app => {
 
 		if (beanCount) {
 			const lesson = await app.model.Lessons.getById(lessonId);
-			const decription = "课程" + lesson.lessonName + "学习完成";
+			const description = "课程" + lesson.lessonName + "学习完成";
 			await app.model.Trades.create({userId,type: TRADE_TYPE_BEAN, amount: beanCount, description });
 		}
 

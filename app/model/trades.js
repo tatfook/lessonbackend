@@ -32,6 +32,7 @@ module.exports = app => {
 
 		description: {
 			type:STRING,
+			defaultValue: "",
 		},
 
 		extra: {     // 额外数据
