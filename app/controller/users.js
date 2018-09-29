@@ -141,7 +141,7 @@ class UsersController extends Controller {
 			packageState: "int_optional",
 		});
 
-		const list = await ctx.model.Subscribes.getByUserId(id, packageState);
+		const list = await this.model.Subscribes.getByUserId(id, packageState);
 
 		return this.success(list);
 	}
