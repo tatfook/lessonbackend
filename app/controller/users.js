@@ -135,11 +135,13 @@ class UsersController extends Controller {
 
 	// 用户课程包
 	async getSubscribes() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-		
-		const list = await ctx.model.Subscribes.getByUserId(id);
+		const {userId} = this.enauthenticated();
+		const {id, packageState} = this.validate({
+			id:'int',
+			packageState: "int_optional",
+		});
+
+		const list = await ctx.model.Subscribes.getByUserId(id, packageState);
 
 		return this.success(list);
 	}
