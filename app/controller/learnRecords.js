@@ -52,6 +52,12 @@ class LearnRecordsController extends Controller {
 			state: 'int',
 		}, params);
 
+		const data = await ctx.model.Subscribes.findOne({where:{
+			userId,
+			packageId: params.packageId,
+		}});
+		if (!data) this.throw(500, "未购买课程包");
+
 		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
 
 		return this.success(learnRecord);
