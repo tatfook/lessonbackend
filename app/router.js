@@ -14,6 +14,7 @@ module.exports = app => {
 
 	const users = controller.users;
 	router.get(prefix + "users/token", users.token);
+	router.post(prefix + "users/expense", users.expense);
 	router.resources("users", prefix + "users", users);
 	router.post(prefix + "users/:id/applyTeacher", users.applyTeacher);
 	router.post(prefix + "users/:id/teacher", users.teacher);
@@ -63,8 +64,8 @@ module.exports = app => {
 	router.put(prefix + "classrooms/:id/dismiss", classrooms.dismiss);
 
 	const learnRecords = controller.learnRecords;
-	router.get(prefix + "learnRecords/isReward", learnRecords.isReward);
-	router.post(prefix + "learnRecords/:id/reward", learnRecords.reward);
+	router.get(prefix + "learnRecords/reward", learnRecords.getReward);
+	router.post(prefix + "learnRecords/:id/reward", learnRecords.createReward);
 	router.resources( prefix + "learnRecords", learnRecords);
 
 	const subjects = controller.subjects;
@@ -85,4 +86,7 @@ module.exports = app => {
 	const pays = controller.pays;
 	router.post("pays", prefix + "pays/callback",  pays.callback);
 	router.resources(prefix + "pays", pays);
+
+	const trades = controller.trades;
+	router.resources(prefix + "trades", trades);
 }

@@ -35,6 +35,10 @@ module.exports = app => {
 			defaultValue: 0,
 		},
 
+		school: {
+			type: STRING(128),
+		},
+
 		extra: {     // 额外数据
 			type: JSON,
 			defaultValue:{},

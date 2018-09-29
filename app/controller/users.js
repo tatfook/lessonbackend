@@ -14,10 +14,12 @@ const {
 	PACKAGE_SUBSCRIBE_STATE_BUY,
 
 	TEACHER_PRIVILEGE_TEACH,
+
+	TRADE_TYPE_BEAN,
+	TRADE_TYPE_COIN,
 } = consts;
 
 class UsersController extends Controller {
-
 	token() {
 		const env = this.app.config.env;
 		this.enauthenticated();
@@ -72,7 +74,9 @@ class UsersController extends Controller {
 
 		const params = ctx.request.body;
 
+		delete params.lockCoin;
 		delete params.coin;
+		delete params.bean;
 		delete params.identify;
 		delete params.username;
 
@@ -92,29 +96,28 @@ class UsersController extends Controller {
 	// 成为老师
 	async teacher() {
 		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-		const params = ctx.request.body;
-
-		ctx.validate({
+		const {id, key, school} = this.validate({
+			id: "int",
 			key: "string",
-		}, params);
+			school: "string_optional"
+		});
 		
-		const user = await ctx.model.Users.getById(id);
-		if (!user) ctx.throw(400, "arg error");
-		if (user.identify & USER_IDENTIFY_TEACHER) ctx.throw(400, "已经是老师");
+		const user = await this.model.Users.getById(id);
+		if (!user) this.throw(400, "arg error");
+		if (user.identify & USER_IDENTIFY_TEACHER) this.throw(400, "已经是老师");
 
-		let isOk = await ctx.model.TeacherCDKeys.useKey(params.key, id);
-		if (!isOk) ctx.throw(400, "key invalid");
+		let isOk = await this.model.TeacherCDKeys.useKey(key, id);
+		if (!isOk) this.throw(400, "key invalid");
 
 		user.identify = (user.identify | USER_IDENTIFY_TEACHER) & (~USER_IDENTIFY_APPLY_TEACHER);
-		await ctx.model.Teachers.create({
+		await this.model.Teachers.create({
 			userId:id,
-			key:params.key,
+			key:key,
 			privilege: TEACHER_PRIVILEGE_TEACH,
+			school,
 		});
 
-		const result = await ctx.model.Users.update(user, {where:{id}});
+		const result = await this.model.Users.update(user, {where:{id}});
 
 		return this.success(result);
 	}
@@ -132,11 +135,13 @@ class UsersController extends Controller {
 
 	// 用户课程包
 	async getSubscribes() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-		
-		const list = await ctx.model.Subscribes.getByUserId(id);
+		const {userId} = this.enauthenticated();
+		const {id, packageState} = this.validate({
+			id:'int',
+			packageState: "int_optional",
+		});
+
+		const list = await this.model.Subscribes.getByUserId(id, packageState);
 
 		return this.success(list);
 	}
@@ -204,6 +209,28 @@ class UsersController extends Controller {
 		const list = await ctx.model.UserLearnRecords.getSkills(id);
 
 		this.success(list);
+	}
+
+	// 用户花费知识币和知识豆
+	async expense() {
+		const {userId} = this.enauthenticated();
+		const {coin, bean, description} = this.validate({coin:"int_optional", bean:"int_optional", description:"string_optional"});
+		
+		const user = await this.model.Users.getById(userId);
+		if (!user) this.throw(400);
+		if ((bean && bean > user.bean) || (coin && coin > user.coin)) this.throw(400, "余额不足");
+		if (user.bean && bean && user.bean >= bean && bean > 0) {
+			user.bean = user.bean - bean;
+			await this.model.Trades.create({userId, type: TRADE_TYPE_BEAN, amount: bean * -1, description});
+		} 
+		if (user.coin && coin && user.coin >= coin && coin > 0){
+			user.coin = user.coin - coin;
+			await this.model.Trades.create({userId, type: TRADE_TYPE_COIN, amount: coin * -1, description});
+		} 
+
+		await this.model.Users.update(user, {fields:["coin", "bean"], where:{id:userId}});
+
+		return this.success("OK");
 	}
 }
 
