@@ -24,7 +24,7 @@ module.exports = (options, app) => {
 		}
 
 		if (!user) {
-			user = await axios.get(config.keepworkBaseURL + "user/tokeninfo", {headers})
+			user = await axios.get(config.tokenUrl, {headers})
 				.then(res => res.data)
 				.catch(e => {console.log(e); return undefined;});
 			if (user && user.userId) {
