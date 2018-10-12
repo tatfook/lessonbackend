@@ -86,6 +86,11 @@ module.exports = app => {
 
 	//model.sync({force:true});
 	
+	model.afterCreate(async (inst) => {
+		inst = inst.get({plain:true});
+		await app.api.packagesUpsert(inst);
+	});
+
 	model.getById = async function(id, userId) {
 		const where = {id};
 
