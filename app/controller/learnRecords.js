@@ -67,8 +67,6 @@ class LearnRecordsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		const params = ctx.request.body || {};
 		if (!id) ctx.throw(400, "id invalid");
-
-		if (id) this.enauthenticated();
 		const userId = this.getUser().userId || 0;
 
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
