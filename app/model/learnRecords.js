@@ -87,13 +87,15 @@ module.exports = app => {
 	model.createLearnRecord = async function(params) {
 		const userId = params.userId;
 
-		await app.model.Users.learn(userId);
+		if (userId) {
+			await app.model.Users.learn(userId);
+		}
 
 		let lr = await app.model.LearnRecords.create(params);
 		if (!lr) return console.log("create learn records failed", params);
 
 		lr = lr.get({plain:true});
-		if (lr.state == LEARN_RECORD_STATE_FINISH) {
+		if (lr.userId && lr.state == LEARN_RECORD_STATE_FINISH) {
 			await this.learnFinish(params);
 		}
 
@@ -118,7 +120,7 @@ module.exports = app => {
 	
 		await app.model.LearnRecords.update(lr, {where});
 
-		if (params.state == LEARN_RECORD_STATE_FINISH) {
+		if (lr.userId && params.state == LEARN_RECORD_STATE_FINISH) {
 			await this.learnFinish(lr);
 			await app.model.Subscribes.addLearnedLesson(lr.userId, lr.packageId, lr.lessonId);
 		}

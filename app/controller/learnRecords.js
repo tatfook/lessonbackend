@@ -40,9 +40,7 @@ class LearnRecordsController extends Controller {
 		const {ctx} = this;
 		const params = ctx.request.body;
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-
+		const userId = this.getUser().userId || 0;
 		params.userId = userId;
 
 		ctx.validate({
@@ -56,6 +54,7 @@ class LearnRecordsController extends Controller {
 			userId,
 			packageId: params.packageId,
 		}});
+
 		if (!data) this.throw(500, "未购买课程包");
 
 		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
@@ -69,8 +68,8 @@ class LearnRecordsController extends Controller {
 		const params = ctx.request.body || {};
 		if (!id) ctx.throw(400, "id invalid");
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		if (id) this.enauthenticated();
+		const userId = this.getUser().userId || 0;
 
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
 		if (!lr) ctx.throw(400, "args error");
