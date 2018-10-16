@@ -77,7 +77,7 @@ module.exports = app => {
 		const userExtra = user.extra || {};
 		_.merge(userExtra, extra);
 
-		await app.model.Users.update({extra}, {where:{id:user.id}});
+		await app.model.Users.update({extra: userExtra}, {where:{id:user.id}});
 	}
 
 	model.getById = async function(userId, username) {

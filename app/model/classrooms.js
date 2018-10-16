@@ -158,6 +158,7 @@ module.exports = app => {
 		if (studentId) {
 			// 设置用户当前课堂id
 			await app.model.Users.updateExtra(studentId, {classroomId});
+
 			learnRecord = await app.model.LearnRecords.findOne({where: {classroomId,userId: studentId}});
 			if (!learnRecord) learnRecord = await app.model.LearnRecords.create(learnRecordData);
 
