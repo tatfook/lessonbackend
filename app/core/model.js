@@ -11,28 +11,43 @@ module.exports = app => {
 	async function getList(options) {
 		const models = {"packages": "Packages"};
 		const {model, where} = options;
-	
-		if (!models[model]) return [];
+		const tableName = model.getTableName();
+		const modelName = models[tableName];
 
-		const list = await app.model[models[model]].findAll({where});
+		if (!modelName) return [];
+
+		const list = await app.model[modelName].findAll({where});
 
 		_.each(list, (o, i) => list[i] = o.get ? o.get({plain:true}) : o);
 
 		return list;
 	}
 
+	app.model.afterCreate(async (inst) => {
+		const cls = inst.constructor;
+		const tableName = cls.getTableName();
+		
+		inst = inst.get({plain:true});
+		await app.api[tableName + "Upsert"](inst);
+	});
+
 	app.model.afterBulkUpdate(async (options) => {
+		const {model} = options;
+		const tableName = model.getTableName();
 		const list = await getList(options);
 
 		for (let i = 0; i < list.length; i++) {
-			await app.api[model + "Upsert"](inst);
+			await app.api[tableName + "Upsert"](list[i]);
 		}
 	});
 
 	app.model.beforeBulkDestroy(async (options) => {
+		const {model} = options;
+		const tableName = model.getTableName();
 		const list = await getList(options);
 		for (let i = 0; i < list.length; i++) {
-			await app.api[model + "Destroy"](inst);
+			await app.api[tableName + "Destroy"](list[i]);
 		}
 	});
+
 }
