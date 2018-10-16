@@ -84,7 +84,8 @@ module.exports = app => {
 		let data = await app.model.Users.findOne({where: {id:userId}});
 
 		const amount = 0;
-		if (!data) {
+		if (!data && userId) {
+			console.log(userId, username);
 			data = await app.model.Users.create({
 				id: userId,
 				username,
