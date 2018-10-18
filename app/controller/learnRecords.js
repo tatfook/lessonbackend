@@ -12,13 +12,13 @@ class LearnRecordsController extends Controller {
 	// get
 	async index() {
 		const {ctx} = this;
-	
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		const query = this.validate();
+		const {userId} = this.authenticated();
+		query.userId = userId;
 
-		const list = await ctx.model.LearnRecords.findAndCount({where: {userId}});
+		const result = await this.model.LearnRecords.findAndCount({...this.queryOptions, where:query});
 
-		return this.success(list);
+		return this.success(result);
 	}
 
 	async show() {
