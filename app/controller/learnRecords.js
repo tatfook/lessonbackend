@@ -12,13 +12,13 @@ class LearnRecordsController extends Controller {
 	// get
 	async index() {
 		const {ctx} = this;
-	
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		const query = this.validate();
+		const {userId} = this.authenticated();
+		query.userId = userId;
 
-		const list = await ctx.model.LearnRecords.findAndCount({where: {userId}});
+		const result = await this.model.LearnRecords.findAndCount({...this.queryOptions, where:query});
 
-		return this.success(list);
+		return this.success(result);
 	}
 
 	async show() {
@@ -40,9 +40,7 @@ class LearnRecordsController extends Controller {
 		const {ctx} = this;
 		const params = ctx.request.body;
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-
+		const userId = this.getUser().userId || 0;
 		params.userId = userId;
 
 		ctx.validate({
@@ -56,6 +54,7 @@ class LearnRecordsController extends Controller {
 			userId,
 			packageId: params.packageId,
 		}});
+
 		if (!data) this.throw(500, "未购买课程包");
 
 		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
@@ -68,9 +67,7 @@ class LearnRecordsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		const params = ctx.request.body || {};
 		if (!id) ctx.throw(400, "id invalid");
-
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		const userId = this.getUser().userId || 0;
 
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
 		if (!lr) ctx.throw(400, "args error");

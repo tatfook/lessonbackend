@@ -58,8 +58,23 @@ module.exports = app => {
 
 	//model.sync({force:true});
 	
-	model.getPackagesByUserId = async function(userId, packageState) {
-		let sql = `select packages.*, subscribes.createdAt joinAt, subscribes.state subscribeState 
+	model.getPackagesByUserId = async function(userId) {
+		const sql = `select packages.*, subscribes.createdAt joinAt, subscribes.state subscribeState 
+			from subscribes, packages 
+			where subscribes.packageId = packages.id and
+			subscribes.userId = :userId`;
+
+
+		const list = await app.model.query(sql, {
+			type: app.model.QueryTypes.SELECT,
+			replacements: {userId},
+		});
+
+		return list;
+	}
+
+	model.getByUserId = async function(userId, packageState) {
+		let sql = `select packages.*, subscribes.extra subscribeExtra, subscribes.createdAt joinAt, subscribes.state subscribeState 
 			from subscribes, packages 
 			where subscribes.packageId = packages.id and
 			subscribes.userId = :userId`;
@@ -71,20 +86,6 @@ module.exports = app => {
 		const list = await app.model.query(sql, {
 			type: app.model.QueryTypes.SELECT,
 			replacements: {userId, packageState},
-		});
-
-		return list;
-	}
-
-	model.getByUserId = async function(userId) {
-		const sql = `select packages.*, subscribes.extra subscribeExtra, subscribes.createdAt joinAt, subscribes.state subscribeState 
-			from subscribes, packages 
-			where subscribes.packageId = packages.id and
-			subscribes.userId = :userId`;
-
-		const list = await app.model.query(sql, {
-			type: app.model.QueryTypes.SELECT,
-			replacements: {userId},
 		});
 		const packages = [];
 

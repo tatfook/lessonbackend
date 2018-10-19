@@ -116,13 +116,14 @@ class ClassroomsController extends Controller {
 			key:"string",
 		}, params);
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		const userId = this.getUser().userId || 0;
 		
-		const result = await ctx.model.Classrooms.join(userId, params.key);
-		if (!result) ctx.throw(400, "key invalid");
+		const data = await ctx.model.Classrooms.join(userId, params.key);
+		if (!data) ctx.throw(400, "key invalid");
 		
-		return this.success(result);
+		if (!userId) data.token = this.app.util.jwt_encode({userId:0, username:"匿名用户"}, this.app.config.self.secret, 3600 * 24);
+
+		return this.success(data);
 	}
 
 	async quit() {
