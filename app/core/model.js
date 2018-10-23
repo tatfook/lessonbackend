@@ -8,8 +8,9 @@ module.exports = app => {
 		//console.log("--------");
 	//});
 	
+	const models = {"packages": "Packages"};
+
 	async function getList(options) {
-		const models = {"packages": "Packages"};
 		const {model, where} = options;
 		const tableName = model.getTableName();
 		const modelName = models[tableName];
@@ -26,6 +27,8 @@ module.exports = app => {
 	app.model.afterCreate(async (inst) => {
 		const cls = inst.constructor;
 		const tableName = cls.getTableName();
+		const modelName = models[tableName];
+		if (!modelName) return;
 		
 		inst = inst.get({plain:true});
 		await app.api[tableName + "Upsert"](inst);
