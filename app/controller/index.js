@@ -6,7 +6,8 @@ const Controller = require("../core/baseController.js");
 class IndexController extends Controller {
 	// get
 	async index() {
-		this.success("hello world");
+		const count = await this.model.classrooms.getPackageWeekClassroomCount(56);
+		this.success(count);
 	}
 
 	show() {

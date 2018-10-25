@@ -71,6 +71,11 @@ module.exports = app => {
 			type: DATE,
 		},
 
+		lastClassroomCount: {
+			type: INTEGER,
+			defaultValue: 0,
+		},
+
 		extra: {
 			type: JSON,
 			defaultValue: {
@@ -175,6 +180,8 @@ module.exports = app => {
 	model.adminUpdateHook = async function(obj) {
 		await this.audit(obj.id, obj.userId, obj.state);
 	}
+
+	app.model.packages = model;
 
 	return model;
 }

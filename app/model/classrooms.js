@@ -81,6 +81,10 @@ module.exports = app => {
 		// 设置用户当前课堂id
 		await app.model.Users.update({extra}, {where:{id:userId}});
 
+		// 更新课程包周上课量
+		const lastClassroomCount = await this.getPackageWeekClassroomCount(classroom.packageId);
+		await app.model.packages.update({lastClassroomCount}, {id:classroom.packageId});
+
 		return classroom;
 	}
 
@@ -217,6 +221,23 @@ module.exports = app => {
 
 		return ;
 	}
+
+	// 获取课程包周上课量
+	model.getPackageWeekClassroomCount = async function(packageId) {
+		const curtime = (new Date()).getTime();	
+		const startTime = curtime - 1000 * 3600 * 24 * 7;
+
+		const count = await app.model.Classrooms.count({where:{
+			createdAt: {
+				[app.model.Op.gt]: new Date(startTime),
+			}
+		}});
+
+		return count;
+	}
+
+
+	app.model.classrooms = model;
 
 	return model;
 }
