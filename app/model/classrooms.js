@@ -132,8 +132,11 @@ module.exports = app => {
 			}
 		});
 
-		user.extra.classroomId = undefined;
-		await app.model.Users.update({extra:user.extra}, {where:{id:user.id}});
+		// 教师退出自己的课堂 不置当前课堂id
+		if (classroom.userId != studentId) {
+			user.extra.classroomId = undefined;
+			await app.model.Users.update({extra:user.extra}, {where:{id:user.id}});
+		}
 
 		return;
 	}
