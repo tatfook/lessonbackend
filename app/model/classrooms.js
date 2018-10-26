@@ -141,7 +141,7 @@ module.exports = app => {
 		return;
 	}
 
-	model.join = async function(studentId, key) {
+	model.join = async function(studentId, key, username) {
 		let data = await app.model.Classrooms.findOne({where:{key}});
 		if (!data) return;
 		data = data.get({plain:true});
@@ -156,6 +156,7 @@ module.exports = app => {
 			lessonId: data.lessonId,
 			userId: studentId,
 			state: LEARN_RECORD_STATE_START,
+			extra:{},
 		}
 		let learnRecord = null;
 		if (studentId) {
@@ -167,7 +168,16 @@ module.exports = app => {
 
 			await app.model.Subscribes.upsert({userId:studentId, packageId:data.packageId});
 		} else {
-			learnRecord = await app.model.LearnRecords.create(learnRecordData);
+			if (username) {
+				learnRecordData.extra.username = username;
+				const lrs = await app.model.LearnRecords.findAll({where:{classroomId}});
+				_.each(lrs, o => {
+					if ((o.extra || {}).username == username)learnRecord = o;
+				});
+			}
+			if (!learnRecord) {
+				learnRecord = await app.model.LearnRecords.create(learnRecordData);
+			}
 		}
 
 		learnRecord = learnRecord.get({plain:true});
