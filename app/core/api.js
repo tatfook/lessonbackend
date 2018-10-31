@@ -29,11 +29,14 @@ class Api  {
 		}
 
 		return axios.request(config)
-			.then(res => res.data)
+			.then(res => {
+				//console.log(res);
+				this.app.logger.debug(`请求:${url}成功`, res.config);
+			})
 			.catch(res => {
-				console.log(res);
+				console.log(res.response.status, res.response.data);
+				this.app.logger.debug(`请求:${url}失败`, res.responsestatus, res.response.data);
 			});
-
 	}
 
 	get gitConfig() {
