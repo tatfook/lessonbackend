@@ -113,6 +113,7 @@ class PackagesController extends Controller {
 		}
 
 		//await ctx.model.Packages.audit(pack.id, userId, pack.state);
+		await this.model.Subscribes.upsert({userId, packageId:pack.id});
 
 		this.success(pack);
 	}
