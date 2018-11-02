@@ -3,6 +3,11 @@ const consts = require("../core/consts.js");
 const { 
 	LEARN_RECORD_STATE_START,
 	LEARN_RECORD_STATE_FINISH,
+
+	PACKAGE_STATE_UNAUDIT,
+	PACKAGE_STATE_AUDITING,
+	PACKAGE_STATE_AUDIT_SUCCESS,
+	PACKAGE_STATE_AUDIT_FAILED,
 } = consts;
 
 const _ = require("lodash");
@@ -111,6 +116,9 @@ class LearnRecordsController extends Controller {
 		const userId = this.getUser().userId;
 
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
+		const pack = await ctx.model.Packages.getById(lr.packageId);
+		if (!pack || pack.state != PACKAGE_STATE_AUDIT_SUCCESS) return this.success({coin:0, bean:0});
+
 		const data = await ctx.model.LessonRewards.rewards(userId, lr.packageId, lr.lessonId);
 		return this.success(data || {coin:0, bean:0});
 	}
@@ -121,6 +129,9 @@ class LearnRecordsController extends Controller {
 		const userId = this.getUser().userId;
 		const params = this.validate({"packageId": "int", "lessonId": "int"});
 
+		const pack = await ctx.model.Packages.getById(params.packageId);
+		if (!pack || pack.state != PACKAGE_STATE_AUDIT_SUCCESS) return this.success({coin:10, bean:10});
+		
 		let data = await this.model.LessonRewards.findOne({
 			where: {
 				userId,
