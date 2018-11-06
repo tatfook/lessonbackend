@@ -263,7 +263,7 @@ class BaseController extends Controller {
 
 	isAuthenticated() {
 		const user = this.ctx.state.user;
-		if (user && user.userId) return true;
+		if (user && user.userId != undefined) return true;
 
 		return false;
 	}

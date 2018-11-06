@@ -68,7 +68,7 @@ module.exports = app => {
 		let classroom = await app.model.Classrooms.create(params);
 		if (!classroom) return ;
 		classroom = classroom.get({plain:true});
-		classroom.key = _.padEnd(_.toString(classroom.id), 9, "" + _.random(10000000, 99999999));
+		classroom.key = _.padEnd(_.toString(classroom.id), 6, "" + _.random(10000000, 99999999));
 		await app.model.Classrooms.update(classroom, {where:{id:classroom.id}});
 		
 		const userId = classroom.userId;
@@ -136,47 +136,56 @@ module.exports = app => {
 			}
 		});
 
-		user.extra.classroomId = undefined;
-		await app.model.Users.update({extra:user.extra}, {where:{id:user.id}});
+		// 教师退出自己的课堂 不置当前课堂id
+		if (classroom.userId != studentId) {
+			user.extra.classroomId = undefined;
+			await app.model.Users.update({extra:user.extra}, {where:{id:user.id}});
+		}
 
 		return;
 	}
 
-	model.join = async function(studentId, key) {
+	model.join = async function(studentId, key, username) {
 		let data = await app.model.Classrooms.findOne({where:{key}});
-
 		if (!data) return;
-
 		data = data.get({plain:true});
 
 		const classroomId = data.id;
-
+		const lessonId = data.lessonId;
 		// 课程未开始或结束
 		if (data.state != CLASSROOM_STATE_USING) return ;
+		const learnRecordData = {
+			classroomId,
+			packageId: data.packageId,
+			lessonId: data.lessonId,
+			userId: studentId,
+			state: LEARN_RECORD_STATE_START,
+			extra:{},
+		}
+		let learnRecord = null;
+		if (studentId) {
+			// 设置用户当前课堂id
+			await app.model.Users.updateExtra(studentId, {classroomId});
 
-		// 设置用户当前课堂id
-		await app.model.Users.updateExtra(studentId, {classroomId});
+			learnRecord = await app.model.LearnRecords.findOne({where: {classroomId,userId: studentId}});
+			if (!learnRecord) learnRecord = await app.model.LearnRecords.create(learnRecordData);
 
-		let learnRecord = await app.model.LearnRecords.findOne({
-			where: {
-				classroomId,
-				userId: studentId,
+			await app.model.Subscribes.upsert({userId:studentId, packageId:data.packageId});
+		} else {
+			if (username) {
+				learnRecordData.extra.username = username;
+				const lrs = await app.model.LearnRecords.findAll({where:{classroomId}});
+				_.each(lrs, o => {
+					if ((o.extra || {}).username == username)learnRecord = o;
+				});
 			}
-		});
-
-		if (!learnRecord) {
-			learnRecord = await app.model.LearnRecords.create({
-				classroomId,
-				packageId: data.packageId,
-				lessonId: data.lessonId,
-				userId: studentId,
-				state: LEARN_RECORD_STATE_START,
-			});
+			if (!learnRecord) {
+				learnRecord = await app.model.LearnRecords.create(learnRecordData);
+			}
 		}
 
 		learnRecord = learnRecord.get({plain:true});
-
-		await app.model.Subscribes.upsert({userId:studentId, packageId:data.packageId});
+		learnRecord.lesson = await app.model.Lessons.getById(lessonId);
 
 		return learnRecord;
 	}

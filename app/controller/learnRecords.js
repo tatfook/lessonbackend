@@ -3,6 +3,11 @@ const consts = require("../core/consts.js");
 const { 
 	LEARN_RECORD_STATE_START,
 	LEARN_RECORD_STATE_FINISH,
+
+	PACKAGE_STATE_UNAUDIT,
+	PACKAGE_STATE_AUDITING,
+	PACKAGE_STATE_AUDIT_SUCCESS,
+	PACKAGE_STATE_AUDIT_FAILED,
 } = consts;
 
 const _ = require("lodash");
@@ -12,13 +17,13 @@ class LearnRecordsController extends Controller {
 	// get
 	async index() {
 		const {ctx} = this;
-	
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		const query = this.validate();
+		const {userId} = this.authenticated();
+		query.userId = userId;
 
-		const list = await ctx.model.LearnRecords.findAndCount({where: {userId}});
+		const result = await this.model.LearnRecords.findAndCount({...this.queryOptions, where:query});
 
-		return this.success(list);
+		return this.success(result);
 	}
 
 	async show() {
@@ -40,9 +45,7 @@ class LearnRecordsController extends Controller {
 		const {ctx} = this;
 		const params = ctx.request.body;
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-
+		const userId = this.getUser().userId || 0;
 		params.userId = userId;
 
 		ctx.validate({
@@ -56,6 +59,7 @@ class LearnRecordsController extends Controller {
 			userId,
 			packageId: params.packageId,
 		}});
+
 		if (!data) this.throw(500, "未购买课程包");
 
 		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
@@ -68,9 +72,7 @@ class LearnRecordsController extends Controller {
 		const id = _.toNumber(ctx.params.id);
 		const params = ctx.request.body || {};
 		if (!id) ctx.throw(400, "id invalid");
-
-		this.enauthenticated();
-		const userId = this.getUser().userId;
+		const userId = this.getUser().userId || 0;
 
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
 		if (!lr) ctx.throw(400, "args error");
@@ -114,6 +116,9 @@ class LearnRecordsController extends Controller {
 		const userId = this.getUser().userId;
 
 		const lr = await ctx.model.LearnRecords.getById(id, userId);
+		const pack = await ctx.model.Packages.getById(lr.packageId);
+		if (!pack || pack.state != PACKAGE_STATE_AUDIT_SUCCESS) return this.success({coin:0, bean:0});
+
 		const data = await ctx.model.LessonRewards.rewards(userId, lr.packageId, lr.lessonId);
 		return this.success(data || {coin:0, bean:0});
 	}
@@ -124,6 +129,9 @@ class LearnRecordsController extends Controller {
 		const userId = this.getUser().userId;
 		const params = this.validate({"packageId": "int", "lessonId": "int"});
 
+		const pack = await ctx.model.Packages.getById(params.packageId);
+		if (!pack || pack.state != PACKAGE_STATE_AUDIT_SUCCESS) return this.success({coin:10, bean:10});
+		
 		let data = await this.model.LessonRewards.findOne({
 			where: {
 				userId,
