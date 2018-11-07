@@ -1,7 +1,8 @@
 
 const axios = require("axios");
 const memoryCache = require('memory-cache');
-const jwt = require("jwt-simple");
+//const jwt = require("jwt-simple");
+const jwt = require("../core/jwt.js");
 
 module.exports = (options, app) => {
 	const config = app.config.self;
