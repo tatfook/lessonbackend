@@ -114,18 +114,22 @@ class Api  {
 	}
 
 	async packagesUpsert(inst) {
-		return this.curl('post', `/packages/${inst.id}/upsert`, {
-		//return await this.curl('post', `/projects/${inst.id}/upsert`, {
-			id: inst.id,
-			title: inst.packageName,
-			description: inst.description,
-			age_min: inst.minAge,
-			age_max: inst.maxAge,
-			cover: inst.extra.coverUrl,
-			created_time: inst.createdAt,
-			updated_time: inst.updatedAt,
-			recent_view: inst.lastClassroomCount,
-		}, this.esConfig);
+		if (inst.state == 2) {
+			return this.curl('post', `/packages/${inst.id}/upsert`, {
+			//return await this.curl('post', `/projects/${inst.id}/upsert`, {
+				id: inst.id,
+				title: inst.packageName,
+				description: inst.description,
+				age_min: inst.minAge,
+				age_max: inst.maxAge,
+				cover: inst.extra.coverUrl,
+				created_time: inst.createdAt,
+				updated_time: inst.updatedAt,
+				recent_view: inst.lastClassroomCount,
+			}, this.esConfig);
+			} else {
+				this.packagesDestroy(inst);
+			}
 	}
 
 	async usersDestroy({id}) {
