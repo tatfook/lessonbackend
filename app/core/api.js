@@ -30,11 +30,12 @@ class Api  {
 
 		return axios.request(config)
 			.then(res => {
-				//console.log(res);
-				this.app.logger.debug(`请求:${url}成功`, res.config);
+				console.log(`请求:${method} ${url}成功`, JSON.stringify(res.config));
+				this.app.logger.debug(`请求:${url}成功`, JSON.stringify(res.config));
+				return res.data;
 			})
-			.catch(res => {
-				console.log(res.response.status, res.response.data);
+		.catch(res => {
+			console.log(`请求:${method} ${url}成功`, res.response.status, res.response.data);
 				this.app.logger.debug(`请求:${url}失败`, res.responsestatus, res.response.data);
 			});
 	}
@@ -114,6 +115,7 @@ class Api  {
 	}
 
 	async packagesUpsert(inst) {
+		//console.log(inst);
 		if (inst.state == 2) {
 			return this.curl('post', `/packages/${inst.id}/upsert`, {
 			//return await this.curl('post', `/projects/${inst.id}/upsert`, {
@@ -127,9 +129,9 @@ class Api  {
 				updated_time: inst.updatedAt,
 				recent_view: inst.lastClassroomCount,
 			}, this.esConfig);
-			} else {
-				this.packagesDestroy(inst);
-			}
+		} else {
+			this.packagesDestroy(inst);
+		}
 	}
 
 	async usersDestroy({id}) {

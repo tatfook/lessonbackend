@@ -28,6 +28,7 @@ module.exports = app => {
 		const cls = inst.constructor;
 		const tableName = cls.getTableName();
 		const modelName = models[tableName];
+		//console.log("------------", tableName, modelName);
 		if (!modelName) return;
 		
 		inst = inst.get({plain:true});
@@ -39,6 +40,7 @@ module.exports = app => {
 		const tableName = model.getTableName();
 		const list = await getList(options);
 
+		//console.log("------------");
 		for (let i = 0; i < list.length; i++) {
 			await app.api[tableName + "Upsert"](list[i]);
 		}
