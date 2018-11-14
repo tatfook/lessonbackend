@@ -117,10 +117,12 @@ class Api  {
 	async packagesUpsert(inst) {
 		//console.log(inst);
 		if (inst.state == 2) {
+			const totalLessons = await this.app.model.PackageLessons.count({where:{packageId:inst.id}});
 			return this.curl('post', `/packages/${inst.id}/upsert`, {
 			//return await this.curl('post', `/projects/${inst.id}/upsert`, {
 				id: inst.id,
 				title: inst.packageName,
+				total_lessons: totalLessons, 
 				description: inst.description,
 				age_min: inst.minAge,
 				age_max: inst.maxAge,
