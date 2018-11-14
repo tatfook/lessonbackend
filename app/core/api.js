@@ -115,6 +115,9 @@ class Api  {
 	}
 
 	async packagesUpsert(inst) {
+		_.each(inst, (val, key) => {
+			if (val == null) delete inst[key];
+		});
 		//console.log(inst);
 		if (inst.state == 2) {
 			const totalLessons = await this.app.model.PackageLessons.count({where:{packageId:inst.id}});
