@@ -133,6 +133,7 @@ class Api  {
 				created_time: inst.createdAt,
 				updated_time: inst.updatedAt,
 				recent_view: inst.lastClassroomCount,
+				description: inst.description,
 			}, this.esConfig);
 		} else {
 			this.packagesDestroy(inst);
