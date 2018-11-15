@@ -1,7 +1,8 @@
 
 const axios = require("axios");
 const memoryCache = require('memory-cache');
-const jwt = require("jwt-simple");
+//const jwt = require("jwt-simple");
+const jwt = require("../core/jwt.js");
 
 module.exports = (options, app) => {
 	const config = app.config.self;
@@ -24,7 +25,7 @@ module.exports = (options, app) => {
 		}
 
 		if (!user) {
-			user = await axios.get(config.keepworkBaseURL + "user/tokeninfo", {headers})
+			user = await axios.get(config.tokenUrl, {headers})
 				.then(res => res.data)
 				.catch(e => {console.log(e); return undefined;});
 			if (user && user.userId) {
