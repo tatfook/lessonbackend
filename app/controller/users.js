@@ -30,6 +30,10 @@ class UsersController extends Controller {
 		return this.success(token);
 	}
 
+	tokeninfo() {
+		return this.success(this.enauthenticated());
+	}
+
 	// 获取当前用户  不存在则创建
 	async index() {
 		const {ctx} = this;

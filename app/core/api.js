@@ -30,11 +30,12 @@ class Api  {
 
 		return axios.request(config)
 			.then(res => {
-				//console.log(res);
-				this.app.logger.debug(`请求:${url}成功`, res.config);
+				console.log(`请求:${method} ${url}成功`, JSON.stringify(res.config));
+				this.app.logger.debug(`请求:${url}成功`, JSON.stringify(res.config));
+				return res.data;
 			})
-			.catch(res => {
-				console.log(res.response.status, res.response.data);
+		.catch(res => {
+			console.log(`请求:${method} ${url}成功`, res.response.status, res.response.data);
 				this.app.logger.debug(`请求:${url}失败`, res.responsestatus, res.response.data);
 			});
 	}
@@ -114,18 +115,29 @@ class Api  {
 	}
 
 	async packagesUpsert(inst) {
-		return this.curl('post', `/packages/${inst.id}/upsert`, {
-		//return await this.curl('post', `/projects/${inst.id}/upsert`, {
-			id: inst.id,
-			title: inst.packageName,
-			description: inst.description,
-			age_min: inst.minAge,
-			age_max: inst.maxAge,
-			cover: inst.extra.coverUrl,
-			created_time: inst.createdAt,
-			updated_time: inst.updatedAt,
-			recent_view: inst.lastClassroomCount,
-		}, this.esConfig);
+		_.each(inst, (val, key) => {
+			if (val == null) delete inst[key];
+		});
+		//console.log(inst);
+		if (inst.state == 2) {
+			const totalLessons = await this.app.model.PackageLessons.count({where:{packageId:inst.id}});
+			return this.curl('post', `/packages/${inst.id}/upsert`, {
+			//return await this.curl('post', `/projects/${inst.id}/upsert`, {
+				id: inst.id,
+				title: inst.packageName,
+				total_lessons: totalLessons, 
+				description: inst.description,
+				age_min: inst.minAge,
+				age_max: inst.maxAge,
+				cover: inst.extra.coverUrl,
+				created_time: inst.createdAt,
+				updated_time: inst.updatedAt,
+				recent_view: inst.lastClassroomCount,
+				description: inst.intro,
+			}, this.esConfig);
+		} else {
+			this.packagesDestroy(inst);
+		}
 	}
 
 	async usersDestroy({id}) {

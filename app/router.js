@@ -14,6 +14,7 @@ module.exports = app => {
 
 	const users = controller.users;
 	router.get(prefix + "users/token", users.token);
+	router.get(prefix + "users/tokeninfo", users.tokeninfo);
 	router.post(prefix + "users/expense", users.expense);
 	router.resources("users", prefix + "users", users);
 	router.post(prefix + "users/:id/applyTeacher", users.applyTeacher);
