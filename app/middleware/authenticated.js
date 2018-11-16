@@ -13,7 +13,7 @@ module.exports = (options, app) => {
 			return ;
 		}
 
-		const Authorization =  ctx.request.header["authorization"] || ("Bearer " + ctx.cookies.get("token"));
+		const Authorization =  ctx.request.header["authorization"] || ("Bearer " + (ctx.cookies.get("token") || "");
 		const token = Authorization.split(" ")[1] || "";
 		const headers = {"Authorization": Authorization};
 		let user = undefined;
@@ -24,7 +24,7 @@ module.exports = (options, app) => {
 			user = memoryCache.get(Authorization);
 		}
 
-		if (!user) {
+		if (!user && token.trim()) {
 			user = await axios.get(config.tokenUrl, {headers})
 				.then(res => res.data)
 				.catch(e => {console.log(e); return undefined;});
