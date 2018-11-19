@@ -83,7 +83,7 @@ module.exports = app => {
 
 		// 更新课程包周上课量
 		const lastClassroomCount = await this.getPackageWeekClassroomCount(classroom.packageId);
-		await app.model.packages.update({lastClassroomCount}, {id:classroom.packageId});
+		await app.model.packages.update({lastClassroomCount}, {where:{id:classroom.packageId}});
 
 		return classroom;
 	}
