@@ -57,7 +57,7 @@ module.exports = app => {
 	//model.sync({force:true});
 
 	model.getSkills = async function(userId) {
-		const sql = `select skillName, sum(score) as score from (select s.skillName, ls.score FROM userLearnRecords as ulr, lessonSkills as ls, skills as s where ulr.userId = :userId and ulr.lessonId = ls.lessonId and ls.skillId = s.id) as t group by skillName`;
+		const sql = `select skillName, enSkillName, sum(score) as score from (select s.skillName, s.enSkillName, ls.score FROM userLearnRecords as ulr, lessonSkills as ls, skills as s where ulr.userId = :userId and ulr.lessonId = ls.lessonId and ls.skillId = s.id) as t group by skillName`;
 		const list = await app.model.query(sql, {
 			type: app.model.QueryTypes.SELECT,
 			replacements: {
