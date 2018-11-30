@@ -12,10 +12,7 @@ class AdminsController extends Controller {
 
 		if (!this.resource) this.ctx.throw(400, "args error");
 
-		this.enauthenticated();
-		const roleId = this.getUser().roleId;
-		
-		if (roleId != 10) this.ctx.throw(400, "no privlige");
+		this.adminAuthenticated();
 
 		return;
 	}

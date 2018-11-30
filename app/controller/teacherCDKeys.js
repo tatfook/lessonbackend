@@ -6,7 +6,7 @@ const Controller = require("../core/baseController.js");
 
 class TeacherCDKeysController extends Controller {
 	async index() {
-		this.ensureAdmin();
+		this.adminAuthenticated();
 		const {ctx} = this;
 		const query = ctx.query;
 
@@ -16,7 +16,7 @@ class TeacherCDKeysController extends Controller {
 	}
 
 	async generate() {
-		this.ensureAdmin();
+		this.adminAuthenticated();
 		const {ctx} = this;
 		const params = ctx.query || {};
 
@@ -33,7 +33,7 @@ class TeacherCDKeysController extends Controller {
 	}
 
 	async update() {
-		this.ensureAdmin();
+		this.adminAuthenticated();
 		const {ctx} = this;
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
@@ -47,7 +47,7 @@ class TeacherCDKeysController extends Controller {
 	}
 
 	async destroy() {
-		this.ensureAdmin();
+		this.adminAuthenticated();
 		const {ctx} = this; 
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");

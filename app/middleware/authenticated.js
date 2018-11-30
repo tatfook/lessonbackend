@@ -33,6 +33,7 @@ module.exports = (options, app) => {
 			}
 		}
 
+		ctx.state.token = token;
 		ctx.state.user = user || {};
 		console.log(ctx.state.user);
 
