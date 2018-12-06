@@ -259,6 +259,7 @@ class PackagesController extends Controller {
 		packages = _.uniqBy(packages.concat(subscribes), "id");
 
 		//console.log(packages.length);
+		const packageIds = [];
 		for (let i = 0; i < packages.length; i++) {
 			let pack = packages[i];
 			pack = pack.get ? pack.get({plain:true}) : pack;
@@ -266,7 +267,12 @@ class PackagesController extends Controller {
 			let obj = await ctx.model.Classrooms.getLastTeach(userId, pack.id);
 			//console.log(obj);
 			pack.lastTeachDate = obj ? obj.createdAt : "";
+			packageIds.push(pack.id);
+			packages[i] = pack;
 		}
+
+		const lessonCount = await ctx.model.PackageLessons.getLessonCountByPackageIds(packageIds);
+		_.each(packages, (o, i) => o.lessonCount = lessonCount[o.id]);
 
 		packages = _.orderBy(packages, ["lastTeachDate", "createdAt"], ["desc", "desc"]);
 
