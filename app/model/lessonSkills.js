@@ -70,5 +70,6 @@ module.exports = app => {
 		_.each(list, val => skills.push(val.get ? val.get({plain:true}) : val));
 		return skills;
 	}
+
 	return model;
 }

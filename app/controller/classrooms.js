@@ -29,9 +29,17 @@ class ClassroomsController extends Controller {
 
 		query.userId = userId;
 
-		const list = await ctx.model.Classrooms.findAndCount({where:query});
+		const data = await ctx.model.Classrooms.findAndCount({where:query});
+		const rows = data.rows;
+		const packageIds = [];
+		_.each(rows, (o, i) => {
+			rows[i] = o.toJSON();
+			packageIds.push(rows[i].packageId);
+		});
+		const lessonCount = await ctx.model.PackageLessons.getLessonCountByPackageIds(packageIds);
+		_.each(rows, (o, i) => o.lessonCount = lessonCount[o.packageId]);
 
-		return this.success(list);
+		return this.success(data);
 	}
 
 	async show() {
