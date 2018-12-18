@@ -48,7 +48,7 @@ module.exports = app => {
 		endTime: {                     // 有效期结束时间
 			type: BIGINT,
 			defaultValue:0,
-		}
+		},
 
 		extra: {                       // 额外数据
 			type: JSON,
