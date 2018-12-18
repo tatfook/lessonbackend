@@ -146,37 +146,17 @@ module.exports = app => {
 	}
 
 	model.subscribePackage = async function(userId, packageId) {
-		const data = await app.model.Subscribes.findOne({
-			where: {
-				userId,
-				packageId,
-				state: PACKAGE_SUBSCRIBE_STATE_BUY,
-			}
-		});
+		const data = await app.model.Subscribes.findOne({where: {userId, packageId,	state: PACKAGE_SUBSCRIBE_STATE_BUY}});
 		if (data) return {id:-1, message:"已订阅"};
 
-		const user = await app.model.Users.getById(userId);
 		const _package = await app.model.Packages.getById(packageId);
+		if (!_package) return {id:400, message:"args error"};
 
-		if (!user || !_package) return {id:400, message:"args error"};
-		if (user.coin < _package.coin) return {id:400, message:"知识币不足"};
-
-		user.coin = user.coin - _package.coin;
-		user.lockCoin = user.lockCoin + _package.rmb;
+		const rmb = _package.rmb;
 		await app.model.Users.update({coin:user.coin, lockCoin: user.lockCoin}, {where:{id:userId}});
 
-		await app.model.Subscribes.upsert({
-			userId,
-			packageId: _package.id,
-			state: PACKAGE_SUBSCRIBE_STATE_BUY,
-		});
+		await app.model.Subscribes.upsert({userId, packageId, state: PACKAGE_SUBSCRIBE_STATE_BUY});
 		
-		//await app.model.Coins.create({
-			//userId,
-			//amount: 0 - _package.cost,
-			//type: COIN_TYPE_SUBSCRIBE_PACKAGE,
-		//});
-
 		return {id:0};
 	}
 

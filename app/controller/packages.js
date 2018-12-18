@@ -9,6 +9,10 @@ const {
 	PACKAGE_STATE_AUDIT_SUCCESS,
 	PACKAGE_STATE_AUDIT_FAILED,
 
+	COIN_TYPE_SUBSCRIBE_PACKAGE,
+	COIN_TYPE_PACKAGE_REWARD,
+
+
 	PACKAGE_SUBSCRIBE_STATE_UNBUY,
 	PACKAGE_SUBSCRIBE_STATE_BUY,
 } = consts;
@@ -206,19 +210,34 @@ class PackagesController extends Controller {
 
 	// 课程包订阅  购买
 	async subscribe() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		if (!id) ctx.throw(400, "id invalid");
-		const params = ctx.request.body;
+		console.log(this.ctx.headers);
+		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
+		const signature = this.ctx.headers["x-keepwork-signature"];
+		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
 
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-		const packageId = id;
+		const params = this.validate({
+			packageId:"int",
+			userId:"int",
+		});
+		const packageId = params.packageId;
+		const userId = params.userId;
+		const amount = params.amount || {};
 
-		const result = await ctx.model.Subscribes.subscribePackage(userId, packageId);
+		const data = await this.model.Subscribes.findOne({where: {userId, packageId,	state: PACKAGE_SUBSCRIBE_STATE_BUY}});
+		if (data) this.throw(400, "已订阅");
 
-		if (result.id != 0) ctx.throw(400, result.message);
-		
+		const _package = await this.model.Packages.getById(packageId);
+		if (!_package) return this.throw(400, "课程包不存在");
+		if (_package.userId == userId) return this.throw(400, "用户不能购买自己的课程包");
+
+		const rmb = amount.rmb || 0;
+		if (rmb !== _package.rmb) return this.throw(400, "金额错误");
+		const lockCoin = _package.rmb;
+
+		// 购买成功  增加待解锁知识币 
+		await this.app.keepworkModel.accounts.increment({lockCoin}, {where:{userId}});
+		await this.model.Subscribes.upsert({userId, packageId, state: PACKAGE_SUBSCRIBE_STATE_BUY});
+
 		return this.success("OK");
 	}
 

@@ -36,7 +36,7 @@ module.exports = app => {
 	router.delete(prefix + "packages/:id/lessons", packages.deleteLesson);
 	router.get(prefix + "packages/:id/lessons", packages.lessons);
 	router.get(prefix + "packages/:id/detail", packages.detail);
-	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
+	router.post(prefix + "packages/subscribe", packages.subscribe);
 	router.get(prefix + "packages/:id/isSubscribe", packages.isSubscribe);
 	router.post(prefix + "packages/:id/audit", packages.audit);
 

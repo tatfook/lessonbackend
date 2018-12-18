@@ -14,32 +14,43 @@ module.exports = app => {
 	} = app.Sequelize;
 
 	const model = app.model.define("teachers", {
-		id: {
+		id: {                          // 记录id
 			type: BIGINT,
 			autoIncrement: true,
 			primaryKey: true,
 		},
 
-		userId: {
+		userId: {                      // 用户id
 			type: BIGINT,
 			allowNull: false,
 		},
 
-		key: {
+		key: {                         // 使用的激活码 
 			type: STRING(64),
 			allowNull: false,
 		},
 
-		privilege: {
+		privilege: {                   // 权限
 			type: INTEGER,
 			defaultValue: 0,
 		},
 
-		school: {
+		school: {                      // 学校信息
 			type: STRING(128),
+			defaultValue:"",
 		},
 
-		extra: {     // 额外数据
+		startTime: {                   // 有效期开始时间
+			type: BIGINT,
+			defaultValue:0,
+		},
+
+		endTime: {                     // 有效期结束时间
+			type: BIGINT,
+			defaultValue:0,
+		}
+
+		extra: {                       // 额外数据
 			type: JSON,
 			defaultValue:{},
 		},

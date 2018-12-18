@@ -22,18 +22,23 @@ module.exports = app => {
 			primaryKey: true,
 		},
 
-		userId: {  // 谁在使用此激活码
+		userId: {                               // 谁在使用此激活码
 			type: BIGINT,
 		},
 
-		key: {
+		key: {                                  // key 激活码
 			type: STRING(64),
 			allowNull: false,
 		},
 
-		state: {
+		state: {                                // 0 --未使用 1 -- 已使用 2 -- 禁用态
 			type: INTEGER,
-			defaultValue: 0, // 0 --未使用 1 -- 已使用 2 -- 禁用态
+			defaultValue: 0, 
+		},
+
+		expire: {                               // 激活码有效期
+			type: BIGINT,
+			defaultValue: 1000 * 3600 * 24 * 365,
 		},
 		
 		extra: {

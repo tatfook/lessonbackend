@@ -1,6 +1,7 @@
 const _ = require("lodash");
 //const jwt = require("jwt-simple");
 const jwt = require("./jwt.js");
+const crypto = require("crypto");
 
 const util = {};
 
@@ -28,6 +29,14 @@ util.jwt_encode = function(payload, key, expire = 3600 * 24 * 100) {
 
 util.jwt_decode = function(token, key, noVerify) {
 	return jwt.decode(token, key, noVerify, "HS1");
+}
+
+util.rsaEncrypt = function(prvKey, message) {
+	return crypto.privateEncrypt(prvKey, Buffer.from(message, "utf8")).toString("hex");
+}
+
+util.rsaDecrypt = function(pubKey, sig) {
+	return crypto.publicDecrypt(pubKey, Buffer.from(sig, "hex")).toString("utf8");
 }
 
 module.exports = util;
