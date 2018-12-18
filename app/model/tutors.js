@@ -18,6 +18,7 @@ module.exports = app => {
 		userId: {                      // 用户id
 			type: BIGINT,
 			allowNull: false,
+			unique: true,
 		},
 
 		tutorId: {                     // 导师id
@@ -47,6 +48,10 @@ module.exports = app => {
 	});
 
 	//model.sync({force:true});
+	
+	model.getByUserId = async function(userId) {
+		return await app.model.users.findOne({where:{userId}}).then(o => o && o.toJSON());
+	}
 	
 	app.model.tutors = model;
 	return model;

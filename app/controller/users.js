@@ -41,6 +41,9 @@ class UsersController extends Controller {
 		const user = this.getUser();
 
 		const data = await ctx.model.Users.getById(user.userId, user.username);
+		if (!data) return this.throw(404, "用户不存在");
+
+		data.tutor = await this.model.tutors.getByUserId(id);
 
 		return this.success(data);
 	}
@@ -52,6 +55,9 @@ class UsersController extends Controller {
 		if (!id) ctx.throw(400, "id invalid");
 
 		const data = await ctx.model.Users.getById(id);
+		if (!data) return this.throw(404, "用户不存在");
+
+		data.tutor = await this.model.tutors.getByUserId(id);
 
 		return this.success(data);
 	}

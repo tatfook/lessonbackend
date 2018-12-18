@@ -131,5 +131,6 @@ module.exports = app => {
 		}
 	}
 
+	app.model.users = model;
 	return model;
 }
