@@ -10,6 +10,8 @@ const {
 	USER_IDENTIFY_TEACHER,
 	USER_IDENTIFY_APPLY_TEACHER,
 
+	USER_ROLE_ALLIANCE_MEMBER,
+
 	PACKAGE_SUBSCRIBE_STATE_UNBUY,
 	PACKAGE_SUBSCRIBE_STATE_BUY,
 
@@ -43,7 +45,11 @@ class UsersController extends Controller {
 		const data = await ctx.model.Users.getById(user.userId, user.username);
 		if (!data) return this.throw(404, "用户不存在");
 
-		data.tutor = await this.model.tutors.getByUserId(user.userId);
+		const userId = user.userId;
+		data.tutorService = await this.model.tutors.getByUserId(user.userId);
+		data.teacher = await this.model.teachers.getByUserId(userId);
+		data.allianceMember = await this.app.keepworkModel.roles.getAllianceMemberByUserId(userId);
+		data.tutor = await this.app.keepworkModel.roles.getTutorByUserId(userId);
 
 		return this.success(data);
 	}
@@ -57,7 +63,11 @@ class UsersController extends Controller {
 		const data = await ctx.model.Users.getById(id);
 		if (!data) return this.throw(404, "用户不存在");
 
-		data.tutor = await this.model.tutors.getByUserId(id);
+		const userId = id;
+		data.tutorService = await this.model.tutors.getByUserId(user.userId);
+		data.teacher = await this.model.teachers.getByUserId(userId);
+		data.allianceMember = await this.app.keepworkModel.roles.getAllianceMemberByUserId(userId);
+		data.tutor = await this.app.keepworkModel.roles.getTutorByUserId(userId);
 
 		return this.success(data);
 	}
@@ -241,6 +251,65 @@ class UsersController extends Controller {
 		await this.model.Users.update(user, {fields:["coin", "bean"], where:{id:userId}});
 
 		return this.success("OK");
+	}
+
+	// 导师回调
+	async tutorCB() {
+		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
+		const signature = this.ctx.headers["x-keepwork-signature"];
+		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
+
+		const params = this.validate({userId:"int"});
+		const userId = params.userId;
+		const amount = params.amount || {rmb: 0, coin: 0, bean: 0};
+		const tutorId = params.tutorId;
+
+		if (amount.rmb != 3000) return this.throw(400, "导师金额不对");
+
+		const tutor = await this.model.tutors.getByUserId(userId) || {userId, tutorId};
+		const curtitme = new Date().getTime();
+		const oneyear = 1000 * 3600 * 24 * 365;
+
+		if (tutor.endTime <= curtitme) {
+			tutor.startTime = curtitme;
+			tutor.endTime = curtitme + oneyear;
+		} else {
+			tutor.startTime = tutor.startTime || curtitme;
+			tutor.endTime = (tutor.endTime || curtitme) + oneyear;
+		}
+
+		await this.model.tutors.upsert(tutor);
+
+		return this.success("OK");
+	}
+
+	// 共享会员
+	async allianceMemberCB() {
+		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
+		const signature = this.ctx.headers["x-keepwork-signature"];
+		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
+
+		const params = this.validate({userId:"int"});
+		const userId = params.userId;
+		const amount = params.amount || {rmb: 0, coin: 0, bean: 0};
+		if (amount.rmb != 100) return this.throw(400, "导师金额不对");
+
+		const alliance = await this.app.keepworkModel.roles.getAllianceMemberByUserId(userId) || {userId, type: USER_ROLE_ALLIANCE_MEMBER};
+		const curtitme = new Date().getTime();
+		const oneyear = 1000 * 3600 * 24 * 365;
+
+		if (alliance.endTime <= curtitme) {
+			alliance.startTime = curtitme;
+			alliance.endTime = curtitme + oneyear;
+		} else {
+			alliance.startTime = alliance.startTime || curtitme;
+			alliance.endTime = (alliance.endTime || curtitme) + oneyear;
+		}
+
+		await this.app.keepworkModel.roles.upsert(alliance);
+
+		return this.success("OK");
+
 	}
 }
 

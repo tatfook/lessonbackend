@@ -55,6 +55,13 @@ module.exports = {
 	USER_IDENTIFY_TEACHER:2,         // 讲师 共享教师
 	USER_IDENTIFY_APPLY_TEACHER:4,   // 申请讲师中
 	USER_IDENTIFY_ALLIANCE_MEMBER:8, // 共享会员 联盟会员
+	USER_IDENTIFY_TUTOR:16,          // 导师
+
+	USER_ROLE_DEFAULT: 0,            // 普通用户
+	USER_ROLE_STUDENT: 1,            // 学生
+	USER_ROLE_TEACHER: 2,            // 讲师
+	USER_ROLE_ALLIANCE_MEMBER: 8,    // 联盟会员
+	USER_ROLE_TUTOR: 16,             // 导师
 
 	CLASSROOM_STATE_UNUSED,
 	CLASSROOM_STATE_USING,

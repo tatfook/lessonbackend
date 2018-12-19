@@ -240,7 +240,6 @@ class PackagesController extends Controller {
 	
 	// 课程包订阅  购买
 	async buy() {
-		console.log(this.ctx.headers);
 		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
 		const signature = this.ctx.headers["x-keepwork-signature"];
 		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");

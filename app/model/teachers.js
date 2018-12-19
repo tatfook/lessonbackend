@@ -23,6 +23,7 @@ module.exports = app => {
 		userId: {                      // 用户id
 			type: BIGINT,
 			allowNull: false,
+			unique: true,
 		},
 
 		key: {                         // 使用的激活码 
@@ -74,5 +75,9 @@ module.exports = app => {
 		return privilege & TEACHER_PRIVILEGE_TEACH;
 	}
 	
+	model.getByUserId = async function(userId) {
+		return await app.model.teachers.findOne({where:{userId}}).then(o => o && o.toJSON());
+	}
+
 	return model;
 }
