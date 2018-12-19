@@ -30,4 +30,6 @@ module.exports = async (app) => {
 	//app.model.Teachers.sync({force:true});
 	//app.model.UserLearnRecords.sync({force:true});
 	//app.model.Users.sync({force:true});
+	
+	//app.model.tutors.sync({force:true});
 }
