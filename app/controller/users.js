@@ -285,9 +285,9 @@ class UsersController extends Controller {
 
 	// 共享会员
 	async allianceMemberCB() {
-		//const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
-		//const signature = this.ctx.headers["x-keepwork-signature"];
-		//if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
+		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
+		const signature = this.ctx.headers["x-keepwork-signature"];
+		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
 
 		const params = this.validate({userId:"int"});
 		const userId = params.userId;
