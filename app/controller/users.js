@@ -285,16 +285,16 @@ class UsersController extends Controller {
 
 	// 共享会员
 	async allianceMemberCB() {
-		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
-		const signature = this.ctx.headers["x-keepwork-signature"];
-		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
+		//const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
+		//const signature = this.ctx.headers["x-keepwork-signature"];
+		//if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
 
 		const params = this.validate({userId:"int"});
 		const userId = params.userId;
 		const amount = params.amount || {rmb: 0, coin: 0, bean: 0};
-		if (amount.rmb != 100) return this.throw(400, "导师金额不对");
+		if (amount.rmb != 100) return this.throw(400, "金额不对");
 
-		const alliance = await this.app.keepworkModel.roles.getAllianceMemberByUserId(userId) || {userId, type: USER_ROLE_ALLIANCE_MEMBER};
+		const alliance = await this.app.keepworkModel.roles.getAllianceMemberByUserId(userId) || {userId, roleId: USER_ROLE_ALLIANCE_MEMBER};
 		const curtitme = new Date().getTime();
 		const oneyear = 1000 * 3600 * 24 * 365;
 

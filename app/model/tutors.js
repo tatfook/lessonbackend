@@ -23,7 +23,6 @@ module.exports = app => {
 
 		tutorId: {                     // 导师id
 			type: BIGINT,
-			allowNull: false,
 		},
 
 		startTime: {                   // 开始时间

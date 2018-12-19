@@ -31,6 +31,7 @@ module.exports = app => {
 		roleId: {                   // 角色id 用于区分不同角色
 			type: INTEGER,
 			defaultValue: 0,
+			allowNull: false,
 		},
 
 		startTime: {                   // 开始时间
@@ -42,8 +43,14 @@ module.exports = app => {
 			type: BIGINT,
 			defaultValue: 0,
 		},
+		
+		extra: {
+			type:JSON,
+			defaultValue:{},
+		},
 
 	}, {
+		underscored: false,
 		charset: "utf8mb4",
 		collate: 'utf8mb4_bin',
 
@@ -63,17 +70,25 @@ module.exports = app => {
 		return await app.keepworkModel.roles.findAll({where:{userId}}).then(list => _.map(list, o => o && o.toJSON()));
 	}
 
+	model.getRoleIdByUserId = async function(userId) {
+		const roles = await this.getByUserId(userId);
+		let roleId = 0;
+		_.each(roles, role => roleId = roleId | role.roleId);
+
+		return roleId;
+	}
+
 	model.getAllianceMemberByUserId = async function(userId) {
 		return await app.keepworkModel.roles.findOne({where:{
 			userId,
-			type: USER_ROLE_ALLIANCE_MEMBER,
+			roleId: USER_ROLE_ALLIANCE_MEMBER,
 		}}).then(o => o && o.toJSON());
 	}
 
 	model.getTutorByUserId = async function(userId) {
 		return await app.keepworkModel.roles.findOne({where:{
 			userId,
-			type: USER_ROLE_TUTOR,
+			roleId: USER_ROLE_TUTOR,
 		}}).then(o => o && o.toJSON());
 	}
 
