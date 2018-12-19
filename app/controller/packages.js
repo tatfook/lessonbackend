@@ -233,7 +233,7 @@ class PackagesController extends Controller {
 		const {userId} = this.enauthenticated();
 		const packageId = id;
 
-		await this.subscribePackage(userId, packageId, amount);
+		await this.subscribePackage(userId, packageId);
 		
 		return this.success("OK");
 	}
