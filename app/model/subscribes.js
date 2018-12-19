@@ -145,21 +145,6 @@ module.exports = app => {
 		return; 
 	}
 
-	model.subscribePackage = async function(userId, packageId) {
-		const data = await app.model.Subscribes.findOne({where: {userId, packageId,	state: PACKAGE_SUBSCRIBE_STATE_BUY}});
-		if (data) return {id:-1, message:"已订阅"};
-
-		const _package = await app.model.Packages.getById(packageId);
-		if (!_package) return {id:400, message:"args error"};
-
-		const rmb = _package.rmb;
-		await app.model.Users.update({coin:user.coin, lockCoin: user.lockCoin}, {where:{id:userId}});
-
-		await app.model.Subscribes.upsert({userId, packageId, state: PACKAGE_SUBSCRIBE_STATE_BUY});
-		
-		return {id:0};
-	}
-
 	model.addTeachedLesson = async function(userId, packageId, lessonId) {
 		let subscribe = await app.model.Subscribes.findOne({
 			where: {

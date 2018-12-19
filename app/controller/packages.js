@@ -208,21 +208,7 @@ class PackagesController extends Controller {
 		return this.success(result);
 	}
 
-	// 课程包订阅  购买
-	async subscribe() {
-		console.log(this.ctx.headers);
-		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
-		const signature = this.ctx.headers["x-keepwork-signature"];
-		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
-
-		const params = this.validate({
-			packageId:"int",
-			userId:"int",
-		});
-		const packageId = params.packageId;
-		const userId = params.userId;
-		const amount = params.amount || {};
-
+	async subscribePackage(userId, packageId, amount = {rmb:0, coin: 0, bean:0}) {
 		const data = await this.model.Subscribes.findOne({where: {userId, packageId,	state: PACKAGE_SUBSCRIBE_STATE_BUY}});
 		if (data) this.throw(400, "已订阅");
 
@@ -237,6 +223,37 @@ class PackagesController extends Controller {
 		// 购买成功  增加待解锁知识币 
 		await this.app.keepworkModel.accounts.increment({lockCoin}, {where:{userId}});
 		await this.model.Subscribes.upsert({userId, packageId, state: PACKAGE_SUBSCRIBE_STATE_BUY});
+
+		return;
+	}
+
+	// 课程包订阅
+	async subscribe() {
+		const {id} = this.validate({id:"int"});
+		const {userId} = this.enauthenticated();
+		const packageId = id;
+
+		await this.subscribePackage(userId, packageId, amount);
+		
+		return this.success("OK");
+	}
+	
+	// 课程包订阅  购买
+	async buy() {
+		console.log(this.ctx.headers);
+		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
+		const signature = this.ctx.headers["x-keepwork-signature"];
+		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
+
+		const params = this.validate({
+			packageId:"int",
+			userId:"int",
+		});
+		const packageId = params.packageId;
+		const userId = params.userId;
+		const amount = params.amount || {};
+
+		await this.subscribePackage(userId, packageId, amount);
 
 		return this.success("OK");
 	}

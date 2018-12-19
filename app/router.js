@@ -19,7 +19,7 @@ module.exports = app => {
 	router.resources("users", prefix + "users", users);
 	router.post(prefix + "users/:id/applyTeacher", users.applyTeacher);
 	router.post(prefix + "users/:id/teacher", users.teacher);
-	router.post(prefix + "users/:id/subscribes", users.postSubscribes);
+	//router.post(prefix + "users/:id/subscribes", users.postSubscribes);
 	router.get(prefix + "users/:id/subscribes", users.getSubscribes);
 	router.get(prefix + "users/:id/isSubscribe", users.isSubscribe);
 	router.get(prefix + "users/:id/coins", users.coins);
@@ -36,7 +36,8 @@ module.exports = app => {
 	router.delete(prefix + "packages/:id/lessons", packages.deleteLesson);
 	router.get(prefix + "packages/:id/lessons", packages.lessons);
 	router.get(prefix + "packages/:id/detail", packages.detail);
-	router.post(prefix + "packages/subscribe", packages.subscribe);
+	router.post(prefix + "packages/:id/subscribe", packages.subscribe);
+	router.post(prefix + "packages/buy", packages.buy);
 	router.get(prefix + "packages/:id/isSubscribe", packages.isSubscribe);
 	router.post(prefix + "packages/:id/audit", packages.audit);
 

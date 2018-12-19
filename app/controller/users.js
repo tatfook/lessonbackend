@@ -173,28 +173,28 @@ class UsersController extends Controller {
 		return this.success(result);
 	}
 
-	// 用户订阅
-	async postSubscribes() {
-		const {ctx} = this;
-		const id = _.toNumber(ctx.params.id);
-		const params = ctx.request.body;
-		if (!id) ctx.throw(400, "id invalid");
+	//// 用户订阅
+	//async postSubscribes() {
+		//const {ctx} = this;
+		//const id = _.toNumber(ctx.params.id);
+		//const params = ctx.request.body;
+		//if (!id) ctx.throw(400, "id invalid");
 		
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-		if (id != userId) ctx.throw(400, "args error");
+		//this.enauthenticated();
+		//const userId = this.getUser().userId;
+		//if (id != userId) ctx.throw(400, "args error");
 		
-		ctx.validate({
-			packageId: 'int',
-		}, params);
+		//ctx.validate({
+			//packageId: 'int',
+		//}, params);
 
-		const packageId = params.packageId;
-		const result = await ctx.model.Subscribes.subscribePackage(userId, packageId);
+		//const packageId = params.packageId;
+		//const result = await ctx.model.Subscribes.subscribePackage(userId, packageId);
 
-		if (result.id != 0) ctx.throw(400, result.message);
+		//if (result.id != 0) ctx.throw(400, result.message);
 		
-		return this.success("OK");
-	}
+		//return this.success("OK");
+	//}
 
 	// 获取知识币变更列表
 	async coins() {
