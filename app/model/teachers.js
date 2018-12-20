@@ -79,5 +79,6 @@ module.exports = app => {
 		return await app.model.teachers.findOne({where:{userId}}).then(o => o && o.toJSON());
 	}
 
+	app.model.teachers = model;
 	return model;
 }
