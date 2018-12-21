@@ -124,19 +124,20 @@ class UsersController extends Controller {
 		
 		const user = await this.model.Users.getById(id);
 		if (!user) this.throw(400, "arg error");
-		if (user.identify & USER_IDENTIFY_TEACHER) this.throw(400, "已经是老师");
 
-		let isOk = await this.model.TeacherCDKeys.useKey(key, id);
+		const isOk = await this.model.TeacherCDKeys.useKey(key, id);
 		if (!isOk) this.throw(400, "key invalid");
 
-		user.identify = (user.identify | USER_IDENTIFY_TEACHER) & (~USER_IDENTIFY_APPLY_TEACHER);
-		await this.model.Teachers.create({
-			userId:id,
-			key:key,
-			privilege: TEACHER_PRIVILEGE_TEACH,
-			school,
-		});
+		const cdKey = await this.model.TeacherCDKeys.findOne({where:{key}}).then(o => o && o.toJSON());
+		const startTime = new Date().getTime();
 
+		user.identify = (user.identify | USER_IDENTIFY_TEACHER) & (~USER_IDENTIFY_APPLY_TEACHER);
+		const teacher = await this.model.Teachers.findOne({where:{userId:id}}).then(o => o && o.toJSON()) || {userId:id, startTime, endTime:startTime, key, school, privilege: TEACHER_PRIVILEGE_TEACH};
+		if (teacher.endTime < startTime) {
+			teacher.endTime = teacher.startTime = startTime;
+		}
+		teacher.endTime += cdKey.expire;
+		await this.model.Teachers.upsert(teacher);
 		const result = await this.model.Users.update(user, {where:{id}});
 
 		return this.success(result);
