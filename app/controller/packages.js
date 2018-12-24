@@ -217,7 +217,7 @@ class PackagesController extends Controller {
 		if (_package.userId == userId) return this.throw(400, "用户不能购买自己的课程包");
 
 		const rmb = amount.rmb || 0;
-		if (rmb !== _package.rmb) return this.throw(400, "金额错误");
+		if (rmb !== _package.rmb && coin !== _package.coin) return this.throw(400, "金额错误");
 		const lockCoin = _package.rmb;
 
 		// 购买成功  增加待解锁知识币 
