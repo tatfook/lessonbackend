@@ -11,6 +11,7 @@ const {
 	USER_IDENTIFY_APPLY_TEACHER,
 
 	USER_ROLE_ALLIANCE_MEMBER,
+	USER_ROLE_TUTOR,
 
 	PACKAGE_SUBSCRIBE_STATE_UNBUY,
 	PACKAGE_SUBSCRIBE_STATE_BUY,
@@ -254,8 +255,8 @@ class UsersController extends Controller {
 		return this.success("OK");
 	}
 
-	// 导师回调
-	async tutorCB() {
+	// 导师服务回调
+	async tutorServiceCB() {
 		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
 		const signature = this.ctx.headers["x-keepwork-signature"];
 		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
@@ -280,6 +281,34 @@ class UsersController extends Controller {
 		}
 
 		await this.model.tutors.upsert(tutor);
+
+		return this.success("OK");
+	}
+
+	// 成为导师回调
+	async tutorCB() {
+		const sigcontent = this.ctx.headers["x-keepwork-sigcontent"];
+		const signature = this.ctx.headers["x-keepwork-signature"];
+		if (!sigcontent || !signature || sigcontent !== this.app.util.rsaDecrypt(this.app.config.self.rsa.publicKey, signature)) return this.throw(400, "未知请求");
+
+		const params = this.validate({userId:"int"});
+		const userId = params.userId;
+		const amount = params.amount || {rmb: 0, coin: 0, bean: 0};
+		if (amount.rmb != 100) return this.throw(400, "金额不对");
+
+		const tutor = await this.app.keepworkModel.roles.getTutorByUserId(userId) || {userId, roleId: USER_ROLE_TUTOR};
+		const curtitme = new Date().getTime();
+		const oneyear = 1000 * 3600 * 24 * 365;
+
+		if (tutor.endTime <= curtitme) {
+			tutor.startTime = curtitme;
+			tutor.endTime = curtitme + oneyear;
+		} else {
+			tutor.startTime = tutor.startTime || curtitme;
+			tutor.endTime = (tutor.endTime || curtitme) + oneyear;
+		}
+
+		await this.app.keepworkModel.roles.upsert(tutor);
 
 		return this.success("OK");
 	}
