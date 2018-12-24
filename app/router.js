@@ -26,6 +26,7 @@ module.exports = app => {
 	router.get(prefix + "users/:id/skills", users.skills);
 	router.get(prefix + "users/:id/isTeach", users.isTeach);
 	router.post(prefix + "users/tutorCB", users.tutorCB);
+	router.post(prefix + "users/tutorServiceCB", users.tutorServiceCB);
 	router.post(prefix + "users/allianceMemberCB", users.allianceMemberCB);
 
 	const packages = controller.packages;
