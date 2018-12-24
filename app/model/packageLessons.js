@@ -53,6 +53,8 @@ module.exports = app => {
 	//model.sync({force:true});
 
 	model.getLessonCountByPackageIds = async function(packageIds = []) {
+		if (packageIds.length == 0) return {};
+
 		const sql = `select packageId, count(*) as count from packageLessons group by packageId having packageId in (:packageIds)`;
 
 		const list = await app.model.query(sql, {
