@@ -47,6 +47,10 @@ class UsersController extends Controller {
 		if (!data) return this.throw(404, "用户不存在");
 
 		const userId = user.userId;
+		const account = await this.app.keepworkModel.accounts.getByUserId(userId) || {};
+		data.rmb = account.rmb;
+		data.coin = account.coin;
+		data.bean = account.bean;
 		data.tutorService = await this.model.tutors.getByUserId(user.userId);
 		data.teacher = await this.model.teachers.getByUserId(userId);
 		data.allianceMember = await this.app.keepworkModel.roles.getAllianceMemberByUserId(userId);
@@ -65,6 +69,10 @@ class UsersController extends Controller {
 		if (!data) return this.throw(404, "用户不存在");
 
 		const userId = id;
+		const account = await this.app.keepworkModel.accounts.getByUserId(userId) || {};
+		data.rmb = account.rmb;
+		data.coin = account.coin;
+		data.bean = account.bean;
 		data.tutorService = await this.model.tutors.getByUserId(user.userId);
 		data.teacher = await this.model.teachers.getByUserId(userId);
 		data.allianceMember = await this.app.keepworkModel.roles.getAllianceMemberByUserId(userId);
