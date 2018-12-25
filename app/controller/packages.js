@@ -234,7 +234,15 @@ class PackagesController extends Controller {
 		const {userId} = this.enauthenticated();
 		const packageId = id;
 
-		await this.subscribePackage(userId, packageId);
+		const _package = await this.model.Packages.getById(packageId);
+		if (!_package) return this.throw(400, "课程包不存在");
+		if (_package.userId == userId) return this.throw(400, "用户不能购买自己的课程包");
+		
+		const isTeacher = await this.model.teachers.isAllowTeach(userId);
+		const isFree = (_package.rmb || _package.coin) ? false : true;
+		if (!isTeacher && !isFree) this.throw(400, "不支持购买");
+
+		await this.model.Subscribes.upsert({userId, packageId});
 		
 		return this.success("OK");
 	}

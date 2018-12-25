@@ -67,8 +67,11 @@ module.exports = app => {
 	model.isAllowTeach = async function(userId) {
 		let user = await app.model.Teachers.findOne({where: {userId}});
 		if (!user) return false;
-
 		user = user.get({plain:true});
+
+		const curtime = new Date().getTime();
+
+		if (curtime > user.endTime || curtime < user.startTime) return false;
 
 		const privilege = user.privilege;
 
