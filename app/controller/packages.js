@@ -84,7 +84,9 @@ class PackagesController extends Controller {
 			if (isTeached) data.teachedLessons.push(lesson.id);
 		}
 
-		data.isSubscribe = await ctx.model.Subscribes.isSubscribePackage(userId, id);
+		const subscribe = await this.model.Subscribes.findOne({where:{userId, packageId:id}}).then(o => o && o.toJSON());
+		data.isSubscribe = subscribe ? true : false;
+		data.isBuy = (subscribe && subscribe.state == PACKAGE_SUBSCRIBE_STATE_BUY) ? true : false;
 
 		return this.success(data);
 	}

@@ -106,7 +106,7 @@ module.exports = app => {
 			where: {
 				userId,
 				packageId,
-				state: PACKAGE_SUBSCRIBE_STATE_BUY,
+				//state: PACKAGE_SUBSCRIBE_STATE_BUY,
 			}
 		});
 		if (data) return true;
@@ -196,5 +196,6 @@ module.exports = app => {
 		}
 	}
 
+	app.model.subscribes = model;
 	return model;
 }
