@@ -122,7 +122,7 @@ class ClassroomsController extends Controller {
 		const classroom = await this.model.Classrooms.findOne({where:{key:params.key}}).then(o => o && o.toJSON());
 		if (!classroom) return this.fail(1);
 		const count = await this.model.LearnRecords.count({where:{classroomId:classroom.id}});
-		if (count > 50) return this.fail(2);
+		if (count >= 50) return this.fail(2);
 		
 		const userId = this.getUser().userId || 0;
 		
