@@ -128,6 +128,8 @@ module.exports = app => {
 		return;
 	}
 
+	app.model.learnRecords = model;
+	
 	return model;
 }
 
