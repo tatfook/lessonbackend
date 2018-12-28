@@ -127,7 +127,7 @@ class ClassroomsController extends Controller {
 		const userId = this.getUser().userId || 0;
 		
 		const data = await ctx.model.Classrooms.join(userId, params.key, params.username);
-		if (!data) ctx.throw(400, "key invalid");
+		if (!data) return this.fail(-1);
 		
 		if (!userId) data.token = this.app.util.jwt_encode({userId:0, username:"匿名用户"}, this.app.config.self.secret, 3600 * 24);
 
