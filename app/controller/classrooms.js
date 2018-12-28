@@ -14,10 +14,9 @@ const {
 
 class ClassroomsController extends Controller {
 	async ensureTeacher() {
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-		const isTeacher = await this.ctx.model.Users.isTeacher(userId);
-		if (!isTeacher) this.ctx.throw(400, "非老师");
+		const {userId} = this.enauthenticated();
+		const teacher = await this.model.teachers.getByUserId(userId);
+		if (!teacher) this.throw(400, "非老师");
 	}
 
 	async index() {
@@ -54,6 +53,7 @@ class ClassroomsController extends Controller {
 
 	async create() {
 		const {ctx} = this;
+		const {userId} = this.enauthenticated();
 		const params = ctx.request.body;
 
 		ctx.validate({
@@ -61,8 +61,8 @@ class ClassroomsController extends Controller {
 			lessonId:"int",
 		});
 
-		await this.ensureTeacher();
-		const userId = this.getUser().userId;
+		const isTeacher = await this.model.teachers.isAllowTeach(userId);
+		if (!isTeacher) return this.throw(400, "无权限");
 
 		const packageLesson = await ctx.model.PackageLessons.findOne({where:{
 			packageId: params.packageId,
@@ -228,12 +228,11 @@ class ClassroomsController extends Controller {
 	// 下课
 	async dismiss() {
 		const {ctx} = this;
+		const {userId} = this.enauthenticated();
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 		const params = ctx.request.body;
 
-		await this.ensureTeacher();
-		const userId = this.getUser().userId;
 
 		const result = await ctx.model.Classrooms.dismiss(userId, id);
 		return this.success(result);

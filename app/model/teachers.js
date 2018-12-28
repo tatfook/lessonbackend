@@ -73,9 +73,10 @@ module.exports = app => {
 
 		if (curtime > user.endTime || curtime < user.startTime) return false;
 
-		const privilege = user.privilege;
+		return true;
+		//const privilege = user.privilege;
 
-		return privilege & TEACHER_PRIVILEGE_TEACH;
+		//return privilege & TEACHER_PRIVILEGE_TEACH;
 	}
 	
 	model.getByUserId = async function(userId) {
