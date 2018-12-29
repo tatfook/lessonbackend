@@ -91,7 +91,7 @@ module.exports = app => {
 		await app.model.LessonRewards.upsert(lessonReward);
 
 		// 扣除用户可返还余额
-		await app.keepworkModel.accounts.increment({coin:coinCount, bean: beanCount, lockCoin: 0 - lockCoin}, {where:{userId}});
+		await app.keepworkModel.accounts.increment({coin:coinCount, bean: beanCount, lockCoin: 0 - coinCount}, {where:{userId}});
 
 		const lesson = await app.model.Lessons.getById(lessonId);
 		await app.keepworkModel.Trades.create({userId,
