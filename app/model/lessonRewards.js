@@ -68,7 +68,7 @@ module.exports = app => {
 
 	model.rewards = async function(userId, packageId, lessonId) {
 		const where = {userId, packageId, lessonId};
-		const account = await app.keepworkModel.findOne({where:{userId}}).then(o => o && o.toJSON());
+		const account = await app.keepworkModel.accounts.findOne({where:{userId}}).then(o => o && o.toJSON());
 		if (!account) return;
 
 		// 是否学习完成
