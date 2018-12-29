@@ -9,7 +9,7 @@ module.exports = app => {
 		DECIMAL,
 	} = app.Sequelize;
 
-	const model = app.keepworkModel.define("trades", {
+	const model = app.model.define("trades", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
@@ -54,6 +54,9 @@ module.exports = app => {
 		rmb: {                       // 交易消耗或获取人民币
 			type: DECIMAL(10,2),
 			defaultValue:0,
+			get() {
+				return _.toNumber(this.getDataValue('rmb'));
+			},
 		},
 
 		coin: {                      // 交易消耗或获取知识币
@@ -66,9 +69,30 @@ module.exports = app => {
 			defaultValue: 0,
 		},
 
+		realRmb: {                   // 交易实际消耗rmb
+			type: DECIMAL(10,2),
+			defaultValue:0,
+			get() {
+				return _.toNumber(this.getDataValue('realRmb'));
+			},
+		},
+
+		realCoin: {                  // 交易实际消耗coin
+			type: INTEGER,
+			defaultValue:0,
+		},
+
+		realBean: {                  // 交易实际消耗bean
+			type: INTEGER,
+			defaultValue:0,
+		},
+
 		rewardRmb: {                 // 奖励rmb
 			type: DECIMAL(10,2),
 			defaultValue:0,
+			get() {
+				return _.toNumber(this.getDataValue('rewardRmb'));
+			},
 		},
 
 		rewardCoin: {                // 奖励coin
