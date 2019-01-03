@@ -217,7 +217,8 @@ class ClassroomsController extends Controller {
 		const learnRecords = _.isArray(params) ? params : [params];
 		for (let i = 0; i < learnRecords.length; i++) {
 			let record = learnRecords[i];
-			if (!record.id || !record.userId) continue;
+			if (!record.id) continue;
+			if (!record.userId) delete record.userId;
 			record.classroomId = id;
 			await ctx.model.LearnRecords.updateLearnRecord(record);
 		}
