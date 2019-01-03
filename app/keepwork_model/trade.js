@@ -9,7 +9,7 @@ module.exports = app => {
 		DECIMAL,
 	} = app.Sequelize;
 
-	const model = app.model.define("trades", {
+	const model = app.keepworkModel.define("trades", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
