@@ -85,6 +85,8 @@ module.exports = app => {
 	router.resources("teacherCDKeys", prefix + "admins/teacherCDKeys", teacherCDKeys);
 
 	const admins = controller.admins;
+	router.post(`${prefix}admins/query`, admins.query);
+	router.post(`${prefix}admins/:resources/query`, admins.resourcesQuery);
 	router.resources("admins", prefix + "admins/:resources", admins);
 	router.post("admins", prefix + "admins/:resources/search", admins.search);
 

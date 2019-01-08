@@ -41,6 +41,7 @@ class BaseController extends Controller {
 	}
 	
 	formatQuery(query) {
+		const self = this;
 		const Op = this.app.Sequelize.Op;
 		for (let key in query) {
 			const arr = key.split("-");
@@ -62,6 +63,37 @@ class BaseController extends Controller {
 			console.log(op, Op[op]);
 			query[newkey][Op[op]] = val;
 		}
+
+		const replaceOp = function(data) {
+			if (!_.isObject(data)) return ;
+			_.each(data, (val, key) => {
+				if (_.isString(key)) {
+					const op = key.substring(1);
+					if (_.startsWith(key, "$") && Op[op]) {
+						data[Op[op]] = val;
+						delete data[key];
+					}
+					if (key == "$model$" && typeof(val) == "string" && self.model[val]) {
+						data["model"] = self.model[val];
+						delete data["$model$"];
+					}
+				}
+				replaceOp(val);
+			});
+		}
+
+		replaceOp(query);
+	}
+
+	async query() {
+		const model = this.model[this.modelName];
+		const query = this.validate();
+
+		this.formatQuery(query);
+
+		const result = await model.findAndCount(query);
+
+		this.success(result);
 	}
 
 	async search() {

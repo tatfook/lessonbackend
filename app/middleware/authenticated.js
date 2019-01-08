@@ -24,14 +24,14 @@ module.exports = (options, app) => {
 			user = memoryCache.get(Authorization);
 		}
 
-		if (!user && token.trim()) {
-			user = await axios.get(config.tokenUrl, {headers})
-				.then(res => res.data)
-				.catch(e => {console.log(e); return undefined;});
-			if (user && user.userId) {
-				memoryCache.put(Authorization, user, 1000 * 60 * 60);
-			}
-		}
+		//if (!user && token.trim()) {
+			//user = await axios.get(config.tokenUrl, {headers})
+				//.then(res => res.data)
+				//.catch(e => {console.log(e); return undefined;});
+			//if (user && user.userId) {
+				//memoryCache.put(Authorization, user, 1000 * 60 * 60);
+			//}
+		//}
 
 		ctx.state.token = token;
 		ctx.state.user = user || {};
