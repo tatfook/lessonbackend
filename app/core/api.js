@@ -130,8 +130,8 @@ class Api  {
 				age_min: inst.minAge,
 				age_max: inst.maxAge,
 				cover: inst.extra.coverUrl,
-				created_time: inst.createdAt,
-				updated_time: inst.updatedAt,
+				created_at: inst.createdAt,
+				updated_at: inst.updatedAt,
 				recent_view: inst.lastClassroomCount,
 				description: inst.intro,
 			}, this.esConfig);
