@@ -28,4 +28,31 @@ module.exports = app => {
 		targetKey: "id",
 		constraints: false,
 	});
+
+	app.model.users.hasOne(app.model.teachers, {
+		as: "teachers",
+		foreignKey:"userId",
+		constraints: false,
+	});
+
+	app.model.teachers.belongsTo(app.model.users, {
+		as: "users",
+		foreignKey:"userId",
+		targetKey: "id",
+		constraints: false,
+	});
+
+	app.model.teachers.hasMany(app.model.teacherCDKeys, {
+		as: "teacherCDKeys",
+		foreignKey: "userId",
+		sourceKey: "userId",
+		constraints: false,
+	});
+
+	app.model.teacherCDKeys.belongsTo(app.model.teachers, {
+		as: "teachers",
+		foreignKey: "userId",
+		targetKey: "userId",
+		constraints: false,
+	});
 }

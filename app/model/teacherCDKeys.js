@@ -82,5 +82,6 @@ module.exports = app => {
 		return true;
 	}
 
+	app.model.teacherCDKeys = model;
 	return model;
 }
