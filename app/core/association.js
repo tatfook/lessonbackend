@@ -55,4 +55,33 @@ module.exports = app => {
 		targetKey: "userId",
 		constraints: false,
 	});
+
+	app.model.packages.hasMany(app.model.packageLessons, {
+		as: "packageLessons",
+		foreignKey:"packageId",
+		sourceKey:"id",
+		constraints: false,
+	});
+
+	app.model.packageLessons.belongsTo(app.model.packages, {
+		as: "packages",
+		foreignKey: "packageId",
+		targetKey: "id",
+		constraints: false,
+	});
+
+	app.model.lessons.hasMany(app.model.packageLessons, {
+		as: "packageLessons",
+		foreignKey: "lessonId",
+		sourceKey: "id",
+		constraints: false,
+		
+	});
+	
+	app.model.packageLessons.belongsTo(app.model.lessons, {
+		as: "lessons",
+		foreignKey: "lessonId",
+		targetKey: "id",
+		constraints: false,
+	});
 }
