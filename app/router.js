@@ -58,8 +58,8 @@ module.exports = app => {
 	router.get(prefix + "lessons/:id/detail", lessons.detail);
 
 	const packageLessons = controller.packageLessons;
-	router.resources(prefix + "packageLessons/search", packageLessons.search);
-	router.resources(prefix + "packageLessons", packageLessons);
+	router.post(prefix + "packageLessons/search", packageLessons.search);
+	//router.resources(prefix + "packageLessons", packageLessons);
 
 	const classrooms = controller.classrooms;
 	router.get(prefix + "classrooms/current", classrooms.current);
