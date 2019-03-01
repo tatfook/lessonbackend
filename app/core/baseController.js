@@ -99,13 +99,7 @@ class BaseController extends Controller {
 	async search() {
 		const {ctx} = this;
 		const query = ctx.request.body;
-
-		this.enauthenticated();
-		const userId = this.getUser().userId;
-		query.userId = userId;
-
 		this.formatQuery(query);
-
 		const model = this.model[this.modelName];
 		const result = await model.findAndCount({...this.queryOptions, where:query});
 
