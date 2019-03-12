@@ -137,5 +137,7 @@ module.exports = app => {
 		return list;
 	}
 
+	app.model.lessons = model;
+
 	return model;
 }

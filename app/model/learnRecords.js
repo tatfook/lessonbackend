@@ -26,6 +26,11 @@ module.exports = app => {
 			allowNull: false,
 		},
 
+		classId: {         // 课堂Id
+			type: BIGINT,
+			defaultValue: 0
+		},
+
 		packageId: {
 			type: BIGINT,
 			allowNull: false,
