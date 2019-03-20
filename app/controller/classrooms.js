@@ -70,9 +70,6 @@ class ClassroomsController extends Controller {
 		}});
 		if (!packageLesson) ctx.throw(400);
 
-		const ok = await ctx.model.Teachers.isAllowTeach(userId);
-		if (!ok) ctx.throw(400, "no privilege");
-
 		const _package = await ctx.model.Packages.getById(params.packageId);
 		const lesson = await ctx.model.Lessons.getById(params.lessonId);
 		if (!_package || !lesson) ctx.throw(400, "args error");
