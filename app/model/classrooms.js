@@ -31,6 +31,11 @@ module.exports = app => {
 			allowNull: false,
 		},
 
+		classId: {         // 课堂Id
+			type: BIGINT,
+			defaultValue: 0
+		},
+
 		packageId: {   // 所属课程包ID
 			type: BIGINT,
 			allowNull: false,
@@ -156,6 +161,7 @@ module.exports = app => {
 		if (data.state != CLASSROOM_STATE_USING) return ;
 		const learnRecordData = {
 			classroomId,
+			classId: data.classId,
 			packageId: data.packageId,
 			lessonId: data.lessonId,
 			userId: studentId,

@@ -15,8 +15,8 @@ const {
 class ClassroomsController extends Controller {
 	async ensureTeacher() {
 		const {userId} = this.enauthenticated();
-		const teacher = await this.model.teachers.getByUserId(userId);
-		if (!teacher) this.throw(400, "非老师");
+		//const teacher = await this.model.teachers.getByUserId(userId);
+		//if (!teacher) this.throw(400, "非老师");
 	}
 
 	async index() {
@@ -61,17 +61,14 @@ class ClassroomsController extends Controller {
 			lessonId:"int",
 		});
 
-		const isTeacher = await this.model.teachers.isAllowTeach(userId);
-		if (!isTeacher) return this.throw(400, "无权限");
+		//const isTeacher = await this.model.teachers.isAllowTeach(userId);
+		//if (!isTeacher) return this.throw(400, "无权限");
 
 		const packageLesson = await ctx.model.PackageLessons.findOne({where:{
 			packageId: params.packageId,
 			lessonId: params.lessonId,
 		}});
 		if (!packageLesson) ctx.throw(400);
-
-		const ok = await ctx.model.Teachers.isAllowTeach(userId);
-		if (!ok) ctx.throw(400, "no privilege");
 
 		const _package = await ctx.model.Packages.getById(params.packageId);
 		const lesson = await ctx.model.Lessons.getById(params.lessonId);
