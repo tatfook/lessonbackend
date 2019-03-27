@@ -94,7 +94,7 @@ class ClassroomsController extends Controller {
 		if (!id) ctx.throw(400, "id invalid");
 		const params = ctx.request.body;
 
-		await this.ensureTeacher();
+		//await this.ensureTeacher();
 		const userId = this.getUser().userId;
 		params.userId = userId;
 
@@ -116,17 +116,23 @@ class ClassroomsController extends Controller {
 	async join() {
 		const {ctx} = this;
 		const params = this.validate({key:"string"});
+		const {userId, organizationId} = this.enauthenticated();
 		const classroom = await this.model.Classrooms.findOne({where:{key:params.key}}).then(o => o && o.toJSON());
 		if (!classroom) return this.fail(1);
-		const count = await this.model.LearnRecords.count({where:{classroomId:classroom.id}});
-		if (count >= 50) return this.fail(2);
 		
-		const userId = this.getUser().userId || 0;
+		if (classroom.classId) {
+			const member = await this.app.keepworkModel.lessonOrganizationClassMembers.findOne({where: {classId: classroom.classId, organizationId, memberId:userId}}).then(o => o && o.toJSON());
+			if (!member) return this.throw(400, "不是该班级学生");
+		}
+
+		//const count = await this.model.LearnRecords.count({where:{classroomId:classroom.id}});
+		//if (count >= 50) return this.fail(2);
 		
+		//const userId = this.getUser().userId || 0;
 		const data = await ctx.model.Classrooms.join(userId, params.key, params.username);
 		if (!data) return this.fail(-1);
 		
-		if (!userId) data.token = this.app.util.jwt_encode({userId:0, username:"匿名用户"}, this.app.config.self.secret, 3600 * 24);
+		//if (!userId) data.token = this.app.util.jwt_encode({userId:0, username:"匿名用户"}, this.app.config.self.secret, 3600 * 24);
 
 		return this.success(data);
 	}
