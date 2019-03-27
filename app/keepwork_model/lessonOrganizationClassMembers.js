@@ -10,7 +10,7 @@ module.exports = app => {
 		DATE,
 	} = app.Sequelize;
 
-	const model = app.model.define("lessonOrganizationClassMembers", {
+	const model = app.keepworkModel.define("lessonOrganizationClassMembers", {
 		id: {
 			type: BIGINT,
 			autoIncrement: true,
