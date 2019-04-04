@@ -35,6 +35,11 @@ module.exports = app => {
 			type: BIGINT,
 			defaultValue: 0
 		},
+		
+		organizationId: {  // 机构Id
+			type: BIGINT,
+			defaultValue: 0,
+		},
 
 		packageId: {   // 所属课程包ID
 			type: BIGINT,
