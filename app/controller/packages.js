@@ -166,6 +166,7 @@ class PackagesController extends Controller {
 		const result = await ctx.model.Packages.destroy({where:{id, userId}});
 
 		await ctx.model.PackageLessons.destroy({where:{packageId:id, userId}});
+		await ctx.keepworkModel.lessonOrganizationPackages.destroy({where:{packageId:id}});
 
 		return this.success(result);
 	}
