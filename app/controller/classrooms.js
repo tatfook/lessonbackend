@@ -121,7 +121,7 @@ class ClassroomsController extends Controller {
 		if (!classroom) return this.fail(1);
 		
 		if (classroom.classId) {
-			const member = await this.app.keepworkModel.lessonOrganizationClassMembers.findOne({where: {classId: classroom.classId, organizationId, memberId:userId}}).then(o => o && o.toJSON());
+			const member = await this.app.keepworkModel.lessonOrganizationClassMembers.findOne({where: {classId: classroom.classId, memberId:userId}}).then(o => o && o.toJSON());
 			if (!member) return this.throw(400, "不是该班级学生");
 		}
 
