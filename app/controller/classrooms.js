@@ -113,6 +113,14 @@ class ClassroomsController extends Controller {
 		return this.success(data.state & CLASSROOM_STATE_USING ? true : false);
 	}
 
+	async getByKey() {
+		const {key} = this.validate({key:"string"});
+		const classroom = await this.model.Classrooms.findOne({where:{key:params.key}}).then(o => o && o.toJSON());
+		if (!classroom) return this.fail(1);
+
+		return this.success(classroom);
+	}
+
 	async join() {
 		const {ctx} = this;
 		const params = this.validate({key:"string"});
