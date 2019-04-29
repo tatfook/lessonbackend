@@ -115,7 +115,7 @@ class ClassroomsController extends Controller {
 
 	async getByKey() {
 		const {key} = this.validate({key:"string"});
-		const classroom = await this.model.Classrooms.findOne({where:{key:params.key}}).then(o => o && o.toJSON());
+		const classroom = await this.model.Classrooms.findOne({where:{key}}).then(o => o && o.toJSON());
 		if (!classroom) return this.fail(1);
 
 		return this.success(classroom);
