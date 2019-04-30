@@ -113,14 +113,23 @@ class ClassroomsController extends Controller {
 		return this.success(data.state & CLASSROOM_STATE_USING ? true : false);
 	}
 
+	async getByKey() {
+		const {key} = this.validate({key:"string"});
+		const classroom = await this.model.Classrooms.findOne({where:{key}}).then(o => o && o.toJSON());
+		if (!classroom) return this.fail(1);
+
+		return this.success(classroom);
+	}
+
 	async join() {
 		const {ctx} = this;
 		const params = this.validate({key:"string"});
-		const {userId, organizationId} = this.enauthenticated();
+		//const {userId, organizationId} = this.enauthenticated();
+		const {userId=0, organizationId} = this.getUser();
 		const classroom = await this.model.Classrooms.findOne({where:{key:params.key}}).then(o => o && o.toJSON());
 		if (!classroom) return this.fail(1);
 		
-		if (classroom.classId) {
+		if (classroom.classId && userId) {
 			const member = await this.app.keepworkModel.lessonOrganizationClassMembers.findOne({where: {classId: classroom.classId, memberId:userId}}).then(o => o && o.toJSON());
 			if (!member) return this.throw(400, "不是该班级学生");
 		}

@@ -42,7 +42,7 @@ class LessonsController extends Controller {
 		if (!id) ctx.throw(400, "id invalid");
 		const data = await ctx.model.Lessons.getById(id);
 		
-		if (!data) ctx.throw("404", "not found");
+		if (!data) ctx.throw(404, "not found");
 
 		data.skills = await ctx.model.LessonSkills.getSkillsByLessonId(id);
 		data.packages = await ctx.model.Lessons.getPackagesByLessonId(id);
