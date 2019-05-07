@@ -102,7 +102,10 @@ module.exports = app => {
 	}
 
 	model.audit = async function(packageId, userId, state) {
-		if (state != PACKAGE_STATE_AUDIT_SUCCESS || !userId)  return;
+		if (state != PACKAGE_STATE_AUDIT_SUCCESS || !userId) {
+			app.keepworkModel.lessonOrganizationPackages.destroy({where:{packageId}});
+			return ;
+		};
 
 		await app.model.Packages.update({auditAt: new Date()}, {where:{id:packageId}});
 		await app.model.Subscribes.upsert({userId, packageId});
