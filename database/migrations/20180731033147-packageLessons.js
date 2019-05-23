@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	up: (queryInterface, Sequelize) => {
+	up: async (queryInterface, Sequelize) => {
 		const {
 			BIGINT,
 			STRING,
@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('packageLessons', { 
+		await queryInterface.createTable('packageLessons', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -52,13 +52,9 @@ module.exports = {
 			underscored: false,
 			charset: "utf8mb4",
 			collate: 'utf8mb4_bin',
-			indexes: [
-			{
-				unique: true,
-				fields: ["packageId", "lessonId"],
-			},
-			],
 		});
+
+		await queryInterface.addIndex('packageLessons', {fields: ["packageId", "lessonId"]})
 	},
 
 	down: (queryInterface, Sequelize) => {

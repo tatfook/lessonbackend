@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	up: (queryInterface, Sequelize) => {
+	up: async (queryInterface, Sequelize) => {
 		const {
 			BIGINT,
 			STRING,
@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('learnRecords', { 
+		await queryInterface.createTable('userLearnRecords', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -33,21 +33,11 @@ module.exports = {
 				allowNull: false,
 			},
 
-			classroomId: {
-				type: BIGINT,
-				defaultValue: 0,
-			},
-
-			state: { // 0 -- 课堂学习  1 -- 自学
-				type: INTEGER,
-				defaultValue: 0,
-			},
-
 			extra: {
 				type: JSON,
 				defaultValue: {},
-			}, 
-			
+			},
+
 			createdAt: {
 				allowNull: false,
 				type: Sequelize.DATE
@@ -62,10 +52,18 @@ module.exports = {
 				underscored: false,
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
+
+				indexes: [
+				{
+					unique: true,
+					fields: ["userId", "packageId", "lessonId"],
+				},
+				],
 			});
+		await queryInterface.addIndex('userLearnRecords', {fields: ["userId", "packageId", "lessonId"], unique: true});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('learnRecords');
+		return queryInterface.dropTable('userLearnRecords');
 	}
 };

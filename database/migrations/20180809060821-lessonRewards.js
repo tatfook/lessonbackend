@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	up: (queryInterface, Sequelize) => {
+	up: async (queryInterface, Sequelize) => {
 		const {
 			BIGINT,
 			STRING,
@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('lessonSkills', { 
+		await queryInterface.createTable('lessonRewards', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -23,18 +23,24 @@ module.exports = {
 				allowNull: false,
 			},
 
+			packageId: {
+				type: BIGINT,
+				allowNull: false,
+			},
+
 			lessonId: {
 				type: BIGINT,
 				allowNull: false,
 			},
 
-			skillId: {
-				type: BIGINT,
-			},
-
-			score: {
+			coin: {        // 奖励知识币数量
 				type: INTEGER,
 				defaultValue: 0,
+			},
+
+			bean: {        // 奖励知识豆数量
+				type: INTEGER,
+				defaultValue:0,
 			},
 
 			extra: {
@@ -56,16 +62,12 @@ module.exports = {
 				underscored: false,
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
-				indexes: [
-				{
-					unique: true,
-					fields: ["lessonId", "skillId"],
-				},
-				],
 			});
+
+		await queryInterface.addIndex('lessonRewards', {fields: ["userId", "packageId", "lessonId"], unique: true});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('lessonSkills');
+		return queryInterface.dropTable('lessonRewards');
 	}
 };

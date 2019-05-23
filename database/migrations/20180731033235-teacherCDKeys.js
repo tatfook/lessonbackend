@@ -11,31 +11,35 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('userLearnRecords', { 
+		return queryInterface.createTable('teacherCDKeys', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
 
-			userId: {
+			userId: {  // 谁在使用此激活码
 				type: BIGINT,
+			},
+
+			key: {
+				type: STRING(64),
 				allowNull: false,
 			},
 
-			packageId: {
-				type: BIGINT,
-				allowNull: false,
+			state: {
+				type: INTEGER,
+				defaultValue: 0, // 0 --未使用 1 -- 已使用 2 -- 禁用态
 			},
 
-			lessonId: {
+			expire: {
 				type: BIGINT,
-				allowNull: false,
+				defaultValue: 31536000000,
 			},
 
 			extra: {
 				type: JSON,
-				defaultValue: {},
+				defaultValue:{},
 			},
 
 			createdAt: {
@@ -52,17 +56,10 @@ module.exports = {
 				underscored: false,
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
-
-				indexes: [
-				{
-					unique: true,
-					fields: ["userId", "packageId", "lessonId"],
-				},
-				],
 			});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('userLearnRecords');
+		return queryInterface.dropTable('teacherCDKeys');
 	}
 };

@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	up: (queryInterface, Sequelize) => {
+	up: async (queryInterface, Sequelize) => {
 		const {
 			BIGINT,
 			STRING,
@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('lessonContents', { 
+		await queryInterface.createTable('lessonSkills', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -28,15 +28,13 @@ module.exports = {
 				allowNull: false,
 			},
 
-			version: {
-				type: INTEGER,
-				allowNull: false,
-				defaultValue: 0,
+			skillId: {
+				type: BIGINT,
 			},
 
-			content: {
-				type: TEXT,
-				defaultValue:"",
+			score: {
+				type: INTEGER,
+				defaultValue: 0,
 			},
 
 			extra: {
@@ -59,9 +57,11 @@ module.exports = {
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
 			});
+
+		await queryInterface.addIndex('lessonSkills', {fields: ['lessonId', 'skillId'], unique: true});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('lessonContents');
+		return queryInterface.dropTable('lessonSkills');
 	}
 };

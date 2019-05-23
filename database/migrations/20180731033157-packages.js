@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	up: (queryInterface, Sequelize) => {
+	up: async (queryInterface, Sequelize) => {
 		const {
 			BIGINT,
 			STRING,
@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('packages', { 
+		await queryInterface.createTable('packages', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -62,6 +62,15 @@ module.exports = {
 				defaultValue: 0,
 			},
 
+			auditAt: {
+				type: DATE,
+			},
+
+			lastClassroomCount: {
+				type: INTEGER,
+				defaultValue: 0,
+			},
+
 			extra: {
 				type: JSON,
 				defaultValue: {
@@ -71,12 +80,12 @@ module.exports = {
 
 			createdAt: {
 				allowNull: false,
-				type: Sequelize.DATE
+				type: DATE
 			},
 
 			updatedAt: {
 				allowNull: false,
-				type: Sequelize.DATE
+				type: DATE
 			},
 
 			}, {
@@ -84,6 +93,7 @@ module.exports = {
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
 			});
+
 	},
 
 	down: (queryInterface, Sequelize) => {

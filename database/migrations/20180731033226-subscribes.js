@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	up: (queryInterface, Sequelize) => {
+	up: async (queryInterface, Sequelize) => {
 		const {
 			BIGINT,
 			STRING,
@@ -11,7 +11,7 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('classrooms', { 
+		await queryInterface.createTable('subscribes', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
@@ -23,29 +23,19 @@ module.exports = {
 				allowNull: false,
 			},
 
-			packageId: {   // 所属课程包ID
+			packageId: {
 				type: BIGINT,
 				allowNull: false,
 			},
 
-			lessonId: {
-				type: BIGINT,
-				allowNull: false,
-			},
-
-			key: {
-				type: STRING(24),
-				unique: true,
-			},
-
-			state: { // 0 -- 未上课  1 -- 上可中  2 -- 上课结束 
+			state: {  // 0 - 未购买 1 - 已购买
 				type: INTEGER,
-				defaultValue: 0,
+				defaultValue: 0
 			},
 
-			extra: {
+			extra: {     // 额外数据
 				type: JSON,
-				defaultValue: {},
+				defaultValue:{},
 			},
 
 			createdAt: {
@@ -63,9 +53,10 @@ module.exports = {
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
 			});
+		await queryInterface.addIndex('subscribes', {fields: ["userId", "packageId"], unique: true});
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('classrooms');
+		return queryInterface.dropTable('subscribes');
 	}
 };

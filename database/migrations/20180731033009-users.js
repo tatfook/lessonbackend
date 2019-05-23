@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	up: (queryInterface, Sequelize) => {
+	up: async (queryInterface, Sequelize) => {
 		const {
 			BIGINT,
 			STRING,
@@ -11,25 +11,35 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('teachers', { 
+		await queryInterface.createTable('users', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
 
-			userId: {
-				type: BIGINT,
-				allowNull: false,
-			},
-
-			key: {
+			username: {  // keepwork username
 				type: STRING(64),
+				unique: true,
 				allowNull: false,
 			},
 
-			privilege: {
+			nickname: {  // lesson昵称或真是姓名
+				type: STRING(64),
+			},
+
+			coin: {      // 知识币
 				type: INTEGER,
+				defaultValue: 0,
+			},
+
+			lockCoin: {   // 待解锁的知识币
+				type: INTEGER,
+				defaultValue: 0,
+			},
+
+			identify: {  // 身份
+				type: INTEGER,  // 0 = 默认 1 - 学生  2 - 教师 4 - 申请老师
 				defaultValue: 0,
 			},
 
@@ -53,9 +63,10 @@ module.exports = {
 				charset: "utf8mb4",
 				collate: 'utf8mb4_bin',
 			});
+		await queryInterface.addIndex('users', { fields: [ 'username' ] });
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('teachers');
+		return queryInterface.dropTable('users');
 	}
 };

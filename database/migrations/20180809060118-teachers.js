@@ -11,15 +11,17 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('teacherCDKeys', { 
+		return queryInterface.createTable('teachers', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
 
-			userId: {  // 谁在使用此激活码
+			userId: {
 				type: BIGINT,
+				allowNull: false,
+				unique: true,
 			},
 
 			key: {
@@ -27,12 +29,27 @@ module.exports = {
 				allowNull: false,
 			},
 
-			state: {
+			privilege: {
 				type: INTEGER,
-				defaultValue: 0, // 0 --未使用 1 -- 已使用 2 -- 禁用态
+				defaultValue: 0,
 			},
-			
-			extra: {
+
+			school: {                      // 学校信息
+				type: STRING(128),
+				defaultValue:"",
+			},
+
+			startTime: {                   // 有效期开始时间
+				type: BIGINT,
+				defaultValue:0,
+			},
+
+			endTime: {                     // 有效期结束时间
+				type: BIGINT,
+				defaultValue:0,
+			},
+
+			extra: {     // 额外数据
 				type: JSON,
 				defaultValue:{},
 			},
@@ -55,6 +72,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('teacherCDKeys');
+		return queryInterface.dropTable('teachers');
 	}
 };

@@ -11,41 +11,26 @@ module.exports = {
 			JSON,
 		} = Sequelize;
 
-		return queryInterface.createTable('users', { 
+		return queryInterface.createTable('skills', {
 			id: {
 				type: BIGINT,
 				autoIncrement: true,
 				primaryKey: true,
 			},
 
-			username: {  // keepwork username
+			skillName: {
 				type: STRING(64),
-				unique: true,
 				allowNull: false,
+				unique: true,
 			},
 
-			nickname: {  // lesson昵称或真是姓名
+			enSkillName: {
 				type: STRING(64),
 			},
-			
-			coin: {      // 知识币
-				type: INTEGER,
-				defaultValue: 0,
-			},
 
-			lockCoin: {   // 待解锁的知识币
-				type: INTEGER,
-				defaultValue: 0,
-			},
-
-			identify: {  // 身份
-				type: INTEGER,  // 0 = 默认 1 - 学生  2 - 教师 4 - 申请老师
-				defaultValue: 0,
-			},
-
-			extra: {     // 额外数据
+			extra: {
 				type: JSON,
-				defaultValue:{},
+				defaultValue: {},
 			},
 
 			createdAt: {
@@ -66,6 +51,6 @@ module.exports = {
 	},
 
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable('users');
+		return queryInterface.dropTable('skills');
 	}
 };
