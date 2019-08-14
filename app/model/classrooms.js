@@ -139,6 +139,7 @@ module.exports = app => {
 		const classroom = await app.model.Classrooms.getById(classroomId);
 		if (classroom.state != CLASSROOM_STATE_USING) return;
 
+		app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom, action: "quit", handleId: studentId, username});
 		app.model.LearnRecords.destroy({
 			where: {
 				classroomId,
@@ -201,7 +202,8 @@ module.exports = app => {
 		return learnRecord;
 	}
 
-	model.dismiss = async function(userId, classroomId) {
+	// 下课
+	model.dismiss = async function(userId, classroomId, username) {
 		let data = await app.model.Classrooms.findOne({
 			where: {
 				id: classroomId,
@@ -213,6 +215,7 @@ module.exports = app => {
 		if (!data) return false;
 		data = data.get({plain:true});
 	
+		app.keepworkModel.lessonOrganizationLogs.classroomLog({Classroom: data, action:"dismiss", handleId: userId, username});
 		// 更新课堂状态
 		await app.model.Classrooms.update({
 			state: CLASSROOM_STATE_USED,

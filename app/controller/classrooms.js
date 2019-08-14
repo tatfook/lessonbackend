@@ -53,7 +53,7 @@ class ClassroomsController extends Controller {
 
 	async create() {
 		const {ctx} = this;
-		const {userId} = this.enauthenticated();
+		const {userId, username} = this.enauthenticated();
 		const params = ctx.request.body;
 
 		ctx.validate({
@@ -84,6 +84,8 @@ class ClassroomsController extends Controller {
 		params.extra.lessonNo = packageLesson.extra.lessonNo;
 
 		const data = await ctx.model.Classrooms.createClassroom(params);
+
+		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({Classroom:data, action:"create", handleId:userId, username});
 
 		return this.success(data);
 	}
@@ -125,7 +127,7 @@ class ClassroomsController extends Controller {
 		const {ctx} = this;
 		const params = this.validate({key:"string"});
 		//const {userId, organizationId} = this.enauthenticated();
-		const {userId=0, organizationId} = this.getUser();
+		const {userId=0, organizationId, username} = this.getUser();
 		const classroom = await this.model.Classrooms.findOne({where:{key:params.key}}).then(o => o && o.toJSON());
 		if (!classroom) return this.fail(1);
 		
@@ -143,13 +145,14 @@ class ClassroomsController extends Controller {
 		
 		//if (!userId) data.token = this.app.util.jwt_encode({userId:0, username:"匿名用户"}, this.app.config.self.secret, 3600 * 24);
 
+		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom, action:"join", handleId: userId, username});
 		return this.success(data);
 	}
 
 	async quit() {
-		const {userId} = this.enauthenticated();
+		const {userId, username} = this.enauthenticated();
 		
-		await this.model.Classrooms.quit(userId);
+		await this.model.Classrooms.quit(userId, username);
 
 		return this.success("OK");
 	}
@@ -246,13 +249,12 @@ class ClassroomsController extends Controller {
 	// 下课
 	async dismiss() {
 		const {ctx} = this;
-		const {userId} = this.enauthenticated();
+		const {userId, username} = this.enauthenticated();
 		const id = _.toNumber(ctx.params.id);
 		if (!id) ctx.throw(400, "id invalid");
 		const params = ctx.request.body;
 
-
-		const result = await ctx.model.Classrooms.dismiss(userId, id);
+		const result = await ctx.model.Classrooms.dismiss(userId, id, username);
 		return this.success(result);
 	}
 }

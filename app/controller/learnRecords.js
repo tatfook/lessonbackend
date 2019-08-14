@@ -45,7 +45,8 @@ class LearnRecordsController extends Controller {
 		const {ctx} = this;
 		const params = ctx.request.body;
 
-		const userId = this.getUser().userId || 0;
+		const {userId=0, username} = this.getUser();
+	
 		params.userId = userId;
 
 		ctx.validate({
@@ -63,6 +64,10 @@ class LearnRecordsController extends Controller {
 		//if (!data) this.throw(500, "未购买课程包");
 
 		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
+
+		if (!params.classroomId) {
+			this.app.keepworkModel.lessonOrganizationLogs.classroomLog({lr: learnRecord, action:"learn", handleId: userId, username});
+		}
 
 		return this.success(learnRecord);
 	}
