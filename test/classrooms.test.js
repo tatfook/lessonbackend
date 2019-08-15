@@ -21,8 +21,7 @@ describe('test/controller/skills.test.js', () => {
 		await app.model.TeacherCDKeys.sync({force:true});
 		await app.model.Classrooms.sync({force:true});
 		await app.model.Users.sync({force:true});
-
-		await app.httpRequest().get("/users").expect(200);
+		await app.keepworkModel.lessonOrganizationLogs.sync({force: true});
 
 		await subjects.create({
 			subjectName: "前端",
@@ -37,6 +36,10 @@ describe('test/controller/skills.test.js', () => {
 			skillName: "跳舞",
 		});
 		
+		const token = app.util.jwt_encode({userId:1, username:'xiaoyao'}, app.config.self.secret);
+
+		await app.httpRequest().get("/users").set("Authorization", `Bearer ${token}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
+
 		let lesson = await app.httpRequest().post("/lessons").send({
 			lessonName: "HTML",
 			subjectId:1,
@@ -46,7 +49,7 @@ describe('test/controller/skills.test.js', () => {
 				coverUrl: "http://www.baidu.com",
 				vedioUrl: "http://www.baidu.com",
 			}
-		}).expect(200).then(res => res.body);
+		}).set("Authorization", `Bearer ${token}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
 		assert.equal(lesson.id,1);
 
 		const package_ = await app.httpRequest().post("/packages").send({
@@ -61,60 +64,55 @@ describe('test/controller/skills.test.js', () => {
 			extra: {
 				coverUrl: "http://www.baidu.com",
 			},
-		}).expect(200).then(res => res.body);
+		}).set("Authorization", `Bearer ${token}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
 
 	});
 
-	it("POST|GET|PUT /classrooms", async ()=> {
-		let data = await app.httpRequest().post("/admins/teacherCDKeys/generate?count=20").expect(200).then(res => res.body);
-		assert(data.length, 20);
-		const key = data[0].key;
-		await app.httpRequest().post("/users/1/teacher").send({key}).expect(200);
+	it("001 创建课堂 进入课堂 退出课堂 关闭课堂", async ()=> {
+		const token = app.util.jwt_encode({userId:1, username:'xiaoyao'}, app.config.self.secret);
 
 		// 创建课堂
-		let classroom = await app.httpRequest().post("/classrooms").send({packageId:1, lessonId:1}).expect(200).then(res => res.body);
-		assert.equal(classroom.id,1);
-		//console.log(classroom);
+		let classroom = await app.httpRequest().post("/classrooms").send({packageId:1, lessonId:1}).set("Authorization", `Bearer ${token}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
+		const classroomId = classroom.id;
+		assert.equal(classroom.id, 1);
+
+		// 进入课堂
+		const token2 = app.util.jwt_encode({userId:2, username:'wxatest'}, app.config.self.secret);
+		await app.httpRequest().get("/users").set("Authorization", `Bearer ${token2}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
+		await app.httpRequest().post("/classrooms/join").send({key:classroom.key}).set("Authorization", `Bearer ${token2}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
+		
+		// 退出课堂
+		await app.httpRequest().post("/classrooms/quit").set("Authorization", `Bearer ${token2}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
+
+		// 下课
+		await app.httpRequest().put(`/classrooms/${classroomId}/dismiss`).set("Authorization", `Bearer ${token}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
+		classroom = await app.httpRequest().get(`/classrooms/${classroomId}`).set("Authorization", `Bearer ${token}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
+		assert.equal(classroom.state, 2);
+
+		// 自学
+		await app.httpRequest().post("/learnRecords").send({packageId:1, lessonId:1, state:1}).set("Authorization", `Bearer ${token2}`).expect(res => assert(res.statusCode == 200)).then(res => res.body);
 
 		// 获取课堂
-		classroom = await app.httpRequest().get("/classrooms/1").expect(200).then(res => res.body);
-		assert.equal(classroom.id,1);
-		assert.equal(classroom.state, 1);
+		//classroom = await app.httpRequest().get("/classrooms/1").expect(200).then(res => res.body);
+		//assert.equal(classroom.id,1);
+		//assert.equal(classroom.state, 1);
 
 		// 当前课堂
-		classroom = await app.httpRequest().get("/classrooms/current").expect(200).then(res => res.body);
-		assert.equal(classroom.id,1);
+		//classroom = await app.httpRequest().get("/classrooms/current").expect(200).then(res => res.body);
+		//assert.equal(classroom.id,1);
 
 		// 关闭课堂
-		await app.httpRequest().put("/classrooms/1/dismiss").expect(200);
-		classroom = await app.httpRequest().get("/classrooms/1").expect(200).then(res => res.body);
-		assert.equal(classroom.state, 2);
 	});
 
-	it ("POST|PUT|GET /classrooms/1/learnRecords", async ()=>{
-		const url = "/classrooms/1/learnRecords";
-		let lr = await app.httpRequest().post(url).send({userId:1}).expect(200).then(res => res.body);
-		assert.equal(lr.id, 1);
+	it ("002", async ()=>{
+		//const url = "/classrooms/1/learnRecords";
+		//let lr = await app.httpRequest().post(url).send({userId:1}).expect(200).then(res => res.body);
+		//assert.equal(lr.id, 1);
 
-		await app.httpRequest().put(url).send({id:1, userId:1, extra:{key:1}}).expect(200);
+		//await app.httpRequest().put(url).send({id:1, userId:1, extra:{key:1}}).expect(200);
 
-		const list = await app.httpRequest().get(url).expect(200).then(res => res.body);
-		assert.equal(list[0].extra.key, 1);
-	});
-
-	it ("join quit classrooms", async () => {
-		// 创建课堂
-		let data = await app.httpRequest().post("/classrooms").send({packageId:1, lessonId:1}).expect(200).then(res => res.body);
-		assert.equal(data.id,2);
-
-		await app.httpRequest().post("/classrooms/join").send({key:data.key}).expect(200);
-
-		data = await app.httpRequest().get("/classrooms/current").expect(200).then(res => res.body);
-		assert.equal(data.id,2);
-		
-		await app.httpRequest().post("/classrooms/quit").expect(200);
-
-		await app.httpRequest().get("/classrooms/current").expect(404);
+		//const list = await app.httpRequest().get(url).expect(200).then(res => res.body);
+		//assert.equal(list[0].extra.key, 1);
 	});
 });
 

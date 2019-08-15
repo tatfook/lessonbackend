@@ -67,9 +67,9 @@ module.exports = app => {
 		}
 		
 		if (action == "create") {
-			log.description =  `创建课堂, 课堂ID: C${classroom.key}, 《${classroom.extra.packageName}》, ${classroom.extra.lessonNo}: ${classroomLog.extra.lessonName}`;
+			log.description =  `创建课堂, 课堂ID: C${classroom.key}, 《${classroom.extra.packageName}》, ${classroom.extra.lessonNo}: ${classroom.extra.lessonName}`;
 		} else if (action == "dismiss") {
-			log.description = `下课, 课堂ID: C${classroom.key}, 《${classroom.extra.packageName}》, ${classroom.extra.lessonNo}: ${classroomLog.extra.lessonName}`;
+			log.description = `下课, 课堂ID: C${classroom.key}, 《${classroom.extra.packageName}》, ${classroom.extra.lessonNo}: ${classroom.extra.lessonName}`;
 		} else if (action == "join") {
 			log.description = `进入课堂, 课堂ID: C${classroom.key}`;
 		} else if (action == "quit") {

@@ -85,7 +85,7 @@ class ClassroomsController extends Controller {
 
 		const data = await ctx.model.Classrooms.createClassroom(params);
 
-		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({Classroom:data, action:"create", handleId:userId, username});
+		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom:data, action:"create", handleId:userId, username});
 
 		return this.success(data);
 	}

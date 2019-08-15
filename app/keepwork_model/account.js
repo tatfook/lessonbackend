@@ -60,7 +60,7 @@ module.exports = app => {
 	model.getByUserId = async function(userId) {
 		const account = await app.keepworkModel.accounts.findOne({where:{userId}}).then(o => o && o.toJSON());
 		if (!account) {
-			return await app.model.accounts.create({userId}).then(o => o && o.toJSON());
+			return await app.keepworkModel.accounts.create({userId}).then(o => o && o.toJSON());
 		}
 
 		return account;

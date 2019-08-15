@@ -19,6 +19,7 @@ class Api  {
 	}
 
 	async curl(method, url, data, config = {}) {
+		if (this.app.config.env == "unittest") return;
 		url = config.baseURL + pathToRegexp.compile(url)(data || {});
 		method = (method || "get").toLowerCase();
 		config = {...config, method, url};

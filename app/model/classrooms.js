@@ -130,7 +130,7 @@ module.exports = app => {
 		return false;
 	}
 
-	model.quit = async function(studentId) {
+	model.quit = async function(studentId, username) {
 		const user = await app.model.Users.getById(studentId);
 		
 		const classroomId = user.extra.classroomId;
@@ -215,7 +215,7 @@ module.exports = app => {
 		if (!data) return false;
 		data = data.get({plain:true});
 	
-		app.keepworkModel.lessonOrganizationLogs.classroomLog({Classroom: data, action:"dismiss", handleId: userId, username});
+		app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom: data, action:"dismiss", handleId: userId, username});
 		// 更新课堂状态
 		await app.model.Classrooms.update({
 			state: CLASSROOM_STATE_USED,

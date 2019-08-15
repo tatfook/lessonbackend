@@ -66,7 +66,7 @@ class LearnRecordsController extends Controller {
 		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
 
 		if (!params.classroomId) {
-			this.app.keepworkModel.lessonOrganizationLogs.classroomLog({lr: learnRecord, action:"learn", handleId: userId, username});
+			await this.app.keepworkModel.lessonOrganizationLogs.classroomLog({lr: learnRecord, action:"learn", handleId: userId, username});
 		}
 
 		return this.success(learnRecord);

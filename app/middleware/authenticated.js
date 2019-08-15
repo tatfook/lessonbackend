@@ -14,7 +14,9 @@ module.exports = (options, app) => {
 		try {
 			user = jwt.decode(token, config.secret);
 			// 验证token是否有效
-			await axios.get(config.coreServiceBaseUrl + "users/profile", {headers}).catch(e => user = undefined);
+			if (this.app.config.env !== "unittest") {
+				await axios.get(config.coreServiceBaseUrl + "users/profile", {headers}).catch(e => user = undefined);
+			}
 		} catch(e) {
 		}
 
