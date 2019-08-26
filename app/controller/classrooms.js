@@ -53,7 +53,7 @@ class ClassroomsController extends Controller {
 
 	async create() {
 		const {ctx} = this;
-		const {userId, username} = this.enauthenticated();
+		const {userId, username, organizationId} = this.enauthenticated();
 		const params = ctx.request.body;
 
 		ctx.validate({
@@ -85,7 +85,7 @@ class ClassroomsController extends Controller {
 
 		const data = await ctx.model.Classrooms.createClassroom(params);
 
-		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom:data, action:"create", handleId:userId, username});
+		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom:data, action:"create", handleId:userId, username, organizationId});
 
 		return this.success(data);
 	}
@@ -145,7 +145,7 @@ class ClassroomsController extends Controller {
 		
 		//if (!userId) data.token = this.app.util.jwt_encode({userId:0, username:"匿名用户"}, this.app.config.self.secret, 3600 * 24);
 
-		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom, action:"join", handleId: userId, username});
+		this.app.keepworkModel.lessonOrganizationLogs.classroomLog({classroom, action:"join", handleId: userId, username, organizationId});
 		return this.success(data);
 	}
 

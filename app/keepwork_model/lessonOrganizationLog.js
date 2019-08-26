@@ -59,8 +59,9 @@ module.exports = app => {
 	
 	app.keepworkModel.lessonOrganizationLogs = model;
 
-	model.classroomLog = async function({classroom, lr, action="create", username, handleId}) {
+	model.classroomLog = async function({classroom = {}, lr, action="create", username, handleId, organizationId}) {
 		const log = {
+			organizationId: organizationId || classroom.organizationId,
 			type: "课堂",
 			handleId,
 			username,

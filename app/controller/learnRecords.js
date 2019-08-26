@@ -45,7 +45,7 @@ class LearnRecordsController extends Controller {
 		const {ctx} = this;
 		const params = ctx.request.body;
 
-		const {userId=0, username} = this.getUser();
+		const {userId=0, username, organizationId} = this.getUser();
 	
 		params.userId = userId;
 
@@ -66,7 +66,7 @@ class LearnRecordsController extends Controller {
 		let learnRecord = await ctx.model.LearnRecords.createLearnRecord(params);
 
 		if (!params.classroomId) {
-			await this.app.keepworkModel.lessonOrganizationLogs.classroomLog({lr: learnRecord, action:"learn", handleId: userId, username});
+			await this.app.keepworkModel.lessonOrganizationLogs.classroomLog({lr: learnRecord, action:"learn", handleId: userId, username, organizationId});
 		}
 
 		return this.success(learnRecord);
