@@ -30,13 +30,17 @@ module.exports = app => {
 			type: BIGINT,
 		},
 
-		url: {
+		url: {                      // 教案URL 允许为空
 			type: STRING,
 			unique: true,
 			//allowNull: false,
 		},
 
-		goals: {
+		coursewareUrl: {            // 课程URL 允许为空
+			type: STRING,
+		},
+
+		goals: {                    // 目标
 			type: TEXT,
 		},
 

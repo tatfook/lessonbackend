@@ -215,6 +215,7 @@ class LessonsController extends Controller {
 		const params = ctx.request.body;
 		ctx.validate({
 			content: "string",
+			courseware: "string",
 		}, params);
 
 		this.enauthenticated();
@@ -223,7 +224,7 @@ class LessonsController extends Controller {
 		const lesson = await ctx.model.Lessons.getById(id, userId);
 		if (!lesson) ctx.throw(400, "args error");
 		
-		const result = await ctx.model.LessonContents.release(userId, id, params.content);
+		const result = await ctx.model.LessonContents.release(userId, id, params.content, params.courseware);
 
 		return this.success(result);
 	}

@@ -17,28 +17,33 @@ module.exports = app => {
 			primaryKey: true,
 		},
 
-		userId: {
+		userId: {             // 用户ID
 			type: BIGINT,
 			allowNull: false,
 		},
 
-		lessonId: {
+		lessonId: {           // 课程ID
 			type: BIGINT,
 			allowNull: false,
 		},
 
-		version: {
+		version: {            // 版本信息
 			type: INTEGER,
 			allowNull: false,
 			defaultValue: 0,
 		},
 
-		content: {
+		content: {            // 教案内容
 			type: TEXT,
 			defaultValue:"",
 		},
 
-		extra: {
+		courseware: {         // 课件内容
+			type: TEXT,
+			defaultValue:"",
+		},
+
+		extra: {              // 附加数据
 			type: JSON,
 			defaultValue: {},
 		},
@@ -51,7 +56,7 @@ module.exports = app => {
 
 	//model.sync({force:true});
 	
-	model.release = async function(userId, lessonId, content) {
+	model.release = async function(userId, lessonId, content, courseware) {
 		let count = await app.model.LessonContents.count({
 			where: {
 				userId,
@@ -66,6 +71,7 @@ module.exports = app => {
 			version: count,
 			lessonId,
 			content,
+			courseware,
 		});
 
 		return data;
