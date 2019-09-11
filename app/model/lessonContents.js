@@ -66,12 +66,13 @@ module.exports = app => {
 
 		count = count + 1;
 
+		const olddata = await model.content(lessonId);
 		const data = await app.model.LessonContents.create({
 			userId,
 			version: count,
 			lessonId,
-			content,
-			courseware,
+			content: content || olddata.content || "",
+			courseware courseware || olddata.courseware || "",
 		});
 
 		return data;
