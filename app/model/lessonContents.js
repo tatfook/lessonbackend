@@ -72,7 +72,7 @@ module.exports = app => {
 			version: count,
 			lessonId,
 			content: content || olddata.content || "",
-			courseware courseware || olddata.courseware || "",
+			courseware: courseware || olddata.courseware || "",
 		});
 
 		return data;
