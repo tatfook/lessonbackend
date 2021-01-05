@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "egg": "^2.9.1",
     "egg-cors": "^2.1.0",
     "egg-scripts": "^2.6.0",
